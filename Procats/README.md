@@ -1,6 +1,6 @@
-# Procats application source — 1.7.4
+# Procats application source — 1.7.5
 
-Shared web interface and Android/Companion/Wear OS modules. See the repository root README for architecture, screenshots and installation commands, [Knowledge Treasury notes](docs/1.7.4-BILGI-HAZINESI.md) for behavior, and [validation](docs/TEST-SONUCLARI.md) for test coverage.
+Shared web interface and Android/Companion/Wear OS modules. See the repository root README for architecture, screenshots and installation commands, [Add data notes](docs/1.7.5-VERI-EKLE.md) for behavior, and [validation](docs/TEST-SONUCLARI.md) for test coverage.
 
 Use Node.js 22+, Java 21 and Android SDK 36. Run `npm ci`, `npm test`, `npm run build` and `npm run preview`. Local Firestore tests use `npm run test:rules` with the demo project. For Android, run `npm run android:sync`, configure your own SDK path in `android/local.properties`, then build the required variant with Gradle.
 

@@ -1,5 +1,5 @@
 /* Stable home stopwatch digits keep the card still during centisecond updates. */
-#view-home #swDisplay{min-inline-size:8ch;line-height:1.25;text-align:center;white-space:nowrap;font-variant-numeric:tabular-nums lining-nums;font-feature-settings:"tnum" 1;font-kerning:none;font-variant-ligatures:none;contain:layout style}
+#view-home #swDisplay{min-inline-size:8ch;line-height:1.25;text-align:center;white-space:nowrap;font-family:ui-monospace,"Cascadia Mono",Consolas,"Roboto Mono","Courier New",monospace;letter-spacing:0;font-variant-numeric:tabular-nums lining-nums;font-feature-settings:"tnum" 1;font-kerning:none;font-variant-ligatures:none;contain:layout style}
 /* Optional countdown faces. */
 /* OLED focus escapes themed stacking contexts and covers the complete app window. */
 body:has(#view-timers.active.timer-oled-active){padding:0!important;gap:0!important;background:#000!important;background-image:none!important}

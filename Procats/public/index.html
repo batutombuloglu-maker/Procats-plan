@@ -401,8 +401,8 @@
         #syncStatus{position:fixed;bottom:8px;right:16px;z-index:60;max-width:calc(100vw - 88px);border:0;border-radius:8px;background:var(--bg-card);color:var(--text-secondary);font-size:12px;padding:5px 9px;cursor:pointer}
         #syncModal .modal-actions{flex-wrap:wrap}#syncModal p{line-height:1.6;margin:14px 0}#syncModal button{font-size:14px}#syncAccount{overflow-wrap:anywhere}
     </style>
-<link rel="stylesheet" href="/mobile.css?v=1.7.4">
-<link rel="stylesheet" href="/account.css?v=1.7.4"><link rel="stylesheet" href="/weekly-summary.css?v=1.7.4">
+<link rel="stylesheet" href="/mobile.css?v=1.7.5">
+<link rel="stylesheet" href="/account.css?v=1.7.5"><link rel="stylesheet" href="/weekly-summary.css?v=1.7.5">
 <link rel="stylesheet" href="/experience.css">
 <link rel="stylesheet" href="/release.css">
 <link rel="stylesheet" href="/upgrade.css">
@@ -635,6 +635,10 @@
                         <button class="btn-vault import" style="width: 100%;"><span data-i18n="btn_import">Yedek Yükle</span></button>
                         <input type="file" id="importFile" accept=".json" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;" data-action-change="importData(event)">
                     </div>
+                    <button class="btn-vault import add" data-action-click="openDataAddPicker()"><span id="addDataLabel">Veri ekle</span></button>
+                    <input type="file" id="addDataFileInput" accept=".json,application/json" hidden data-action-change="addDataFile(event)">
+                    <p class="vault-desc" id="addDataHint" style="margin:0;font-size:12px;">JSON dosyasındaki yeni kayıtları ekler. Mevcut kayıtlar korunur.</p>
+                    <p id="addDataResult" role="status" style="font-size:13px;line-height:1.6;color:var(--text-secondary);"></p>
                 </div>
             </div>
         </div>

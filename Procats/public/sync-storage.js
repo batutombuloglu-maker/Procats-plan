@@ -32,6 +32,34 @@ finally{busy=false;if(!stopped){if(failed)schedule(30000);else if(again){again=f
 function resolve(which){if(stopped||closing||importing)return Promise.resolve();const result=performResolve(which);resolvePromise=result;return result;}
 async function performResolve(which){if(!conflict)return;await store.recovery(boot.user,{local:clone(data),remote:clone(conflict.data),createdAt:Date.now()});if(stopped)return;const old=clone(data);base=clone(conflict.data);revision=conflict.revision;if(which==='remote')data=ProcatsActivity.snapshot(clone(conflict.data));conflict=null;await persist();applying=true;try{window.procatsApplyRemote?.(old,data);}finally{applying=false;}dueAt=Date.now();await sync();}
 function importBackup(updates){if(importing)return Promise.reject(Error("Storage busy"));const result=commitBackup(updates);importPromise=result.catch(()=>{});return result;}
+function additionCurrent(){const current=clone(data);for(const key of ['procats_lists_v1','procats_knowledge_v1'])current[key]=settings[key]?JSON.parse(settings[key]):[];return current;}
+function previewAddition(file){if(importing||stopped||closing||conflict)throw Error('add-busy');return ProcatsDataAdd.plan(additionCurrent(),file);}
+function addData(file,expected){if(importing)return Promise.reject(Error('add-busy'));const result=commitAddition(file,expected);importPromise=result.catch(()=>{});return result;}
+async function commitAddition(file,expected){
+ if(stopped||closing||busy||importing||conflict)throw Error('add-busy');
+ importing=true;clearTimeout(timer);
+ try{
+  await durable;
+  // Prepare against the newest durable record while all storage writes are locked.
+  const plan=ProcatsDataAdd.plan(additionCurrent(),file);
+  if(plan.signature!==expected)throw Error('add-changed');
+  for(const [key,store]of [['procats_lists_v1',window.ProcatsListsStore],['procats_knowledge_v1',window.ProcatsKnowledgeStore]])if(Object.hasOwn(plan.updates,key)){const state=store?.getState();if(state?.invalid||state?.conflict)throw Error('add-busy');}
+  const previous=clone(data);
+  if(!plan.totalAdded)return {plan,previous,mainChanged:false};
+  const mainUpdates=Object.fromEntries(Object.entries(plan.updates).filter(([key])=>keys.has(key))),mainChanged=Object.keys(mainUpdates).length>0;
+  const next=mainChanged?ProcatsActivity.snapshot({...clone(data),...mainUpdates}):clone(data),prefs=clone(settings);
+  for(const key of ['procats_lists_v1','procats_knowledge_v1'])if(Object.hasOwn(plan.updates,key))prefs[key]=JSON.stringify(plan.updates[key]);
+  if(mainChanged&&window.procatsValidate&&!window.procatsValidate(next))throw Error('add-invalid');
+  checkChange(next);
+  const record={base:clone(base),data:next,revision,conflict:null,settings:prefs,savedAt:Date.now()};
+  // One atomic durable journal commit; failure exposes none of the additions.
+  await store.save(boot.user,record);
+  data=next;for(const key of Object.keys(settings))delete settings[key];Object.assign(settings,prefs);
+  for(const key of ['procats_lists_v1','procats_knowledge_v1'])if(Object.hasOwn(plan.updates,key))try{localStorage.setItem(prefix+'setting:'+key,prefs[key]);}catch{}
+  localSaved=true;storageError=false;dueAt=Date.now()+10000;setStatus('pending');
+  return {plan,previous,mainChanged};
+ }finally{importing=false;schedule();}
+}
 async function commitBackup(updates){
  if(stopped||closing||busy||importing||conflict)throw Error('Storage busy');
  importing=true;clearTimeout(timer);
@@ -57,6 +85,7 @@ async function pause(){closing=true;clearTimeout(timer);await Promise.all([syncP
 function resume(){if(stopped)return;closing=false;schedule();}
 window.ProcatsSync={pause,resume,importBackup,keys:[...keys],sync,resolve,flush,stop(){stopped=true;clearTimeout(timer);clearTimeout(heartbeat);ProcatsCloud.stop();},getState:()=>({status:storageError?'storage':status,localSaved,conflict:!!conflict,pending:!same(base,data),email:boot.email,revision}),getData:()=>clone(data),getConflict:()=>conflict?{format:'procats-conflict',local:clone(data),remote:clone(conflict.data)}:null,start(){ready=true;persist();setStatus(conflict?'conflict':same(base,data)?'connecting':'pending');watch();ProcatsCloud.subscribe(()=>{if(busy)again=true;else void sync(false);},error=>{if(['permission-denied','unauthenticated'].includes(error.code)){stopped=true;setStatus('signin');void window.ProcatsAccount?.onAccessDenied();}else setStatus(error.code==='resource-exhausted'?'quota':'offline');});void store.persist();return sync(false);},importLegacy(snapshot){return importBackup(new Map(Object.entries(snapshot).filter(([key])=>keys.has(key)||['procats_theme','procats_lang','yks_v3_sidebarWidth','procats_obs_sidebarWidth','procats_navigation_v1','procats-device-settings-v1'].includes(key)).map(([key,value])=>[key,typeof value==='string'?value:JSON.stringify(value)])));}};
 // One logical calendar paste must never expose a day without its tasks.
+window.ProcatsSync.previewAddition=previewAddition;window.ProcatsSync.addData=addData;
 window.ProcatsSync.commitSections=function(updates){
  if(applying)return;
  if(stopped||closing||importing)throw Error('Storage locked');

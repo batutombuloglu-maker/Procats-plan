@@ -143,7 +143,7 @@
                 min: "Dk", ph_min: "Süre (Dk)", btn_set: "Ayarla", btn_pause: "Duraklat", btn_cancel: "İptal", btn_confirm: "Onayla", notes_title: "Hızlı Notlar", btn_new_note: "+ Yeni Not",
                 bm_title: "Dijital Cephanelik", bm_sub: "Sık kullandığın bağlantılar ve kaynaklar.", btn_new_bm: "+ Yeni Kaynak Ekle", btn_delete: "Sil",
                 arch_title: "Yaşam Arşivi", arch_sub: "Okunan kitaplar, filmler ve oyunlar.", btn_new_arch: "+ Yeni İçerik", tab_books: "Kitaplar", tab_movies: "Filmler", tab_games: "Oyunlar",
-                vault_title: "Kişisel Veri Kasası", vault_sub: "Görevlerin, notların ve planların hesabınla eşitlenir. Ayrıca bir kopyasını indirip yedek olarak saklayabilirsin.", btn_export: "Verileri İndir (.json)", btn_import: "Yedek Yükle",
+                vault_title: "Kişisel Veri Kasası", vault_sub: "Görevlerin, notların ve planların hesabınla eşitlenir. Şifreli yedek indir, bir yedeği geri yükle veya mevcutları koruyarak yeni veri ekle.", btn_export: "Veri indir", btn_import: "Yedek Yükle",
                 btn_save: "Kaydet", mod_folder_title: "Klasör Oluştur", mod_folder_name: "Klasör Adı", ph_folder: "Örn: 1. Hafta", mod_day_title: "Gün Ekle", mod_day_name: "Gün Adı", ph_day: "Örn: Pazartesi", mod_day_folder: "Klasör Seçimi (Opsiyonel)", mod_task_title: "Görev Ekle / Düzenle", mod_task_name: "Görev Başlığı", ph_task: "Örn: 05.00 Kalkış", mod_task_desc: "Detaylar", ph_desc: "Açıklama...",
                 mod_link_title: "Başlık", mod_link_url: "URL (Link)", mod_arch_type: "Tür Seçin", mod_arch_title: "Başlık", mod_arch_date: "Tarih", mod_arch_summary: "Özet", mod_arch_comment: "Kişisel Yorumun", mod_arch_score: "Puan (10 Üzerinden)",
                 alert_time_up: "Süre Bitti! Odaklanma puanı kazanıldı.", alert_del_folder: "Klasörü ve içindekileri tamamen silmek istediğine emin misin?", alert_del_day: "Bu günü tamamen silmek istediğinize emin misiniz?", alert_del_task: "Bu görevi kalıcı olarak silmek istiyor musun?", alert_del_bm: "Bu kaynağı silmek istediğinize emin misiniz?", alert_del_arch: "Bu eseri arşivden silmek istediğine emin misin?", alert_import_warn: "DİKKAT: Yüklenen dosya mevcut verilerinin üzerine yazılacak. Onaylıyor musun?", alert_import_suc: "Veriler başarıyla geri yüklendi! Sistem yenileniyor...", alert_import_err: "Hata: Geçerli bir yedek dosyası değil.", alert_title_req: "Lütfen bir başlık girin.", root_folder: "Ana Dizin (Klasörsüz)", status_done: "✓ Tamamlandı", status_doing: "Yapılıyor...", status_missed: "Yapılmadı", status_missed_act: "İptal Edildi", no_tasks: "Görev yok. Sağ üstten ekle.",
@@ -904,6 +904,35 @@
                     catch(error){showCustomAlert(error.message==='backup-size'?ProcatsBackupUI.text().size:t('alert_import_err'));}
                 });
             }catch(error){showCustomAlert(error.message==='backup-size'?ProcatsBackupUI.text().size:error.message==='backup-unlock'?ProcatsBackupUI.text().failed:t('alert_import_err'));}
+        }
+        let dataAddReading=false;
+        function openDataAddPicker(){if(dataImportPending||dataAddReading){showCustomAlert(ProcatsDataAddUI.text().busy);return;}document.getElementById('addDataFileInput').click();}
+        async function addDataFile(event){
+            const input=event.target,file=input.files?.[0];input.value='';if(!file)return;
+            if(dataImportPending||dataAddReading){showCustomAlert(ProcatsDataAddUI.text().busy);return;}
+            if(file.size>ProcatsLimits.fileBytes){showCustomAlert(ProcatsDataAddUI.text().limit);return;}
+            dataAddReading=true;
+            try{
+                let imported=JSON.parse(await file.text());
+                if(imported?.format==='procats-encrypted'){const password=await ProcatsBackupUI.password('open');if(password===null)return;imported=await ProcatsBackupCrypto.decryptBackup(imported,password);}
+                const preview=ProcatsSync.previewAddition(imported);
+                if(!preview.totalAdded){showCustomAlert(ProcatsDataAddUI.text().none);return;}
+                showCustomConfirm(ProcatsDataAddUI.preview(preview),async()=>{
+                    if(dataImportPending){showCustomAlert(ProcatsDataAddUI.text().busy);return;}
+                    dataImportPending=true;let result;
+                    try{result=await ProcatsSync.addData(imported,preview.signature);}
+                    catch(error){showCustomAlert(ProcatsDataAddUI.error(error));return;}
+                    finally{dataImportPending=false;}
+                    const message=ProcatsDataAddUI.text()[result.plan.totalAdded?'success':'none'];
+                    document.getElementById('addDataResult').textContent=message;
+                    try{
+                        if(result.mainChanged)window.procatsApplyRemote(result.previous,ProcatsSync.getData());
+                        window.ProcatsKnowledgeStore?.refresh();window.ProcatsListsStore?.refresh();
+                    }catch{showCustomAlert(ProcatsDataAddUI.text().refresh);return;}
+                    showCustomAlert(message);
+                });
+            }catch(error){showCustomAlert(error.message==='backup-unlock'?ProcatsBackupUI.text().failed:ProcatsDataAddUI.error(error));}
+            finally{dataAddReading=false;}
         }
                 // --- FOLDER & TASK DATABASE & DRAG DROP
         let folders = readStoredJSON('procats_folders', []); let days = readStoredJSON('yks_v3_days', [ { id: 1, name: "Plan", folderId: null, completed: false } ]); let tasks = readStoredJSON('yks_v3_tasks', []); let activeDayId = null; let activeFolderId = null; let editingId = null; let activeTaskId = null; let draggedTaskIndex = null;

@@ -72,6 +72,8 @@ const exact={"closeCustomPrompt(false)":function(event){closeCustomPrompt(false)
 "openModal('linkModal')":function(event){openModal('linkModal')},
 "exportData()":function(event){exportData()},
 "importData(event)":function(event){importData(event)},
+"openDataAddPicker()":function(event){openDataAddPicker()},
+"addDataFile(event)":function(event){addDataFile(event)},
 "closeModal('folderModal')":function(event){closeModal('folderModal')},
 "saveFolder()":function(event){saveFolder()},
 "closeModal('dayModal')":function(event){closeModal('dayModal')},

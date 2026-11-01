@@ -24,4 +24,4 @@ The current snapshot passed automated authorization, cross-device merge, offline
 
 ## Dependency checks
 
-The 1.7.4 locked trees have no high or critical npm audit findings. The shared app production dependency audit reports zero findings. Moderate issues remain in development/build tools: 17 in the app project and 15 in the Windows tooling. No major-version downgrade or forced audit fix was applied. These checks do not certify Android, Electron, the operating system or the entire application as vulnerability-free.
+The 1.7.5 locked trees have no high or critical npm audit findings. The shared app production dependency audit reports zero findings. Moderate issues remain in development/build tools: 17 in the app project and 15 in the Windows tooling. No major-version downgrade or forced audit fix was applied. These checks do not certify Android, Electron, the operating system or the entire application as vulnerability-free.

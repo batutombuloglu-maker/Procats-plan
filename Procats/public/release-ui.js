@@ -47,7 +47,7 @@ function overview(){
   const button=action(list,'',()=>show(page),'settings-category');button.dataset.settingsPage=page;
   const text=document.createElement('span'),strong=document.createElement('strong'),small=document.createElement('small');strong.textContent=L(page);small.textContent=L(page+'Help');text.append(strong,small);button.append(text);
  }
- const footer=document.createElement('p');footer.className='settings-version';footer.textContent='Procats Studio · '+(window.PROCATS_PUBLISHER?.version||'1.7.4');body.append(footer);
+ const footer=document.createElement('p');footer.className='settings-version';footer.textContent='Procats Studio · '+(window.PROCATS_PUBLISHER?.version||'1.7.5');body.append(footer);
 }
 function appearance(){
  const language=section(L('language'));select(language,'settingsLanguage',L('language'),[['tr','Türkçe'],['en','English'],['de','Deutsch']],currentLang,value=>{setLang(value);try{localStorage.setItem('procats-login-language',value);}catch{}show('appearance');});
