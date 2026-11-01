@@ -56,3 +56,9 @@ test('failed durable write and a changed preview leave both main records and kno
 test('in-flight additive writes lock concurrent writes and expose no partial records',async()=>{
  const a=journal(),S=a.ctx.ProcatsSync,file=pack({yks_v5_notes:[{id:2,text:'New'}]}),preview=S.previewAddition(file);let release;const gate=new Promise(r=>release=r);a.hold(gate);const running=S.addData(file,preview.signature);await new Promise(setImmediate);assert.equal(S.getData().yks_v5_notes.length,1);assert.throws(()=>a.ctx.procatsStorage.setItem('yks_v5_notes','[]'),/locked/);release();await running;assert.equal(S.getData().yks_v5_notes.length,2);
 });
+
+test('refresh-only imports commit atomically even when no new card is added',async()=>{
+ const a=journal(),S=a.ctx.ProcatsSync,old=C.make({id:81,kind:'visual',question:'Country?',answer:'Capital',category:['Coğrafya'],tags:['Başkentler','Country'],image:'data:image/jpeg;base64,/9j/AAAA'},1000),graded=C.rate(old,'knew',1800000000000);
+ a.ctx.procatsStorage.setItem('procats_knowledge_v1',JSON.stringify([graded]));await S.flush();const file={format:'procats-knowledge-refresh',version:1,items:[{previous:old,card:{...copy(old),image:'',tags:[...old.tags,'@map/world-2026/CM']}}]},preview=S.previewAddition(file),before=copy(S.getData());assert.equal(preview.totalAdded,0);assert.equal(preview.totalChanged,1);await S.addData(file,preview.signature);
+ const stored=JSON.parse(a.saved.settings.procats_knowledge_v1);assert.equal(stored[0].image,'');assert.deepEqual(stored[0].review,graded.review);assert.equal(stored[0].id,81);assert.deepEqual(S.getData(),before);assert.equal(S.previewAddition(file).totalChanged,0);
+});

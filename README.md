@@ -1,95 +1,38 @@
 # Procats
 
-Personal study planning and knowledge management across Android, Windows and the web. Developed by **Batu**. Current source snapshot: **1.7.5**.
+Personal study planning and knowledge management for Android, Wear OS, Windows and the web. Developed by **Batu**. Current source: **1.7.6**.
 
-![Data Vault with additive import](docs/screenshots/data-vault.png)
+## Features
 
-![Compact knowledge treasury](docs/screenshots/knowledge-desktop.png)
+- Daily tasks, calendars, focus timers, quick notes, resources and practice-exam tracking.
+- A compact Knowledge Treasury with categories, multiple subjects, full-archive search, and paged cards.
+- Scheduled review at 1, 3, 7, then every 30 days. Hard/forgotten answers return tomorrow. Random discovery has an independent shuffle bag and does not change review dates.
+- A theme-aware geography atlas: 197 country shapes filled with flags, capital markers, continent/detail views, Turkish and English capital names, source-dated population and area. Geometry is bundled and loaded by continent, with no external map/API service.
+- A safe map refresh importer: existing identity, review history and relationships survive; user-edited matching content is protected. Ordinary JSON imports remain additive.
+- A persistent home post-it using the existing account-synced note collection. Hiding it never deletes its content.
+- Selectable heatmap or lightweight WebGL 3D progress steps, both derived from the existing task ledger. The scene is event-driven, with a static fallback and reduced-motion support.
+- Full-screen exam clock with an explicit exit button. Presentation changes do not stop the countdown.
+- An expanded thought collection with a rolling 15-day cooldown tracked on the device.
+- Account-scoped local journals, Firestore synchronization, encrypted backups and an offline recovery tool.
 
-Procats combines day-by-day tasks, focus timers, quick notes, study resources, practice-exam tracking, checklists and a personal knowledge treasury. Its interface supports Turkish, English and German with shared themes across the application.
+## Project layout
 
-## What is implemented
+`Procats/` contains the web/Android/Wear project; `Windows/` is the isolated Electron shell. `legacy/` preserves an older prototype. Active release notes and verification details are in `Procats/docs/`. The public repository contains no personal records, account backups, real Firebase client configuration, signing keys or authentication credentials. Source code is not a backup of personal application data.
 
-- Day and task organization, completion tracking and focus history.
-- Countdown, analog exam-clock and OLED timer views.
-- Notes, study links and practice-exam progress charts.
-- Knowledge cards with categories, tags, optional images, related cards and self-assessed review intervals. The compact desktop archive renders at most 36 cards per page and searches the complete archive.
-- An account-scoped device journal, offline edits, revision-based Firestore synchronization and explicit conflict handling.
-- Authenticated encrypted backups, import validation and a standalone offline recovery tool.
-- Additive JSON imports with a section/count preview, duplicate detection, relationship remapping and an atomic local commit that preserves existing records.
-- A stable-width home stopwatch display that keeps every digit in place.
-- Android home-screen widgets and a companion Wear OS task application.
-- A Windows Electron shell using the same web interface.
+## Build the web client
 
-## Architecture
+Use Node.js 22 or newer. From `Procats/`, run `npm ci`, `npm test`, `npm run build`, then `npm run preview`. The public checkout builds with example Firebase settings and supports local guest use. To connect your own backend, copy `public/firebase-config.example.js` to `public/firebase-config.js`, enter your project settings, and update `.firebaserc` and `publisher.json`. Configure authenticated Firestore rules before deploying.
 
-| Folder | Purpose |
-|---|---|
-| `Procats/public` | Shared HTML, CSS and JavaScript interface; data validation, account journal and sync modules |
-| `Procats/android` | Capacitor Android app, native timer/widget integration, shared companion code and Wear OS app |
-| `Procats/tests` | Node tests and local Firestore rule/adapter tests |
-| `Procats/tools` | Offline encrypted-backup recovery |
-| `Windows` | Electron application shell and security tests |
-| `legacy` | Preserved original desktop prototype |
+For Android use JDK 21, Android SDK 36, and the Gradle wrapper in `Procats/android/`. Build the web client, run `npx cap sync android`, then build the desired variant. Personal APKs use `com.procats.study.personal`; phone version code **28**, watch code **29**. Both must share your original signing certificate. Private signing material is deliberately omitted. A new certificate cannot update an existing installation in place.
 
-The knowledge archive uses a separate manifest and four atomically updated Firestore documents; it does not change the existing task document contract. Native journal writes and account-scoped recovery protect pending edits. Conflicting changes require a user choice instead of silently replacing an answer.
+For Windows, install dependencies in `Windows/`, copy the completed `Procats/www/` directory to `Windows/www/`, and run `npm test` and `npm run dist`. The release task produces installer and portable x64 EXEs. They are not publisher-signed.
 
-## Run locally
+## Verification and limits
 
-Use Node.js 22 or newer:
+The release passed 238 Node application checks, 42 Android unit/Robolectric tests, 7 Windows security checks, and 96 Firestore emulator checks. The actual 197-card refresh preserved a separate card and all review/link fields, and was idempotent. Desktop/mobile layout and file-import flows were checked with fictional guest data. Physical phone/watch pairing and long-term device power management were not tested.
 
-```sh
-cd Procats
-npm ci
-npm test
-npm run build
-npm run preview
-```
+No new dependencies were added. Production web dependencies have zero known audit findings in the release check; moderate development/build-tool advisories remain. See the included test report for scope and limitations. No live deployment or Play Store upload was performed for this task.
 
-Open the printed local address. The public repository contains example configuration only. You can try guest mode locally; real account sync requires your own Firebase project. Copy `public/firebase-config.example.js` to `public/firebase-config.js`, fill your own web configuration, update `.firebaserc` and `publisher.json`, and deploy your Firestore rules before connecting real accounts. The local configuration file is ignored by Git.
+## Attribution
 
-For rule tests, install Java 21 and run `npm run test:rules`. These use a local demo project rather than a production account.
-
-## Android and Wear OS
-
-Java 21 and Android SDK 36 are required. Configure `android/local.properties`, then:
-
-```sh
-npm run android:sync
-cd android
-./gradlew :app:assembleDebug :wear:assembleDebug
-./gradlew :companion:testDebugUnitTest :app:testDebugUnitTest :wear:testDebugUnitTest
-```
-
-Debug packages use `.preview`. The signed `personal` variants use `com.procats.study.personal` so they can coexist with a store installation. `assemblePersonal` and publication builds require your own private signing configuration. Keys and passwords are deliberately absent from this repository. Phone and watch packages must share the package ID and signing certificate for Data Layer communication.
-
-## Windows
-
-Build `Procats/www` first, copy it to `Windows/www`, then:
-
-```sh
-cd Windows
-npm ci
-npm test
-npm run dist
-```
-
-The Windows build produces installer and portable EXEs. Firebase Hosting updates the web client; bundled Android and Windows interfaces are updated by installing new application packages.
-
-## Data and privacy
-
-**This repository contains application source, example configuration and screenshots made with fictional test cards. It contains no user's tasks, notes, knowledge archive, account backup, sign-in session or signing key.**
-
-Guest mode stores data on that device. Configured accounts use Firebase Authentication and Firestore under owner-only rules. This is not end-to-end encrypted cloud storage. Backups use AES-256-GCM with a password-derived key; the offline recovery tool can convert a backup to ordinary JSON without Firebase:
-
-```sh
-node Procats/tools/recover-backup.mjs path/to/backup.procats.json
-```
-
-The password is entered privately at the terminal. The recovered JSON is unencrypted personal data and should never be committed. Source-code history backs up the program, not an individual's application records.
-
-## Validation
-
-218 Node application tests, including 2,000-card pagination and offline recovery, pass in the current local snapshot. The backend rules pass 96 local authorization/sync checks; Android modules passed 42 unit/Robolectric tests and the Windows shell passed 7 tests. Desktop and mobile layouts were checked in a browser. Physical phone/watch pairing, device power management and long-term reliability are separate validation tasks; automated tests do not guarantee indefinite data retention.
-
-See [development notes](Procats/docs/1.7.5-VERI-EKLE.md) and [validation details](Procats/docs/TEST-SONUCLARI.md).
+Atlas sources and data licensing are documented in [geography/SOURCES.md](Procats/public/geography/SOURCES.md). Natural Earth geometry is public domain; the derived country metadata collection is offered under ODbL 1.0. Population values display their reference year and source. Philosophical additions clearly distinguish original Procats reflections from short adapted passages of Epictetus and Marcus Aurelius. Geography assets and preset metadata are public educational content, not private user records.

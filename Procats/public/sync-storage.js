@@ -45,7 +45,7 @@ async function commitAddition(file,expected){
   if(plan.signature!==expected)throw Error('add-changed');
   for(const [key,store]of [['procats_lists_v1',window.ProcatsListsStore],['procats_knowledge_v1',window.ProcatsKnowledgeStore]])if(Object.hasOwn(plan.updates,key)){const state=store?.getState();if(state?.invalid||state?.conflict)throw Error('add-busy');}
   const previous=clone(data);
-  if(!plan.totalAdded)return {plan,previous,mainChanged:false};
+  if(!plan.totalAdded&&!plan.totalChanged)return {plan,previous,mainChanged:false};
   const mainUpdates=Object.fromEntries(Object.entries(plan.updates).filter(([key])=>keys.has(key))),mainChanged=Object.keys(mainUpdates).length>0;
   const next=mainChanged?ProcatsActivity.snapshot({...clone(data),...mainUpdates}):clone(data),prefs=clone(settings);
   for(const key of ['procats_lists_v1','procats_knowledge_v1'])if(Object.hasOwn(plan.updates,key))prefs[key]=JSON.stringify(plan.updates[key]);

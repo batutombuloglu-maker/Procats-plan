@@ -11,8 +11,15 @@
  let mode='classic',sleepAt=Date.now()+6000,finished=false,lastRemaining=0,keyboard=false,suppressClickUntil=0;
  try{const value=appStorage.getItem('procats_timer_view_v1');if(['classic','exam','oled'].includes(value))mode=value;}catch{}
  const toolbar=el('div','timer-view-toolbar'),back=el('button','timer-view-back'),tabs=el('div','timer-view-tabs');back.type='button';tabs.setAttribute('role','group');
+ let expanded=false,ownedFullscreen=false;
+ const full=el('button','timer-fullscreen'),fullExit=el('button','timer-full-exit');full.type=fullExit.type='button';
+ const fullWords=()=>({tr:['Tam ekran','Tam ekrandan çık'],en:['Full screen','Exit full screen'],de:['Vollbild','Vollbild verlassen']})[currentLang]||['Full screen','Exit full screen'];
+ function exitExpanded(){expanded=false;root.classList.remove('timer-exam-expanded');document.body.classList.remove('timer-exam-full');full.setAttribute('aria-pressed','false');if(ownedFullscreen&&document.fullscreenElement===root)void document.exitFullscreen().catch(()=>{});ownedFullscreen=false;full.focus({preventScroll:true});}
+ full.onclick=async()=>{expanded=true;root.classList.add('timer-exam-expanded');document.body.classList.add('timer-exam-full');full.setAttribute('aria-pressed','true');if(root.requestFullscreen)try{await root.requestFullscreen();ownedFullscreen=true;}catch{}fullExit.focus({preventScroll:true});};fullExit.onclick=exitExpanded;root.append(fullExit);
+ document.addEventListener('fullscreenchange',()=>{if(ownedFullscreen&&!document.fullscreenElement)exitExpanded();});
+ document.addEventListener('keydown',e=>{if(expanded&&e.key==='Escape'){e.preventDefault();exitExpanded();}});
  const buttons=new Map();for(const view of ['classic','exam','oled']){const b=el('button','timer-view-tab');b.type='button';b.dataset.timerView=view;b.onclick=()=>choose(view);tabs.append(b);buttons.set(view,b);}
- back.onclick=()=>choose('classic');toolbar.append(back,tabs);root.prepend(toolbar);
+ back.onclick=()=>choose('classic');toolbar.append(back,tabs,full);root.prepend(toolbar);
  const face=el('section','timer-new-face');face.hidden=true;classic.after(face);
  const clock=el('div','timer-exam-face');
  let ticks='';for(let n=0;n<60;n++){const [x,y]=C.point(n*6,127),[a,b]=C.point(n*6,136);ticks+=`<line x1="${x}" y1="${y}" x2="${a}" y2="${b}" class="${n%5===0?'hour-tick':'minute-tick'}"/>`;}
@@ -45,19 +52,19 @@
  const tip=el('p','timer-oled-tip');face.append(clock,oled,tip);
  const presets=root.querySelector('.timer-presets').parentElement,controls=root.querySelector('.timer-controls');presets.classList.add('timer-duration-controls');
  function wake(){sleepAt=Date.now()+6000;root.classList.remove('timer-controls-asleep');}
- function choose(value){mode=value;try{appStorage.setItem('procats_timer_view_v1',value);}catch{}wake();render();buttons.get(value).focus({preventScroll:true});}
+ function choose(value){if(expanded&&value!=='exam')exitExpanded();mode=value;try{appStorage.setItem('procats_timer_view_v1',value);}catch{}wake();render();buttons.get(value).focus({preventScroll:true});}
  function timeLabel(timestamp){return new Date(timestamp).toLocaleTimeString(currentLang,{hour:'2-digit',minute:'2-digit',hour12:false});}
  let labels='',layout='',frameTimer=null;
  function render(force=false){
-  const active=root.classList.contains('active');
+  const active=root.classList.contains('active');if(expanded&&!active)exitExpanded();
   // Inactive views have no periodic DOM work. The native alarm and duration
   // model continue independently; the next visible render catches up at once.
   if((!active||document.hidden)&&!force)return;
   const state=window.ProcatsTimerState(),now=Date.now(),m=C.model(state,now);
   if(lastRemaining>0&&m.remaining===0&&state.duration>0)finished=true;if(m.remaining>0||state.duration===0)finished=false;lastRemaining=m.remaining;
   const layoutKey=mode+':'+active;
-  if(layout!==layoutKey){layout=layoutKey;root.dataset.timerView=mode;root.classList.toggle('timer-oled-active',mode==='oled'&&active);classic.hidden=mode!=='classic';face.hidden=mode==='classic';clock.hidden=mode!=='exam';oled.hidden=mode!=='oled';back.hidden=mode!=='oled';for(const [key,b]of buttons)b.setAttribute('aria-pressed',String(key===mode));}
-  if(labels!==currentLang){labels=currentLang;back.textContent='‹ '+L('exit');tabs.setAttribute('aria-label',L('views'));for(const [key,b]of buttons)b.textContent=L(key);}
+  if(layout!==layoutKey){layout=layoutKey;root.dataset.timerView=mode;root.classList.toggle('timer-oled-active',mode==='oled'&&active);classic.hidden=mode!=='classic';face.hidden=mode==='classic';clock.hidden=mode!=='exam';oled.hidden=mode!=='oled';back.hidden=mode!=='oled';full.hidden=mode!=='exam';for(const [key,b]of buttons)b.setAttribute('aria-pressed',String(key===mode));}
+  if(labels!==currentLang){labels=currentLang;full.textContent='⛶ '+fullWords()[0];fullExit.textContent='↙ '+fullWords()[1];full.setAttribute('aria-label',fullWords()[0]);fullExit.setAttribute('aria-label',fullWords()[1]);back.textContent='‹ '+L('exit');tabs.setAttribute('aria-label',L('views'));for(const [key,b]of buttons)b.textContent=L(key);}
   const editing=document.activeElement?.tagName==='INPUT'||keyboard;
   const focusedControls=toolbar.contains(document.activeElement)||controls.contains(document.activeElement)||presets.contains(document.activeElement);
   const asleep=mode==='oled'&&active&&state.running&&now>=sleepAt&&!(editing&&focusedControls);

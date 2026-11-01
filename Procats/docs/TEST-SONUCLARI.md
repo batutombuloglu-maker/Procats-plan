@@ -1,11 +1,9 @@
-# Validation — 1 November 2026
+# Release verification — 1 November 2026
 
-- 218 Node application tests pass. Ten additive-import tests cover knowledge-only and multi-section imports, preservation of existing records/progress, duplicate detection, ID and relationship remapping, legacy string-valued backups, stale list-order IDs, large valid knowledge sections, prototype/format/size/reference validation, failed durable writes, stale previews and concurrent-write locking. Existing review, pagination, backup and timer tests also pass.
-- 7 Windows shell security tests and 42 Android unit/Robolectric tests pass. The unchanged Firestore rules pass 96 local emulator checks. Tests use a demo project, not production records.
-- In an isolated guest browser, a fictional note and card were imported. A knowledge-only pack added one card and skipped one match, preserving the note. Re-import added nothing. A missing-parent file was rejected without partial writes. Reload preserved the two cards and original note. No example data is bundled into installers or published as personal data.
-- Data Vault was inspected at 1440×900 and 390×844, with no horizontal mobile overflow. Home stopwatch samples at 00:00.31 and 00:36.80 had identical character x coordinates and 18.75px character widths. The previous compact-card CSS block is unchanged.
-- Phone/watch certificates, version metadata and security flags are verified. Web assets inside the phone APK and Windows ASAR match the final build. The Windows EXEs are not publisher-signed. Physical phone/watch pairing and device power management were not tested.
-- Dependency audit: no high or critical findings; app production dependencies have zero findings. Moderate development/build-tool findings remain: 17 app and 15 Windows. No new dependencies were added for this release.
-- Public-source checks exclude credentials, production configuration, signing material, personal records and account backups. Public source builds with example Firebase settings and has English documentation.
-
-Automated checks do not certify indefinite retention, all devices or a professional penetration test. Keep independent encrypted backups and check restore/sync on your own devices. No live Firebase deployment or app-store upload was performed.
+- 238 Node application tests, 42 Android unit/Robolectric tests, 7 Windows shell security tests, and 96 local Firestore emulator checks passed.
+- New checks cover map refresh, identity/review/link preservation, protected user edits, missing-country additions, idempotence, refresh-only durable commits, invalid input, shuffle-bag exhaustion/early exit/filtering, 15-day quote cooldown/pool expansion, persistent home-note edits/conflicts and read-only bounded progress models.
+- The complete 197-card dataset and all 197 flag/geometry references are validated. A separate personal-style sample card survives refresh; the total stays 198. Current geography source dates and licensing are included. All tests use fictional/local or public educational data.
+- Desktop/mobile UI checks cover maps, compact titles, capitals/continent filters, review/discovery separation, home-note persistence, progress mode selection and the full-screen clock. Evidence is shipped separately with the personal package.
+- Phone/watch package versions, original signing certificates and security flags are checked. Bundled web-file hashes are compared against phone APK and Windows ASAR contents. Windows EXEs are not publisher-signed.
+- Runtime web dependency audit: zero findings. Development/build tools retain moderate advisories (17 app, 15 Windows), with no high/critical findings in the recorded scan. No dependencies were added.
+- Physical phone/watch pairing, vendor battery management, indefinite data retention and a professional penetration test are outside this validation. No production records or live deployment were used.

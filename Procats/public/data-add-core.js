@@ -1,6 +1,7 @@
 import {checkStructure,checkChange,limits} from './security-limits.js';
 import {validateSnapshot} from './validation.js';
 import './knowledge-core.js';
+import {planKnowledgeRefresh} from './knowledge-refresh-core.js';
 import './lists-core.js';
 
 // Additive imports only operate on record collections. Preferences, running
@@ -17,7 +18,7 @@ const stable=x=>JSON.stringify(canonical(x));
 function canonical(x){if(Array.isArray(x))return x.map(canonical);if(!object(x))return x;return Object.fromEntries(Object.keys(x).sort().map(k=>[k,canonical(x[k])]));}
 const volatile=new Set(['id','createdAt','updatedAt','position','expanded','completed','missed','rating','score','isExempt','completedDate','activityDate','lastSentTimestamp','timesSentToday','active','itemOrder','review','x','y','w','h','width','height','z']);
 function identity(key,item){
- if(key==='procats_knowledge_v1')return stable({kind:item.kind,question:fold(item.question),answer:fold(item.answer),image:item.image||''});
+ if(key==='procats_knowledge_v1')return stable({kind:item.kind,question:fold(item.question),answer:fold(item.answer),image:item.image||'',map:globalThis.ProcatsKnowledgeCore.mapOf(item)});
  if(key==='procats_lists_v1')return stable({title:fold(item.title),items:item.items.map(i=>fold(i.title))});
  const value=Object.fromEntries(Object.entries(item).filter(([k])=>!volatile.has(k)));
  // Cosmetic note movement or progress changes do not cause repeat imports.
@@ -52,6 +53,7 @@ function guardedKeys(incoming){const keys=new Set(Object.keys(incoming));if(keys
 export function additionSignature(current,incoming){return stable(Object.fromEntries(guardedKeys(incoming).map(k=>[k,current[k]??[]])));}
 export function planAddition(current,file,{now=Date.now()}={}){
  if(!object(current)||!Number.isSafeInteger(now)||now<0)throw Error('add-invalid');
+ if(file?.format==='procats-knowledge-refresh')return planKnowledgeRefresh(current,file,{now,signature:additionSignature(current,{procats_knowledge_v1:[]})});
  const {incoming,ignored}=readCollections(file),signature=additionSignature(current,incoming),updates={},counts={},skipped={},mappings={};
  for(const key of Object.keys(incoming))if(!Array.isArray(current[key]??[]))throw Error('add-current');
  const reference=(section,id)=>{

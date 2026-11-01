@@ -47,7 +47,7 @@ function overview(){
   const button=action(list,'',()=>show(page),'settings-category');button.dataset.settingsPage=page;
   const text=document.createElement('span'),strong=document.createElement('strong'),small=document.createElement('small');strong.textContent=L(page);small.textContent=L(page+'Help');text.append(strong,small);button.append(text);
  }
- const footer=document.createElement('p');footer.className='settings-version';footer.textContent='Procats Studio · '+(window.PROCATS_PUBLISHER?.version||'1.7.5');body.append(footer);
+ const footer=document.createElement('p');footer.className='settings-version';footer.textContent='Procats Studio · '+(window.PROCATS_PUBLISHER?.version||'1.7.6');body.append(footer);
 }
 function appearance(){
  const language=section(L('language'));select(language,'settingsLanguage',L('language'),[['tr','Türkçe'],['en','English'],['de','Deutsch']],currentLang,value=>{setLang(value);try{localStorage.setItem('procats-login-language',value);}catch{}show('appearance');});
@@ -68,7 +68,7 @@ function appearance(){
 }
 function workspace(){
  if(window.ProcatsCompanionUI?.available){const devices=section('Saat ve ana ekran araçları');action(devices,'Saat ve araçları ayarla',()=>{closeSettings();void window.ProcatsCompanionUI.open();});hint(devices,'Sıradaki görevin, günün özeti ve Galaxy Watch / Wear OS kartı.');}
- const workspace=section(L('workspace'));toggle(workspace,'settingsExams',L('exams'),prefs.get().examsVisible,value=>{prefs.set({examsVisible:value});apply();});hint(workspace,L('keep'));
+ const workspace=section(L('workspace'));toggle(workspace,'settingsExams',L('exams'),prefs.get().examsVisible,value=>{prefs.set({examsVisible:value});apply();});hint(workspace,L('keep'));toggle(workspace,'settingsHomeNote',({tr:'Ana sayfa notunu göster',en:'Show home note',de:'Startseitennotiz anzeigen'})[currentLang],prefs.get().homeNoteVisible,value=>{prefs.set({homeNoteVisible:value});document.getElementById('homeStickyNote').hidden=!value;});const progressWords=ProcatsProgressSteps.labels();select(workspace,'settingsActivityView',({tr:'Ana sayfa ilerleme görünümü',en:'Home progress display',de:'Fortschritt auf der Startseite'})[currentLang],[['steps',({tr:'3B ilerleme',en:'3D progress',de:'3D-Fortschritt'})[currentLang]],['heatmap',({tr:'Isı haritası',en:'Heatmap',de:'Heatmap'})[currentLang]]],prefs.get().activityView,value=>{prefs.set({activityView:value});ProcatsProgressSteps.render();});
  const nav=section(L('navEdit'));action(nav,L('navEdit'),()=>{closeSettings();document.querySelector('.mobile-tabs [data-mobile-view="more"]')?.click();const editor=document.getElementById('navigationEditor');if(editor?.hidden)document.querySelector('.navigation-edit-toggle')?.click();});hint(nav,L('navHelp'));
  if(!matchMedia('(max-width: 760px), (pointer: coarse) and (max-width: 1024px)').matches)nav.querySelector('button').hidden=true;
 }

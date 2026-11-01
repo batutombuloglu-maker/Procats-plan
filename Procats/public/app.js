@@ -416,14 +416,15 @@
         function loadRandomQuote() {
             const extra = window.ProcatsQuotes?.added || [];
             if (dailyQuoteState === undefined) { try { dailyQuoteState = JSON.parse(appStorage.getItem('procats_daily_quote_v1') || 'null'); } catch { dailyQuoteState = null; } }
-            const nextQuote = ProcatsDailyQuote.next(dailyQuoteState, allQuotes.length + extra.length);
+            const nextQuote = ProcatsDailyQuote.next(dailyQuoteState, allQuotes.length + extra.length,new Date(),[...allQuotes.map(q=>q.split(' | ')[0].normalize('NFKC').toLocaleLowerCase('tr-TR').replace(/[^\p{L}\p{N}]+/gu,' ').trim()),...extra.map(q=>q.tr.normalize('NFKC').toLocaleLowerCase('tr-TR').replace(/[^\p{L}\p{N}]+/gu,' ').trim())]);
             if (nextQuote !== dailyQuoteState) { dailyQuoteState = nextQuote; appStorage.setItem('procats_daily_quote_v1', JSON.stringify(nextQuote)); }
             selectedQuoteIndex = dailyQuoteState.index;
             clearTimeout(dailyQuoteTimer);
             const midnight = new Date(); midnight.setHours(24, 0, 0, 30);
             dailyQuoteTimer = setTimeout(loadRandomQuote, midnight.getTime() - Date.now());
             let text, author;
-            if (selectedQuoteIndex < allQuotes.length) {
+            if(selectedQuoteIndex<0){text=({tr:'Bugünün küçük adımına odaklan.',en:'Focus on one small step today.',de:'Konzentriere dich heute auf einen kleinen Schritt.'})[currentLang];author='Procats';}
+            else if (selectedQuoteIndex < allQuotes.length) {
                 const original = allQuotes[selectedQuoteIndex].split(' | ');
                 text = currentLang === 'tr' ? original[0] : currentLang === 'de' ? window.ProcatsQuotes.legacyDE[selectedQuoteIndex] : original[1];
                 author = original[2];
@@ -432,7 +433,7 @@
             } else {
                 const quote = extra[selectedQuoteIndex - allQuotes.length];
                 text = quote[currentLang];
-                author = quote.author || {tr:'Stoacı düşünce · Procats',en:'Stoic reflection · Procats',de:'Stoischer Gedanke · Procats'}[currentLang];
+                author = quote.authorByLanguage?.[currentLang] || quote.author || {tr:'Stoacı düşünce · Procats',en:'Stoic reflection · Procats',de:'Stoischer Gedanke · Procats'}[currentLang];
             }
             const container = document.getElementById('homeQuoteContainer');
             if (!container) return;
@@ -518,10 +519,10 @@
         window.addEventListener('resize', hideAllMenus);
 
         function updateLiveClock() {
+            if(document.hidden)return;
             const now = new Date(); const h = String(now.getHours()).padStart(2, '0'); const m = String(now.getMinutes()).padStart(2, '0'); const s = String(now.getSeconds()).padStart(2, '0');
             const timeString = `${h}:${m}:${s}`;
-            if(document.getElementById('liveClockHome')) document.getElementById('liveClockHome').innerText = timeString;
-            if(document.getElementById('liveClockTimers')) document.getElementById('liveClockTimers').innerText = timeString;
+            for(const [view,id]of [['view-home','liveClockHome'],['view-timers','liveClockTimers']])if(document.getElementById(view)?.classList.contains('active')){const clock=document.getElementById(id);if(clock&&clock.textContent!==timeString)clock.textContent=timeString;}
         }
         setInterval(updateLiveClock, 1000); updateLiveClock();
 
@@ -547,6 +548,7 @@
                 box.title = `${dateStr}: ${count} ${t('task_count')}`; 
                 grid.appendChild(box);
             }
+            window.ProcatsProgressSteps?.render(activityData);
         }
         function resetHeatmap() { showCustomConfirm(t('reset_heatmap'), () => { const next=ProcatsActivity.reset(ProcatsSync.getData(),tasks);if(!commitAppSections({yks_v3_tasks:next.yks_v3_tasks,yks_v6_activity:next.yks_v6_activity,procats_activity_v1:next.procats_activity_v1}))return;tasks=next.yks_v3_tasks;renderApp();refreshActivity(); }); }
 
@@ -743,11 +745,13 @@
         let notes = readStoredJSON('yks_v5_notes', []);
         const noteColors = ['#ff9a9e', '#fecfef', '#a1c9f1', '#b2fba5', '#ffdfba', '#fff192']; 
         let draggedNoteIndex = null;
+        window.ProcatsRefreshQuickNotes=()=>{notes=ProcatsSync.getData().yks_v5_notes||[];};
 
         function renderNotes() { 
             if(!appStorage.setItem('yks_v5_notes', JSON.stringify(notes)))notes=ProcatsSync.getData().yks_v5_notes||[];
             const grid = document.getElementById('notesGrid'); if(!grid) return; grid.innerHTML = ''; 
             notes.forEach((note, index) => { 
+                if(note.homePinned)return;
                 const div = document.createElement('div'); div.className = `post-it`; div.style.background = /^#[0-9a-f]{3,8}$/i.test(note.color || '') ? note.color : noteColors[0]; div.draggable = false;
                 div.innerHTML = `<button class="post-it-delete" data-action-click="deleteNote(${note.id})">✕</button><div class="note-content" contenteditable="true" data-action-input="updateNote(${note.id}, this.innerText)" data-action-paste="pasteNoteText(event, ${note.id})" data-action-drop="pasteNoteText(event, ${note.id})">${escapeHtml(note.text)}</div><div class="note-colors">${noteColors.map(c => `<div class="color-dot" style="background:${c}" data-action-click="changeNoteColor(${note.id}, '${c}')"></div>`).join('')}</div>`; 
                 grid.appendChild(div); 
@@ -916,14 +920,14 @@
                 let imported=JSON.parse(await file.text());
                 if(imported?.format==='procats-encrypted'){const password=await ProcatsBackupUI.password('open');if(password===null)return;imported=await ProcatsBackupCrypto.decryptBackup(imported,password);}
                 const preview=ProcatsSync.previewAddition(imported);
-                if(!preview.totalAdded){showCustomAlert(ProcatsDataAddUI.text().none);return;}
+                if(!preview.totalAdded&&!preview.totalChanged){showCustomAlert(ProcatsDataAddUI.text().none);return;}
                 showCustomConfirm(ProcatsDataAddUI.preview(preview),async()=>{
                     if(dataImportPending){showCustomAlert(ProcatsDataAddUI.text().busy);return;}
                     dataImportPending=true;let result;
                     try{result=await ProcatsSync.addData(imported,preview.signature);}
                     catch(error){showCustomAlert(ProcatsDataAddUI.error(error));return;}
                     finally{dataImportPending=false;}
-                    const message=ProcatsDataAddUI.text()[result.plan.totalAdded?'success':'none'];
+                    const message=ProcatsDataAddUI.text()[result.plan.totalAdded||result.plan.totalChanged?'success':'none'];
                     document.getElementById('addDataResult').textContent=message;
                     try{
                         if(result.mainChanged)window.procatsApplyRemote(result.previous,ProcatsSync.getData());

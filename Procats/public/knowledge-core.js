@@ -60,6 +60,9 @@
   else if(action.type==='rate'){const index=next.findIndex(x=>x.id===action.id);if(index<0)throw Error('knowledge-missing');if(action.expected!==undefined&&JSON.stringify(next[index])!==action.expected)throw Error('knowledge-changed');next[index]=rate(next[index],action.grade,action.now??Date.now());}
   else throw Error('knowledge-action');return check(next);
  }
+ const isReservedTag=t=>typeof t==='string'&&/^@map\/world-2026\/[A-Z]{2}$/.test(t);
+ const visibleTags=c=>(c.tags||[]).filter(t=>!isReservedTag(t));
+ const mapOf=c=>c?.kind==='visual'&&!c.image?(c.tags||[]).find(isReservedTag)?.slice(-2)||null:null;
  function filter(cards,{query='',category='',tag='',kind=''}={}){
   const terms=fold(query).split(/\s+/).filter(Boolean),path=category.split(' › ').filter(Boolean).map(fold);
   return cards.filter(c=>(!kind||matchesType(c,kind))&&(!tag||c.tags.some(t=>fold(t)===fold(tag)))&&(path.length===1?[...c.category,...c.tags].some(x=>fold(x)===path[0]):path.every((x,i)=>fold(c.category[i])===x))&&terms.every(q=>fold([c.question,c.answer,c.explanation,c.source,c.author,c.work,c.origin,c.example,c.meaning,c.passage,...c.tags,...c.category].join(' ')).includes(q)));
@@ -85,5 +88,5 @@
   const total=cards.length,pages=Math.max(1,Math.ceil(total/size)),page=Math.max(0,Math.min(pages-1,Number.isFinite(index)?Math.floor(index):0)),offset=page*size;
   return {items:cards.slice(offset,offset+size),page,pages,total,start:total?offset+1:0,end:Math.min(total,offset+size)};
  }
- globalThis.ProcatsKnowledgeCore={key,metaKey,categories,kinds,maxBytes,maxCards,valid,snapshot,check,make,rate,update,filter,queue,pack,fold,paginate,calendarDue,schedule,typeGroups,contentTypes,typeInfo,typeOf,matchesType,withType};
+ globalThis.ProcatsKnowledgeCore={key,metaKey,categories,kinds,maxBytes,maxCards,isReservedTag,visibleTags,mapOf,valid,snapshot,check,make,rate,update,filter,queue,pack,fold,paginate,calendarDue,schedule,typeGroups,contentTypes,typeInfo,typeOf,matchesType,withType};
 })();

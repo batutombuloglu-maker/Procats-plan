@@ -334,3 +334,215 @@ window.ProcatsQuotes.added.push(...[
     "translation": true
   }
 ]);
+
+// 1.7.6: original reflections and explicitly labelled adaptations.
+window.ProcatsQuotes.added.push(...[
+  {
+    "tr": "İlerlemeni başkasının hızıyla ölçersen kendi yolunu göremezsin.",
+    "en": "Measuring progress by someone else’s speed hides your own path.",
+    "de": "Wer Fortschritt an fremdem Tempo misst, übersieht den eigenen Weg."
+  },
+  {
+    "tr": "Bir soruya dürüstçe bakmak, acele bir cevaptan daha değerlidir.",
+    "en": "An honest look at a question is worth more than a hurried answer.",
+    "de": "Eine ehrliche Frage ist mehr wert als eine hastige Antwort."
+  },
+  {
+    "tr": "Dinlenmek, emek verdiğin yolu terk etmek değildir.",
+    "en": "Resting is not abandoning the path you work for.",
+    "de": "Ausruhen bedeutet nicht, den eigenen Weg aufzugeben."
+  },
+  {
+    "tr": "Kendine verdiğin sözü küçük tut; yerine getirmeyi ciddiye al.",
+    "en": "Make yourself a small promise and take keeping it seriously.",
+    "de": "Versprich dir wenig, aber halte es mit Ernst."
+  },
+  {
+    "tr": "Dikkatini korumak, zamanına sahip çıkmanın bir yoludur.",
+    "en": "Protecting your attention is one way to protect your time.",
+    "de": "Deine Aufmerksamkeit zu schützen heißt auch, deine Zeit zu schützen."
+  },
+  {
+    "tr": "Yanlışını fark ettiğin an, düşüncenin ilerleyebildiği andır.",
+    "en": "Noticing a mistake opens a way for thought to move forward.",
+    "de": "Einen Irrtum zu erkennen öffnet dem Denken einen neuen Weg."
+  },
+  {
+    "tr": "Bir fikri savunmak kadar onu değiştirebilmek de cesaret ister.",
+    "en": "Changing an idea can require as much courage as defending it.",
+    "de": "Eine Ansicht zu ändern kann so viel Mut wie ihre Verteidigung verlangen."
+  },
+  {
+    "tr": "Bugünün emeği görünmeyebilir; yok olmuş değildir.",
+    "en": "Today’s effort may be invisible without being lost.",
+    "de": "Die heutige Mühe kann unsichtbar sein, ohne verloren zu sein."
+  },
+  {
+    "tr": "Kendini tanımak, her gün yeniden dinlemeyi gerektirir.",
+    "en": "Knowing yourself requires learning to listen again each day.",
+    "de": "Selbsterkenntnis verlangt, sich jeden Tag neu zuzuhören."
+  },
+  {
+    "tr": "Her boşluğu doldurmak zorunda değilsin; düşünce de yer ister.",
+    "en": "You need not fill every gap; thought needs room too.",
+    "de": "Nicht jede Lücke muss gefüllt werden; auch Denken braucht Raum."
+  },
+  {
+    "tr": "Merak, bilmediğini saklamadığında büyür.",
+    "en": "Curiosity grows when you stop hiding what you do not know.",
+    "de": "Neugier wächst, wenn du dein Nichtwissen nicht versteckst."
+  },
+  {
+    "tr": "Son adımı düşünmekten ilk adımı unutma.",
+    "en": "Do not forget the first step while imagining the last.",
+    "de": "Vergiss über dem letzten Schritt nicht den ersten."
+  },
+  {
+    "tr": "Kendine nazik davranmak, sorumluluktan kaçmak değildir.",
+    "en": "Being kind to yourself does not mean avoiding responsibility.",
+    "de": "Freundlichkeit zu dir selbst bedeutet nicht Verantwortungslosigkeit."
+  },
+  {
+    "tr": "Bir şeyi anlamanın sevinci, onu bildiğini göstermenin ötesindedir.",
+    "en": "The joy of understanding goes beyond proving what you know.",
+    "de": "Die Freude am Verstehen ist mehr als der Beweis des eigenen Wissens."
+  },
+  {
+    "tr": "Fikrinin değişmesi, düşünmeye devam ettiğinin işareti olabilir.",
+    "en": "A changed opinion can be a sign that you keep thinking.",
+    "de": "Eine geänderte Meinung kann zeigen, dass du weiterdenkst."
+  },
+  {
+    "tr": "Zor bir gün, bütün hayatının özeti değildir.",
+    "en": "A hard day is not a summary of your whole life.",
+    "de": "Ein schwerer Tag ist keine Zusammenfassung deines Lebens."
+  },
+  {
+    "tr": "Dikkatle yapılan küçük bir iş de özen taşır.",
+    "en": "Even a small task can carry great care.",
+    "de": "Auch eine kleine Aufgabe kann große Sorgfalt tragen."
+  },
+  {
+    "tr": "Geçmişten ders almak, orada yaşamayı gerektirmez.",
+    "en": "Learning from the past does not require living there.",
+    "de": "Aus der Vergangenheit zu lernen heißt nicht, in ihr zu leben."
+  },
+  {
+    "tr": "Bugün açıklayamadığın şeyi yarın daha iyi sorabilirsin.",
+    "en": "What you cannot explain today may become a better question tomorrow.",
+    "de": "Was du heute nicht erklären kannst, wird morgen vielleicht eine bessere Frage."
+  },
+  {
+    "tr": "Bazen ilerlemek, gereksiz bir yükü bırakmaktır.",
+    "en": "Sometimes moving forward means putting down an unnecessary burden.",
+    "de": "Manchmal heißt Fortschritt, eine unnötige Last abzulegen."
+  },
+  {
+    "tr": "Kendini hep sonuçla yargılarsan çabanın hikâyesini kaçırırsın.",
+    "en": "Judging yourself only by results misses the story of your effort.",
+    "de": "Wer sich nur am Ergebnis misst, übersieht die Geschichte seiner Mühe."
+  },
+  {
+    "tr": "Bir düşünceyi yazmak, ona uzaktan bakabilmektir.",
+    "en": "Writing a thought lets you see it from a little distance.",
+    "de": "Einen Gedanken aufzuschreiben schafft Abstand zu ihm."
+  },
+  {
+    "tr": "Sakinlik her şeyi çözmez; neye bakacağını seçmene yardım eder.",
+    "en": "Calm does not solve everything; it helps you choose where to look.",
+    "de": "Ruhe löst nicht alles, hilft aber den Blick zu wählen."
+  },
+  {
+    "tr": "Bilginin değeri, hayatına nasıl dokunduğunda da saklıdır.",
+    "en": "Knowledge also gains value through how it touches your life.",
+    "de": "Der Wert des Wissens liegt auch darin, wie es dein Leben berührt."
+  },
+  {
+    "tr": "Önce nasıl biri olmak istediğini belirle.",
+    "en": "First decide what kind of person to be.",
+    "de": "Bestimme zuerst, was für ein Mensch du sein willst.",
+    "authorByLanguage": {
+      "tr": "Epictetus · Enchiridion 33 · serbest çeviri",
+      "en": "Epictetus · Enchiridion 33 · adapted",
+      "de": "Epictetus · Enchiridion 33 · frei übertragen"
+    },
+    "source": "https://www.gutenberg.org/files/45109/45109-h/45109-h.htm"
+  },
+  {
+    "tr": "Rolünü seçemesen de onu iyi oynamak sana düşer.",
+    "en": "You may not choose the role; play it well.",
+    "de": "Auch eine nicht gewählte Rolle kannst du gut spielen.",
+    "authorByLanguage": {
+      "tr": "Epictetus · Enchiridion 17 · serbest çeviri",
+      "en": "Epictetus · Enchiridion 17 · adapted",
+      "de": "Epictetus · Enchiridion 17 · frei übertragen"
+    },
+    "source": "https://www.gutenberg.org/files/45109/45109-h/45109-h.htm"
+  },
+  {
+    "tr": "Bir hazza kapılmadan önce kendine zaman tanı.",
+    "en": "Give yourself time before surrendering to pleasure.",
+    "de": "Gib dir Zeit, bevor du einer Freude nachgibst.",
+    "authorByLanguage": {
+      "tr": "Epictetus · Enchiridion 34 · serbest çeviri",
+      "en": "Epictetus · Enchiridion 34 · adapted",
+      "de": "Epictetus · Enchiridion 34 · frei übertragen"
+    },
+    "source": "https://www.gutenberg.org/files/45109/45109-h/45109-h.htm"
+  },
+  {
+    "tr": "Doğru eylemden, başkalarının yargısı yüzünden vazgeçme.",
+    "en": "Do not abandon right action for others’ judgment.",
+    "de": "Verzichte nicht aus Furcht vor fremdem Urteil auf richtiges Handeln.",
+    "authorByLanguage": {
+      "tr": "Epictetus · Enchiridion 35 · serbest çeviri",
+      "en": "Epictetus · Enchiridion 35 · adapted",
+      "de": "Epictetus · Enchiridion 35 · frei übertragen"
+    },
+    "source": "https://www.gutenberg.org/files/45109/45109-h/45109-h.htm"
+  },
+  {
+    "tr": "Kusursuz yapamadığında umutsuzluğa kapılma; yeniden dön.",
+    "en": "Do not despair at imperfection; return again.",
+    "de": "Verzweifle nicht an Unvollkommenheit; kehre zurück.",
+    "authorByLanguage": {
+      "tr": "Marcus Aurelius · Meditations V.9 · serbest çeviri",
+      "en": "Marcus Aurelius · Meditations V.9 · adapted",
+      "de": "Marcus Aurelius · Meditations V.9 · frei übertragen"
+    },
+    "source": "https://www.gutenberg.org/files/2680/2680-h/2680-h.htm"
+  },
+  {
+    "tr": "Sana zor geleni, insan için imkânsız sayma.",
+    "en": "Do not call impossible what is hard for you.",
+    "de": "Halte nicht alles, was dir schwerfällt, für unmöglich.",
+    "authorByLanguage": {
+      "tr": "Marcus Aurelius · Meditations VI.18 · serbest çeviri",
+      "en": "Marcus Aurelius · Meditations VI.18 · adapted",
+      "de": "Marcus Aurelius · Meditations VI.18 · frei übertragen"
+    },
+    "source": "https://www.gutenberg.org/files/2680/2680-h/2680-h.htm"
+  },
+  {
+    "tr": "Dengen bozulduğunda kendine olabildiğince çabuk dön.",
+    "en": "When unsettled, return to yourself as soon as possible.",
+    "de": "Finde bei Unruhe so bald wie möglich zu dir zurück.",
+    "authorByLanguage": {
+      "tr": "Marcus Aurelius · Meditations VI.9 · serbest çeviri",
+      "en": "Marcus Aurelius · Meditations VI.9 · adapted",
+      "de": "Marcus Aurelius · Meditations VI.9 · frei übertragen"
+    },
+    "source": "https://www.gutenberg.org/files/2680/2680-h/2680-h.htm"
+  },
+  {
+    "tr": "Doğru değilse söyleme; uygun değilse yapma.",
+    "en": "Do not say what is false or do what is wrong.",
+    "de": "Sage nichts Falsches; tue nichts Unrechtes.",
+    "authorByLanguage": {
+      "tr": "Marcus Aurelius · Meditations XII.13 · serbest çeviri",
+      "en": "Marcus Aurelius · Meditations XII.13 · adapted",
+      "de": "Marcus Aurelius · Meditations XII.13 · frei übertragen"
+    },
+    "source": "https://www.gutenberg.org/files/2680/2680-h/2680-h.htm"
+  }
+]);

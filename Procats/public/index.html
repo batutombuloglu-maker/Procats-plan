@@ -401,8 +401,8 @@
         #syncStatus{position:fixed;bottom:8px;right:16px;z-index:60;max-width:calc(100vw - 88px);border:0;border-radius:8px;background:var(--bg-card);color:var(--text-secondary);font-size:12px;padding:5px 9px;cursor:pointer}
         #syncModal .modal-actions{flex-wrap:wrap}#syncModal p{line-height:1.6;margin:14px 0}#syncModal button{font-size:14px}#syncAccount{overflow-wrap:anywhere}
     </style>
-<link rel="stylesheet" href="/mobile.css?v=1.7.5">
-<link rel="stylesheet" href="/account.css?v=1.7.5"><link rel="stylesheet" href="/weekly-summary.css?v=1.7.5">
+<link rel="stylesheet" href="/mobile.css?v=1.7.6">
+<link rel="stylesheet" href="/account.css?v=1.7.6"><link rel="stylesheet" href="/weekly-summary.css?v=1.7.6">
 <link rel="stylesheet" href="/experience.css">
 <link rel="stylesheet" href="/release.css">
 <link rel="stylesheet" href="/upgrade.css">
@@ -410,7 +410,7 @@
 <link rel="stylesheet" href="/exams.css">
 <link rel="stylesheet" href="/navigation.css">
 <link rel="stylesheet" href="/release-ui.css"><link rel="stylesheet" href="/features-1.5.css">
-<link rel="stylesheet" href="/lists.css"><link rel="stylesheet" href="/knowledge.css">
+<link rel="stylesheet" href="/lists.css"><link rel="stylesheet" href="/knowledge.css"><link rel="stylesheet" href="/knowledge-refined.css"><link rel="stylesheet" href="/progress-steps.css"><link rel="stylesheet" href="/home-note.css">
     <link rel="stylesheet" href="/timer-views.css">
 <script src="/publisher.js"></script>
 <link rel="stylesheet" href="/calendar.css"><link rel="stylesheet" href="/planning-mobile.css">
@@ -509,10 +509,10 @@
                 <div class="stopwatch-time" id="swDisplay">00:00.00</div>
                 <div class="sw-controls"><button class="btn-sw start" id="swStartBtn" data-action-click="swToggle()" data-i18n="btn_start">Başlat</button><button class="btn-sw reset" data-action-click="swReset()" data-i18n="btn_reset">Sıfırla</button></div>
             </div>
-            <div class="heatmap-widget">
+            <section id="homeStickyNote" class="home-sticky-note"></section><div class="home-activity-row"><div class="heatmap-widget">
                 <div class="heatmap-title"><span data-i18n="heat_title">Son 30 Günlük Odaklanma Isı Haritası</span><button class="heat-reset" data-action-click="resetHeatmap()"><span data-i18n="btn_reset_all">Sıfırla</span></button></div>
                 <div class="heatmap-grid" id="heatmapGrid"></div>
-            </div>
+            </div><section id="progressSteps" class="progress-steps" aria-label="İlerleme basamakları"></section></div>
             <div class="home-quote" id="homeQuoteContainer"></div>
         </div>
         

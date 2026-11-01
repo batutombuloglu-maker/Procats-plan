@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import '../public/knowledge-core.js';
+import '../public/discovery-core.js';
 const C=globalThis.ProcatsKnowledgeCore;
 const sample=()=>Array.from({length:2000},(_,i)=>C.make({id:i+1,question:'Kart '+i,answer:'Kısa cevap '+i,category:['Bilim'],tags:['örnek']},1000));
 test('2,000 cards are covered exactly once in bounded pages without changing the archive',()=>{
@@ -27,7 +28,7 @@ class Node {
 }
 const all=node=>node.children.flatMap(child=>[child,...all(child)]);
 test('actual archive UI keeps only 36 cards mounted; page jump, filtering and deletion stay correct',()=>{
- let cards=sample();const root=new Node('main'),nav=new Node('button'),ctx={currentLang:'tr',setInterval(){},ProcatsKnowledgeCore:C,ProcatsKnowledgeStore:{get:()=>structuredClone(cards),getState:()=>({status:'synced',invalid:false,conflict:false})},document:{addEventListener(){},getElementById:id=>id==='view-knowledge'?root:nav,createElement:tag=>new Node(tag),documentElement:new Node('html')},MutationObserver:class{observe(){}},addEventListener(){},switchView(){}};ctx.window=ctx;
+ let cards=sample();const root=new Node('main'),nav=new Node('button'),ctx={currentLang:'tr',setInterval(){},ProcatsKnowledgeCore:C,ProcatsGeography:{country:()=>null,facts:()=>null,prose:c=>c.explanation},ProcatsDiscovery:globalThis.ProcatsDiscovery,ProcatsKnowledgeStore:{get:()=>structuredClone(cards),getState:()=>({status:'synced',invalid:false,conflict:false})},document:{addEventListener(){},getElementById:id=>id==='view-knowledge'?root:nav,createElement:tag=>new Node(tag),documentElement:new Node('html')},MutationObserver:class{observe(){}},addEventListener(){},switchView(){}};ctx.window=ctx;
  vm.createContext(ctx);vm.runInContext(fs.readFileSync(new URL('../public/knowledge.js',import.meta.url),'utf8'),ctx);
  const visible=()=>all(root).filter(n=>n.className.split(' ').includes('kh-archive-card'));
  const pageSelect=()=>all(root).find(n=>n.className==='kh-page-select');

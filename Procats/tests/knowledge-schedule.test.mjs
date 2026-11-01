@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import '../public/knowledge-core.js';
+import '../public/discovery-core.js';
 const C=globalThis.ProcatsKnowledgeCore;
 const now=new Date(2026,10,1,21,30).getTime();
 const make=(id=1,type='fact',extra={})=>C.make(C.withType({id,question:'Question '+id,answer:'Answer '+id,category:[],tags:[],...extra},type),now-1000);
@@ -35,13 +36,13 @@ class Node {
 }
 const all=node=>node.children.flatMap(child=>[child,...all(child)]);
 function ui(initial){
- let cards=structuredClone(initial),writes=0;const root=new Node('main'),nav=new Node('button'),ctx={currentLang:'tr',setInterval(){},ProcatsKnowledgeCore:C,document:{hidden:false,addEventListener(){},getElementById:id=>id==='view-knowledge'?root:nav,createElement:tag=>new Node(tag),documentElement:new Node('html')},MutationObserver:class{observe(){}},addEventListener(){},switchView(){},showCustomAlert(message){throw Error(message);}};
+ let cards=structuredClone(initial),writes=0;const root=new Node('main'),nav=new Node('button'),ctx={currentLang:'tr',setInterval(){},ProcatsKnowledgeCore:C,ProcatsGeography:{country:()=>null,facts:()=>null,prose:c=>c.explanation},ProcatsDiscovery:globalThis.ProcatsDiscovery,document:{hidden:false,addEventListener(){},getElementById:id=>id==='view-knowledge'?root:nav,createElement:tag=>new Node(tag),documentElement:new Node('html')},MutationObserver:class{observe(){}},addEventListener(){},switchView(){},showCustomAlert(message){throw Error(message);}};
  ctx.ProcatsKnowledgeStore={get:()=>structuredClone(cards),commit(next){cards=structuredClone(next);writes++;ctx.ProcatsKnowledgeUI.render();},getState:()=>({status:'synced',invalid:false,conflict:false})};ctx.window=ctx;vm.createContext(ctx);vm.runInContext(fs.readFileSync(new URL('../public/knowledge.js',import.meta.url),'utf8'),ctx);
  return {root,get:()=>cards,writes:()=>writes,find:fn=>all(root).find(fn),click(text){const b=all(root).find(n=>n.tagName==='button'&&n.textContent===text);assert.ok(b,'Button '+text);b.onclick();},grade(grade){const b=all(root).find(n=>n.dataset.grade===grade);assert.ok(b);b.onclick();}};
 }
 test('random discovery filters are independent and all grades leave persistent dates untouched',()=>{
  const cards=[make(1,'series'),make(2,'book')],u=ui(cards);u.click('Rastgele keşfet');const type=u.find(n=>n.tagName==='select'&&n.attributes['aria-label']==='İçerik türü');type.value='series';type.onchange();u.click('Keşfe başla · 1');
- u.click('Cevabı göster');u.grade('again');u.click('Cevabı göster');u.grade('hard');u.click('Bir tur daha');u.click('Cevabı göster');u.grade('knew');assert.equal(u.writes(),0);assert.deepEqual(u.get(),cards);
+ u.click('Cevabı göster');u.grade('again');u.click('Bir tur daha');u.click('Cevabı göster');u.grade('hard');u.click('Bir tur daha');u.click('Cevabı göster');u.grade('knew');assert.equal(u.writes(),0);assert.deepEqual(u.get(),cards);
  u.click('Hazinem');assert.equal(all(u.root).filter(n=>n.className.includes('kh-archive-card')).length,2);u.click('Rastgele keşfet');assert.ok(u.find(n=>n.textContent==='Keşfe başla · 1'));
 });
 test('answering the review inbox persists once and removes the answered card from the due list',()=>{

@@ -51,3 +51,15 @@ body:has(#view-timers.active.timer-oled-active)>.view-container::before,body:has
 }
 @media(max-height:560px) and (min-width:761px){#view-timers[data-timer-view="exam"]{padding-top:70px;gap:10px}.timer-clock-svg{width:190px}.timer-exam-face{gap:8px}#view-timers.timer-oled-active .timer-new-face{width:min(300px,65vh);margin-bottom:20px}#view-timers.timer-oled-active .timer-duration-controls{bottom:90px;left:25px}.timer-oled-tip{top:60px}}
 @media(prefers-reduced-motion:reduce){.timer-oled-face{transition:none}}
+
+/* Full-screen clock is a presentation state; countdown/alarm data is untouched. */
+.timer-fullscreen,.timer-full-exit{font:500 12px var(--font-family);color:var(--text-secondary);background:var(--bg-card);border:1px solid color-mix(in srgb,var(--text-main) 15%,transparent);border-radius:12px;padding:11px 15px;min-height:42px;cursor:pointer}.timer-fullscreen:hover{color:var(--accent-color)}.timer-full-exit{display:none}
+body.timer-exam-full>.obsidian-nav,body.timer-exam-full .mobile-nav,body.timer-exam-full #syncStatus,body.timer-exam-full #demoBanner,body.timer-exam-full .mobile-app-header{display:none!important}
+#view-timers.timer-exam-expanded{position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;max-width:none!important;margin:0!important;padding:12px!important;background:var(--bg-main)!important;z-index:9500;display:flex;align-items:center;justify-content:center;gap:0;overflow:hidden}
+#view-timers.timer-exam-expanded :is(.timer-view-toolbar,.timer-duration-controls,.timer-controls,.timer-face-hint,.timer-help,#liveClockTimers){display:none!important}
+#view-timers.timer-exam-expanded .timer-new-face{width:100%;display:flex;align-items:center;justify-content:center;margin:0;padding:0}
+#view-timers.timer-exam-expanded .timer-exam-face{gap:10px;width:100%;margin:0}
+#view-timers.timer-exam-expanded .timer-clock-svg{width:min(88vw,80dvh)!important;max-width:none;filter:drop-shadow(0 12px 22px #0003)}
+#view-timers.timer-exam-expanded .timer-face-remaining{font-size:clamp(18px,3vh,28px)}#view-timers.timer-exam-expanded .timer-face-end{font-size:13px}
+#view-timers.timer-exam-expanded .timer-full-exit{display:block;position:absolute;top:max(12px,env(safe-area-inset-top));right:max(12px,env(safe-area-inset-right));z-index:2;background:color-mix(in srgb,var(--bg-main) 90%,transparent);opacity:.65}#view-timers.timer-exam-expanded .timer-full-exit:hover,#view-timers.timer-exam-expanded .timer-full-exit:focus-visible{opacity:1}
+@media(max-width:760px){.timer-view-toolbar{flex-wrap:wrap}.timer-fullscreen{min-height:38px;padding:8px 10px}.timer-exam-expanded .timer-full-exit{font-size:10px}#view-timers.timer-exam-expanded .timer-clock-svg{width:min(94vw,74dvh)!important}}
