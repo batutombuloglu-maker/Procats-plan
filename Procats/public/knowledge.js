@@ -45,6 +45,7 @@
  }
  function updateTools(){
   const filters=activeFilters(),paths=new Set(C.categories);for(const c of cards)for(let i=1;i<=c.category.length;i++)paths.add(c.category.slice(0,i).join(' › '));
+  if(viewMode==='random'&&filters.tag==='Başkentler')for(const name of ['Avrupa','Afrika','Asya','Kuzey Amerika','Güney Amerika','Okyanusya'])paths.add(name);
   options(category,[['',L('all')],...[...paths].sort().map(p=>[p,p.split(' › ').map(categoryLabel).join(' › ')])],filters.category);
   options(tag,[['',L('allTags')],...[...new Set(cards.flatMap(c=>C.visibleTags(c)))].sort().map(t=>[t,t])],filters.tag);
   typeOptions(kind,filters.kind,true);

@@ -29,7 +29,7 @@ For Windows, install dependencies in `Windows/`, copy the completed `Procats/www
 
 ## Verification and limits
 
-The release passed 238 Node application checks, 42 Android unit/Robolectric tests, 7 Windows security checks, and 96 Firestore emulator checks. The actual 197-card refresh preserved a separate card and all review/link fields, and was idempotent. Desktop/mobile layout and file-import flows were checked with fictional guest data. Physical phone/watch pairing and long-term device power management were not tested.
+The release passed 239 Node application checks, 42 Android unit/Robolectric tests, 7 Windows security checks, and 96 Firestore emulator checks. The actual 197-card refresh preserved a separate card and all review/link fields, and was idempotent. Desktop/mobile layout and file-import flows were checked with fictional guest data. Physical phone/watch pairing and long-term device power management were not tested.
 
 No new dependencies were added. Production web dependencies have zero known audit findings in the release check; moderate development/build-tool advisories remain. See the included test report for scope and limitations. No live deployment or Play Store upload was performed for this task.
 
