@@ -1,0 +1,21 @@
+apply plugin: 'com.android.library'
+android {
+    testOptions {
+      unitTests.includeAndroidResources = true
+      unitTests.all {
+        systemProperty 'robolectric.dependency.repo.url', 'https://repo.maven.apache.org/maven2'
+        jvmArgs '--add-opens=java.base/java.lang=ALL-UNNAMED', '--add-opens=java.base/java.util=ALL-UNNAMED', '--add-opens=java.base/java.io=ALL-UNNAMED', '--add-opens=java.base/java.net=ALL-UNNAMED', '--add-opens=java.base/java.security=ALL-UNNAMED', '--add-opens=java.base/java.text=ALL-UNNAMED', '--add-opens=java.base/jdk.internal.access=ALL-UNNAMED', '--add-opens=java.desktop/java.awt.font=ALL-UNNAMED'
+      }
+    }
+
+ namespace 'com.procats.companion'
+ compileSdk 36
+ defaultConfig { minSdk 26; testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner' }
+ compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+}
+dependencies {
+    testImplementation 'org.robolectric:robolectric:4.17'
+ api 'com.google.android.gms:play-services-wearable:20.0.1'
+ testImplementation 'junit:junit:4.13.2'
+ testImplementation 'org.json:json:20250517'
+}

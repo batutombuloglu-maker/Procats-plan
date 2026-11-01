@@ -1,0 +1,24 @@
+package com.procats.companion;
+import android.content.*;import android.content.pm.PackageManager;
+import org.junit.*;import static org.junit.Assert.*;import org.junit.runner.RunWith;
+import org.robolectric.*;import org.robolectric.annotation.Config;
+import org.json.*;
+@RunWith(RobolectricTestRunner.class) @Config(sdk=35)
+public class StoreTest {
+ Context c;Store store;String account="a".repeat(64),scope;
+ @Before public void setup()throws Exception{c=RuntimeEnvironment.getApplication();c.getSharedPreferences("procats_companion_v1",0).edit().clear().commit();store=new Store(c);scope=store.bind(account);store.publish(scope,snapshot(),new JSONArray());}
+ JSONObject snapshot()throws Exception{return new JSONObject("{\"schema\":1,\"date\":\""+Model.today()+"\",\"done\":0,\"missed\":0,\"total\":1,\"tasks\":[{\"id\":\"10\",\"identity\":\"a-b\",\"title\":\"Matematik\",\"status\":0}]}");}
+ @Test public void durableAcrossStoreInstances(){assertTrue(store.act("10",1));assertEquals(1,new Store(c).view().optInt("done"));assertEquals(1,new Store(c).pending().optJSONArray("operations").length());}
+ @Test public void cannotReplaySameAction(){JSONObject op=Model.operation(store.view(),"10",1);assertTrue(store.accept(op,false));assertTrue(store.accept(op,false));assertEquals(1,store.pending().optJSONArray("operations").length());}
+ @Test public void disabledWatchCannotEnqueue(){JSONObject op=Model.operation(store.view(),"10",1);assertFalse(store.accept(op,true));store.enableWear(true);assertTrue(store.accept(op,true));}
+ @Test public void disablingWatchInvalidatesOldCommands(){store.enableWear(true);JSONObject op=Model.operation(store.view(),"10",1);store.enableWear(false);store.enableWear(true);assertFalse(store.accept(op,true));}
+ @Test public void accountSwitchNeverShowsOldTasks()throws Exception{store.act("10",1);String another=store.bind("b".repeat(64));assertNotEquals(scope,another);assertEquals(0,Model.array(store.view(),"tasks").length());assertEquals(0,Model.array(store.pending(),"operations").length());String restored=store.bind(account);assertEquals(1,Model.array(store.pending(),"operations").length());assertEquals(restored,Model.array(store.pending(),"operations").optJSONObject(0).optString("scope"));}
+ @Test public void lockHidesContentAndPreservesPendingForSameAccount(){store.act("10",1);store.lock();assertTrue(store.view().optString("scope").isEmpty());store.bind(account);assertEquals(1,Model.array(store.pending(),"operations").length());}
+ @Test public void ackOnlyRemovesCommittedOperations()throws Exception{store.act("10",1);JSONObject op=Model.array(store.pending(),"operations").getJSONObject(0),s=snapshot();s.getJSONArray("tasks").getJSONObject(0).put("status",1);s.put("done",1);store.publish(scope,s,new JSONArray().put(new JSONObject().put("id",op.getString("id")).put("result","applied")));assertEquals(0,Model.array(store.pending(),"operations").length());assertEquals(1,store.view().optInt("done"));}
+ @Test public void taskDeletedBeforeApplyDoesNotReappear()throws Exception{store.act("10",1);JSONObject s=snapshot();s.put("tasks",new JSONArray());s.put("total",0);store.publish(scope,s,new JSONArray());assertEquals(0,Model.array(store.view(),"tasks").length());assertEquals(1,Model.array(store.pending(),"operations").length());}
+ @Test public void eraseClearsPendingAndAccount(){store.act("10",1);store.erase();store.bind(account);assertEquals(0,Model.array(store.pending(),"operations").length());}
+ @Test public void failedScopePublishDoesNotCorruptQueue()throws Exception{store.act("10",1);assertThrows(IllegalStateException.class,()->store.publish("wrong",snapshot(),new JSONArray()));assertEquals(1,store.view().optInt("done"));}
+ @Test public void delayedWatchActionSurvivesNextDaySnapshotForWorkspaceValidation()throws Exception{store.enableWear(true);JSONObject op=Model.operation(store.view(),"10",1),tomorrow=snapshot();tomorrow.put("date",java.time.LocalDate.now().plusDays(1).toString());tomorrow.getJSONArray("tasks").getJSONObject(0).put("id","20");store.publish(scope,tomorrow,new JSONArray());assertTrue(store.accept(op,true));assertEquals(1,Model.array(store.pending(),"operations").length());assertEquals(0,store.view().optInt("done"));}
+ @Test public void eraseOneAccountKeepsOtherAccountPending(){store.act("10",1);store.bind("b".repeat(64));store.eraseAccount(account);store.bind(account);assertEquals(0,Model.array(store.pending(),"operations").length());assertEquals(0,Model.array(store.view(),"tasks").length());}
+ @Test public void eraseInactiveAccountPreservesActiveQueue()throws Exception{store.bind("b".repeat(64));String bScope=store.pending().optString("scope");store.publish(bScope,snapshot(),new JSONArray());store.act("10",1);store.eraseAccount(account);assertEquals(1,Model.array(store.pending(),"operations").length());assertEquals(1,store.view().optInt("done"));}
+}

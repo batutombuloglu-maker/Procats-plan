@@ -1,0 +1,75 @@
+{
+  "name": "procats-windows",
+  "version": "1.7.3",
+  "private": true,
+  "description": "Procats Windows uygulaması",
+  "author": "Procats Studio",
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test tests/*.test.cjs",
+    "dist": "electron-builder --win nsis portable --x64 --publish never"
+  },
+  "devDependencies": {
+    "electron": "44.9.3",
+    "electron-builder": "26.15.3"
+  },
+  "build": {
+    "appId": "com.procats.study.windows",
+    "productName": "Procats",
+    "copyright": "Copyright © 2026 Procats Studio",
+    "asar": true,
+    "compression": "maximum",
+    "electronDist": "node_modules/electron/dist",
+    "directories": {
+      "output": "../windows-build",
+      "buildResources": "assets"
+    },
+    "files": [
+      "main.cjs",
+      "preload.cjs",
+      "security.cjs",
+      "connection.html",
+      "connection.css",
+      "connection.js",
+      "assets/icon.png",
+      "assets/icon.ico",
+      "asset-server.cjs",
+      "www/**/*"
+    ],
+    "electronLanguages": [
+      "tr",
+      "en-US",
+      "de"
+    ],
+    "win": {
+      "icon": "assets/icon.ico",
+      "executableName": "Procats",
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "nsis": {
+      "artifactName": "Procats-${version}-Windows-Kurulum.${ext}",
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Procats",
+      "installerLanguages": [
+        "tr_TR",
+        "en_US",
+        "de_DE"
+      ],
+      "language": "1055",
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false
+    },
+    "portable": {
+      "artifactName": "Procats-${version}-Windows-Kurulumsuz.${ext}"
+    }
+  }
+}

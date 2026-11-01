@@ -1,0 +1,52 @@
+rules_version = '2';
+service cloud.firestore {
+ match /databases/{database}/documents {
+  function owner(uid) { return request.auth != null && request.auth.uid == uid; }
+  function recentOwner(uid) { return owner(uid) && request.auth.token.auth_time >= (request.time.toMillis() / 1000) - 300; }
+  function marker(uid) { return /databases/$(database)/documents/users/$(uid)/account/deletion; }
+  function liveOwner(uid) { return owner(uid) && request.auth.token.email_verified == true && !exists(marker(uid)); }
+  function validState() { return request.resource.data.keys().hasAll(['payload','revision','updatedAt']) && request.resource.data.keys().hasOnly(['payload','revision','updatedAt']) && request.resource.data.payload is string && request.resource.data.payload.size() <= 850000 && request.resource.data.revision is int && request.resource.data.updatedAt == request.time; }
+  function knowledgeGone(uid) {
+   return !existsAfter(/databases/$(database)/documents/users/$(uid)/state/knowledge)
+    && !existsAfter(/databases/$(database)/documents/users/$(uid)/state/knowledge_0)
+    && !existsAfter(/databases/$(database)/documents/users/$(uid)/state/knowledge_1)
+    && !existsAfter(/databases/$(database)/documents/users/$(uid)/state/knowledge_2)
+    && !existsAfter(/databases/$(database)/documents/users/$(uid)/state/knowledge_3);
+  }
+  function coherentKnowledge(uid, revision) {
+   return getAfter(/databases/$(database)/documents/users/$(uid)/state/knowledge).data.revision == revision
+    && getAfter(/databases/$(database)/documents/users/$(uid)/state/knowledge_0).data.revision == revision
+    && getAfter(/databases/$(database)/documents/users/$(uid)/state/knowledge_1).data.revision == revision
+    && getAfter(/databases/$(database)/documents/users/$(uid)/state/knowledge_2).data.revision == revision
+    && getAfter(/databases/$(database)/documents/users/$(uid)/state/knowledge_3).data.revision == revision;
+  }
+  match /users/{uid}/state/main {
+   allow get: if liveOwner(uid);
+   allow list: if false;
+   allow create: if liveOwner(uid) && !existsAfter(marker(uid)) && validState() && request.resource.data.revision == 1;
+   allow update: if liveOwner(uid) && !existsAfter(marker(uid)) && validState() && request.resource.data.revision == resource.data.revision+1;
+   allow delete: if recentOwner(uid) && existsAfter(marker(uid));
+  }
+  // Lists use their own document; the existing main workspace contract is unchanged.
+  match /users/{uid}/state/lists {
+   allow get: if liveOwner(uid);
+   allow list: if false;
+   allow create: if liveOwner(uid) && !existsAfter(marker(uid)) && validState() && request.resource.data.revision == 1;
+   allow update: if liveOwner(uid) && !existsAfter(marker(uid)) && validState() && request.resource.data.revision == resource.data.revision+1;
+   allow delete: if recentOwner(uid) && existsAfter(marker(uid));
+  }
+  // The bounded card archive is committed atomically across its manifest + 4 shards.
+  match /users/{uid}/state/{part} {
+   allow get: if part in ['knowledge','knowledge_0','knowledge_1','knowledge_2','knowledge_3'] && liveOwner(uid);
+   allow create: if part in ['knowledge','knowledge_0','knowledge_1','knowledge_2','knowledge_3'] && liveOwner(uid) && !existsAfter(marker(uid)) && validState() && request.resource.data.revision == 1 && coherentKnowledge(uid, 1);
+   allow update: if part in ['knowledge','knowledge_0','knowledge_1','knowledge_2','knowledge_3'] && liveOwner(uid) && !existsAfter(marker(uid)) && validState() && request.resource.data.revision == resource.data.revision+1 && coherentKnowledge(uid, request.resource.data.revision);
+   allow delete: if part in ['knowledge','knowledge_0','knowledge_1','knowledge_2','knowledge_3'] && recentOwner(uid) && existsAfter(marker(uid));
+  }
+  match /users/{uid}/account/deletion {
+   allow get: if owner(uid);
+   allow create: if recentOwner(uid) && request.resource.data.keys().hasOnly(['requestedAt']) && request.resource.data.requestedAt == request.time && !existsAfter(/databases/$(database)/documents/users/$(uid)/state/main) && !existsAfter(/databases/$(database)/documents/users/$(uid)/state/lists) && knowledgeGone(uid);
+   allow list, update, delete: if false;
+  }
+  match /{document=**} { allow read, write: if false; }
+ }
+}

@@ -1,0 +1,23 @@
+{
+  "appId": "com.procats.study",
+  "appName": "Procats",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https",
+    "hostname": "localhost",
+    "cleartext": false
+  },
+  "android": {
+    "allowMixedContent": false,
+    "backgroundColor": "#121214",
+    "webContentsDebuggingEnabled": false,
+    "minWebViewVersion": 120
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 500,
+      "backgroundColor": "#121214",
+      "showSpinner": false
+    }
+  }
+}

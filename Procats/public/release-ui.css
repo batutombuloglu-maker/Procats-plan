@@ -1,0 +1,38 @@
+/* Focused settings pages share the existing sheet and active theme. */
+#appSettings .experience-heading{gap:10px;margin-bottom:18px}
+#appSettings .experience-heading h2{flex:1;min-width:0;font-size:21px;line-height:1.25;overflow-wrap:anywhere}
+.settings-back{width:44px;height:44px;flex:none;border:1px solid color-mix(in srgb,var(--text-main) 12%,transparent);border-radius:12px;background:var(--bg-card);color:var(--text-main);font:inherit;font-size:32px;cursor:pointer}
+.settings-category{padding:16px 0}
+.settings-category>span{display:flex;flex-direction:column;gap:5px;min-width:0}
+.settings-category strong{font-size:15px;font-weight:600;line-height:1.4}
+.settings-category small{font-size:12px;color:var(--text-secondary);line-height:1.5;font-weight:400}
+#appSettings .settings-section:first-child{margin-top:0}
+#appSettings .settings-action{line-height:1.5;overflow-wrap:anywhere;text-decoration:none}
+#appSettings .settings-action small{font-size:11px;color:var(--text-secondary);margin-left:auto;flex-shrink:0}
+#appSettings .settings-action:disabled{opacity:.6;cursor:default}
+#appSettings .settings-action:disabled::after{display:none}
+#appSettings .settings-state{padding-top:14px}
+#appSettings .settings-theme-grid{padding:0;border:0;background:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.settings-theme-card{position:relative;padding:0 0 11px;overflow:hidden;min-width:0;text-align:left;background:var(--bg-card);color:var(--text-main);border:1px solid color-mix(in srgb,var(--text-main) 16%,transparent);border-radius:14px;cursor:pointer;font:inherit}
+.settings-theme-card[aria-pressed="true"]{border:2px solid var(--accent-color);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent-color) 14%,transparent)}
+.settings-theme-preview{position:relative;display:block;height:78px;overflow:hidden;margin-bottom:9px}
+.settings-theme-preview>img{position:absolute;width:100%;height:100%;object-fit:cover;opacity:.85}
+.settings-theme-preview>img.theme-landscape{width:160%;height:300%;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-90deg)}
+.settings-theme-sample{position:absolute;inset:15px 15px auto;display:block;width:38%;height:6px;border-radius:4px;background:var(--preview-accent);box-shadow:0 13px 0 color-mix(in srgb,var(--preview-accent) 48%,transparent),0 26px 0 color-mix(in srgb,var(--preview-accent) 24%,transparent)}
+.settings-theme-name{display:block;padding:0 30px 0 12px;font-size:12px;line-height:1.45;font-weight:600;overflow-wrap:anywhere}
+.settings-theme-check{display:none;position:absolute;bottom:11px;right:10px;color:var(--accent-color);font-size:15px;font-weight:700}
+.settings-theme-card[aria-pressed="true"] .settings-theme-check{display:block}
+.settings-link-label{display:block;font-size:12px;color:var(--text-secondary);padding:14px 0 8px}
+.settings-web-link{font:inherit;font-size:14px;background:var(--bg-card);color:var(--text-main);border:1px solid color-mix(in srgb,var(--text-main) 16%,transparent);border-radius:10px;padding:12px;width:100%;min-width:0;box-sizing:border-box}
+.settings-share-status{margin-top:16px;padding:14px;background:var(--bg-card);border-radius:12px;color:var(--text-secondary);font-size:13px;line-height:1.7;overflow-wrap:anywhere}
+.settings-share-status:empty{display:none}
+/* Alarm banners inherit both the palette and the controls of the selected theme. */
+#timerNotice{gap:12px;border-color:color-mix(in srgb,var(--accent-color) 50%,var(--bg-card));padding:14px 16px;border-radius:16px;font:inherit;box-shadow:0 12px 35px #0004;isolation:isolate}
+#timerNotice::before{content:'';position:absolute;left:0;top:15px;bottom:15px;width:3px;border-radius:3px;background:var(--accent-color)}
+#timerNotice .timer-notice-icon{display:grid;place-items:center;width:38px;height:38px;flex:none;border-radius:12px;background:color-mix(in srgb,var(--accent-color) 13%,var(--bg-card));color:var(--accent-color)}
+#timerNotice .timer-notice-icon svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#timerNotice .timer-notice-content{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
+#timerNotice .timer-notice-title{font-size:11px;line-height:1.4;letter-spacing:.5px;color:var(--text-secondary);font-weight:600}
+#timerNotice .timer-notice-message{font-size:14px;line-height:1.5;overflow-wrap:anywhere}
+#timerNotice button{font:inherit;font-size:13px;font-weight:600;min-height:44px;flex:none;padding:10px 13px;border-radius:11px;background:var(--accent-color);color:var(--theme-on-accent,#fff)}
+@media(max-width:360px){#appSettings .modal-content{padding-left:16px;padding-right:16px}.settings-category small{font-size:11px}.settings-theme-name{font-size:11px}.settings-theme-grid{gap:9px}#timerNotice{padding:12px;gap:9px}#timerNotice .timer-notice-icon{width:30px;height:34px}#timerNotice button{padding:9px}}

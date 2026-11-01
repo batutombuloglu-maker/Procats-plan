@@ -1,0 +1,18 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent"><ImageView android:id="@+id/widget_surface" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitXY" android:importantForAccessibility="no" android:src="@drawable/widget_background"/><LinearLayout android:id="@+id/widget_root" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:padding="14dp">
+ <TextView android:id="@+id/widget_brand" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="P R O C A T S · Bugün" android:textSize="10sp" android:textStyle="bold" android:textColor="#168CFF"/>
+ <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+  <TextView android:id="@+id/widget_summary" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="0 / 0" android:textSize="20sp" android:textStyle="bold" android:textColor="#F5F5F7"/>
+  <ImageView android:id="@+id/widget_ring" android:layout_width="32dp" android:layout_height="32dp" android:importantForAccessibility="no"/>
+  <TextView android:id="@+id/widget_undo" android:layout_width="72dp" android:layout_height="48dp" android:gravity="center" android:text="↶ Geri al" android:textSize="12sp" android:textColor="#93C5FD" android:visibility="gone"/>
+ </LinearLayout>
+ <TextView android:id="@+id/widget_title" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Sıradaki görevin burada" android:maxLines="2" android:ellipsize="end" android:textSize="16sp" android:textStyle="bold" android:textColor="#F5F5F7"/>
+ <TextView android:id="@+id/widget_detail" android:layout_width="match_parent" android:layout_height="wrap_content" android:maxLines="1" android:ellipsize="end" android:textSize="12sp" android:textColor="#BEC6D0" android:layout_marginBottom="6dp"/>
+ 
+ <LinearLayout android:layout_width="1dp" android:layout_height="0dp" android:layout_weight="1" android:orientation="vertical"/>
+ <LinearLayout android:id="@+id/widget_actions" android:layout_width="match_parent" android:layout_height="48dp" android:orientation="horizontal">
+  <TextView android:id="@+id/widget_done" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:text="✓ Yapıldı" android:textSize="12sp" android:textStyle="bold" android:textColor="#FFFFFF" android:background="@drawable/widget_primary"/>
+  <TextView android:id="@+id/widget_missed" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginStart="6dp" android:gravity="center" android:text="– Yapılmadı" android:textSize="12sp" android:textColor="#FFFFFF" android:background="@drawable/widget_secondary"/>
+ </LinearLayout>
+
+ <TextView android:id="@+id/widget_status" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Telefondaki son kayıt" android:textSize="10sp" android:maxLines="2" android:ellipsize="end" android:textColor="#9AA7BA"/>
+</LinearLayout></FrameLayout>

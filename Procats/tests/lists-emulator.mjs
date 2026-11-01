@@ -1,0 +1,33 @@
+import assert from 'node:assert/strict';
+import {initializeTestEnvironment,assertSucceeds,assertFails} from '@firebase/rules-unit-testing';
+import * as sdk from 'firebase/firestore';
+import {readFile} from 'node:fs/promises';
+import {createCloudAdapter} from '../public/cloud-adapter.js';
+import {createListsStore} from '../public/lists-store.js';
+import '../public/sync-merge.js';
+const env=await initializeTestEnvironment({projectId:'demo-procats',firestore:{rules:await readFile('firestore.rules','utf8')}});
+const now=Math.floor(Date.now()/1000),claims={email_verified:true,auth_time:now},C=globalThis.ProcatsListsCore;
+let checks=0;const pass=async p=>{await assertSucceeds(p);checks++;},fail=async p=>{await assertFails(p);checks++;};
+const ref=(db,id='lists',uid='lists-owner')=>sdk.doc(db,'users',uid,'state',id);
+const payload=revision=>({payload:JSON.stringify({[C.key]:[]}),revision,updatedAt:sdk.serverTimestamp()});
+try{
+ const owner=env.authenticatedContext('lists-owner',claims).firestore(),other=env.authenticatedContext('lists-other',claims).firestore(),guest=env.unauthenticatedContext().firestore(),unverified=env.authenticatedContext('lists-owner',{...claims,email_verified:false}).firestore();
+ await fail(sdk.setDoc(ref(guest),payload(1)));await fail(sdk.setDoc(ref(other),payload(1)));await fail(sdk.setDoc(ref(unverified),payload(1)));
+ await pass(sdk.setDoc(ref(owner),payload(1)));await pass(sdk.getDoc(ref(owner)));await fail(sdk.getDoc(ref(other)));await fail(sdk.getDoc(ref(guest)));await fail(sdk.getDoc(ref(unverified)));
+ await fail(sdk.setDoc(ref(owner),payload(1)));await fail(sdk.setDoc(ref(owner),{...payload(2),extra:true}));await fail(sdk.setDoc(ref(owner),{...payload(2),payload:'x'.repeat(850001)}));await fail(sdk.setDoc(ref(owner),{...payload(2),updatedAt:0}));await pass(sdk.setDoc(ref(owner),payload(2)));await fail(sdk.deleteDoc(ref(owner)));
+ await fail(sdk.getDocs(sdk.collection(owner,'users/lists-owner/state')));await fail(sdk.setDoc(ref(owner,'unknown'),payload(1)));
+ const user={uid:'lists-sync-owner',emailVerified:true};
+ const make=()=>{const db=env.authenticatedContext(user.uid,claims).firestore(),local=new Map();const store=createListsStore({storage:{getItem:k=>local.get(k)??null,setItem:(k,v)=>local.set(k,v)},flush:async()=>{},merge:ProcatsMerge.mergeDocuments,cloudFactory:cached=>createCloudAdapter({sdk,db,auth:{currentUser:user},user,cached,documentId:'lists',validate:C.snapshot})});return {db,store};};
+ const phone=make(),pc=make();
+ const legacy=createCloudAdapter({sdk,db:phone.db,auth:{currentUser:user},user});const old={yks_v3_days:[],yks_v3_tasks:[],yks_v7_bookmarks:[{id:3,title:'Keep',url:'https://example.com/'}]};await legacy.request('PUT',{data:old,revision:0});
+ phone.store.commit([{id:1,title:'TYT Matematik',items:[{id:10,title:'Temel kavramlar',completed:false}]}]);await phone.store.sync();await pc.store.sync();assert.equal(pc.store.get()[0].title,'TYT Matematik');checks++;
+ pc.store.commit(C.update(pc.store.get(),{type:'check-item',listId:1,id:10,completed:true}));await pc.store.sync();await phone.store.sync();assert.equal(phone.store.get()[0].items[0].completed,true);checks++;
+ phone.store.commit(C.update(phone.store.get(),{type:'add-item',listId:1,id:11,title:'İkinci konu'}));await phone.store.sync();await pc.store.sync();pc.store.commit(C.update(pc.store.get(),{type:'reorder-items',listId:1,ids:[11,10]}));await pc.store.sync();await phone.store.sync();assert.deepEqual(C.orderedItems(phone.store.get()[0]).map(i=>i.id),[11,10]);checks++;
+ phone.store.commit(C.update(phone.store.get(),{type:'add-list',id:2,title:'TYT Fizik'}));await phone.store.sync();await pc.store.sync();
+ pc.store.commit(C.update(pc.store.get(),{type:'reorder-lists',ids:[2,1]}));await pc.store.sync();await phone.store.sync();assert.deepEqual(C.orderedLists(phone.store.get()).map(l=>l.id),[2,1]);checks++;
+ phone.store.commit(C.update(phone.store.get(),{type:'rename-list',listId:2,title:'Fizik Konuları'}));await phone.store.sync();await pc.store.sync();assert.equal(C.orderedLists(pc.store.get())[0].title,'Fizik Konuları');assert.equal(pc.store.get().find(l=>l.id===1).items.find(i=>i.id===10).completed,true);checks++;
+ assert.deepEqual((await legacy.request('GET')).data,old);checks++;assert.equal((await legacy.request('GET')).revision,1);checks++;
+ await phone.store.stop();await pc.store.stop();legacy.stop();
+ const batch=sdk.writeBatch(owner);batch.delete(ref(owner));batch.delete(ref(owner,'main'));batch.set(sdk.doc(owner,'users','lists-owner','account','deletion'),{requestedAt:sdk.serverTimestamp()});await pass(batch.commit());await fail(sdk.getDoc(ref(owner)));await fail(sdk.setDoc(ref(owner),payload(1)));
+ console.log('PASS: '+checks+' Lists authorization, cross-device sync, deletion and old-workspace compatibility checks.');
+}finally{await env.cleanup();}

@@ -1,0 +1,36 @@
+{
+  "name": "procats",
+  "version": "1.7.3",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "preview": "node scripts/preview.mjs",
+    "android:sync": "npm run build && cap sync android",
+    "android:open": "cap open android",
+    "test": "node --test tests/*.test.mjs",
+    "test:rules": "firebase emulators:exec --project demo-procats --only firestore \"node tests/security-emulator.mjs && node tests/lists-emulator.mjs && node tests/knowledge-emulator.mjs\""
+  },
+  "dependencies": {
+    "@capacitor/android": "8.5.3",
+    "@capacitor/app": "8.1.1",
+    "@capacitor/core": "8.5.3",
+    "@capacitor/filesystem": "8.1.3",
+    "@capacitor/local-notifications": "8.3.0",
+    "@capacitor/share": "8.0.2",
+    "@capacitor/splash-screen": "8.0.2",
+    "@pdf-lib/fontkit": "1.1.1",
+    "firebase": "12.19.0",
+    "pdf-lib": "1.17.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.5.3",
+    "@firebase/rules-unit-testing": "5.0.2",
+    "esbuild": "0.25.12",
+    "esbuild-wasm": "0.25.12",
+    "firebase-tools": "15.34.0"
+  },
+  "overrides": {
+    "@grpc/grpc-js": "1.14.6"
+  }
+}

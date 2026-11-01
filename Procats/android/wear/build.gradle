@@ -1,0 +1,40 @@
+apply plugin: 'com.android.application'
+def uploadProperties = new Properties()
+def uploadFile = rootProject.file('../signing/keystore.properties')
+if (uploadFile.exists()) uploadFile.withInputStream { uploadProperties.load(it) }
+def uploadValue = { name, environment -> System.getenv(environment) ?: uploadProperties.getProperty(name) }
+def uploadStore=uploadValue('storeFile','PROCATS_KEYSTORE_FILE')
+if(uploadStore && !new File(uploadStore).isAbsolute())uploadStore=rootProject.file('../signing/'+uploadStore).absolutePath
+def uploadPassword=uploadValue('storePassword','PROCATS_KEYSTORE_PASSWORD')
+def uploadAlias=uploadValue('keyAlias','PROCATS_KEY_ALIAS')
+def uploadKeyPassword=uploadValue('keyPassword','PROCATS_KEY_PASSWORD')
+def canSign=uploadStore&&uploadPassword&&uploadAlias&&uploadKeyPassword
+android {
+    testOptions {
+      unitTests.includeAndroidResources = true
+      unitTests.all {
+        systemProperty 'robolectric.dependency.repo.url', 'https://repo.maven.apache.org/maven2'
+        jvmArgs '--add-opens=java.base/java.lang=ALL-UNNAMED', '--add-opens=java.base/java.util=ALL-UNNAMED', '--add-opens=java.base/java.io=ALL-UNNAMED', '--add-opens=java.base/java.net=ALL-UNNAMED', '--add-opens=java.base/java.security=ALL-UNNAMED', '--add-opens=java.base/java.text=ALL-UNNAMED', '--add-opens=java.base/jdk.internal.access=ALL-UNNAMED', '--add-opens=java.desktop/java.awt.font=ALL-UNNAMED'
+      }
+    }
+
+ namespace 'com.procats.study'
+ compileSdk 36
+ defaultConfig { applicationId 'com.procats.study'; minSdk 30; targetSdk 36; versionCode 23; versionName '1.7.3' }
+ signingConfigs { if(canSign) { upload { storeFile file(uploadStore);storePassword uploadPassword;keyAlias uploadAlias;keyPassword uploadKeyPassword } } }
+ buildTypes {
+  debug { applicationIdSuffix '.preview'; versionNameSuffix '-preview' }
+  release { if(canSign)signingConfig signingConfigs.upload;minifyEnabled true;shrinkResources true;proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),'proguard-rules.pro' }
+  personal { initWith release; applicationIdSuffix '.personal'; matchingFallbacks = ['release']; debuggable false }
+ }
+ compileOptions { sourceCompatibility JavaVersion.VERSION_17;targetCompatibility JavaVersion.VERSION_17 }
+}
+dependencies {
+    testImplementation 'org.robolectric:robolectric:4.17'
+ implementation project(':companion')
+ implementation 'androidx.wear.tiles:tiles:1.6.2'
+ implementation 'androidx.wear.protolayout:protolayout:1.4.2'
+ implementation 'com.google.guava:guava:33.4.8-android'
+ testImplementation 'junit:junit:4.13.2'
+}
+gradle.taskGraph.whenReady { graph -> if(!canSign && [':wear:assembleRelease',':wear:bundleRelease',':wear:packageRelease',':wear:assemblePersonal',':wear:packagePersonal'].any { graph.hasTask(it) })throw new GradleException('Configure private PROCATS signing environment variables.') }

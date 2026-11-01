@@ -1,0 +1,104 @@
+apply plugin: 'com.android.application'
+// Upload credentials stay outside the app and source archive.
+def uploadProperties = new Properties()
+def uploadFile = rootProject.file('../signing/keystore.properties')
+if (uploadFile.exists()) uploadFile.withInputStream { uploadProperties.load(it) }
+def uploadValue = { name, environment -> System.getenv(environment) ?: uploadProperties.getProperty(name) }
+def uploadStore = uploadValue('storeFile', 'PROCATS_KEYSTORE_FILE')
+def uploadPassword = uploadValue('storePassword', 'PROCATS_KEYSTORE_PASSWORD')
+def uploadAlias = uploadValue('keyAlias', 'PROCATS_KEY_ALIAS')
+def uploadKeyPassword = uploadValue('keyPassword', 'PROCATS_KEY_PASSWORD')
+def canSignUpload = uploadStore && uploadPassword && uploadAlias && uploadKeyPassword
+
+
+android {
+    testOptions {
+      unitTests.includeAndroidResources = true
+      unitTests.all {
+        systemProperty 'robolectric.dependency.repo.url', 'https://repo.maven.apache.org/maven2'
+        jvmArgs '--add-opens=java.base/java.lang=ALL-UNNAMED', '--add-opens=java.base/java.util=ALL-UNNAMED', '--add-opens=java.base/java.io=ALL-UNNAMED', '--add-opens=java.base/java.net=ALL-UNNAMED', '--add-opens=java.base/java.security=ALL-UNNAMED', '--add-opens=java.base/java.text=ALL-UNNAMED', '--add-opens=java.base/jdk.internal.access=ALL-UNNAMED', '--add-opens=java.desktop/java.awt.font=ALL-UNNAMED'
+      }
+    }
+
+    namespace = "com.procats.study"
+    compileSdk = rootProject.ext.compileSdkVersion
+    defaultConfig {
+        applicationId "com.procats.study"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 22
+        versionName "1.7.3"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        aaptOptions {
+             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
+             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
+            ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+    }
+    signingConfigs {
+        if (canSignUpload) {
+            upload {
+                storeFile new File(uploadStore).isAbsolute() ? file(uploadStore) : rootProject.file('../signing/' + uploadStore)
+                storePassword uploadPassword
+                keyAlias uploadAlias
+                keyPassword uploadKeyPassword
+            }
+        }
+    }
+    buildTypes {
+        debug { applicationIdSuffix '.preview'; versionNameSuffix '-preview' }
+
+        release {
+            debuggable false
+            if (canSignUpload) signingConfig signingConfigs.upload
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        personal {
+            initWith release
+            applicationIdSuffix '.personal'
+            matchingFallbacks = ['release']
+        }
+    }
+}
+
+repositories {
+    flatDir{
+        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+    }
+}
+
+dependencies {
+    testImplementation 'org.robolectric:robolectric:4.17'
+    implementation project(':companion')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
+    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
+    implementation project(':capacitor-android')
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+    implementation project(':capacitor-cordova-android-plugins')
+}
+
+apply from: 'capacitor.build.gradle'
+
+// Never produce an unsigned publication package by silently skipping upload signing.
+gradle.taskGraph.whenReady { graph ->
+    def publicationTasks = [':app:assembleRelease', ':app:bundleRelease', ':app:installRelease', ':app:packageRelease', ':app:assemblePersonal', ':app:packagePersonal', ':app:installPersonal']
+    if (!canSignUpload && publicationTasks.any { graph.hasTask(it) }) {
+        throw new GradleException('Release signing is required. Configure the private signing folder or all four PROCATS signing environment variables.')
+    }
+}
+
+try {
+    def servicesJSON = file('google-services.json')
+    if (servicesJSON.text) {
+        apply plugin: 'com.google.gms.google-services'
+    }
+} catch(Exception e) {
+    logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+}
+

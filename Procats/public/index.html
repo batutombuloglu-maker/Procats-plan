@@ -1,0 +1,741 @@
+<!DOCTYPE html> 
+<html lang="tr"> 
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://i.ytimg.com https://img.youtube.com; font-src 'self'; connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://firebaseinstallations.googleapis.com; object-src 'none'; base-uri 'none'; form-action 'self'; frame-src 'none'; worker-src 'self'; upgrade-insecure-requests">
+<script src="/transport.js"></script> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"> 
+    <title>Procats</title>
+<link rel="manifest" href="/manifest.webmanifest"><link rel="icon" href="/favicon.svg"><link rel="apple-touch-icon" href="/icon-192.png"><meta name="theme-color" content="#121214"> 
+    <style> 
+        /* --- THEME ENGINE / TEMA MOTORU / THEMEN-ENGINE --- */
+        :root { 
+            --bg-main: #121214; --bg-nav: #1c1c1e; --bg-sidebar: #1c1c1e; 
+            --bg-card: #2c2c2e; --bg-modal: #252528; --accent-color: #0a84ff; 
+            --accent-success: #32d74b; --accent-danger: #ff453a; 
+            --text-main: #f5f5f7; --text-secondary: #8e8e93; 
+            --border-radius: 16px; --border-radius-lg: 20px; 
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+        } 
+
+
+
+
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-family); -webkit-font-smoothing: antialiased; } 
+        body { background-color: var(--bg-main); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; transition: 0.3s; padding: 15px; gap: 15px;} 
+
+        /* Modern Iconic Design / Modernes Ikonisches Design */
+        .icon { font-size: 16px; font-style: normal; font-weight: 300; }
+
+        /* --- FLOATING OBSIDIAN LEFT BAR / SCHWEBENDE OBSIDIAN LINKE LEISTE --- */
+        .obsidian-nav { width: 56px; background-color: var(--bg-nav); border: 1px solid #38383a; border-radius: var(--border-radius-lg); display: flex; flex-direction: column; align-items: center; padding: 20px 0; z-index: 50; flex-shrink: 0; justify-content: space-between; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        [data-theme="light"] .obsidian-nav { border-color: #e5e5ea; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .nav-top, .nav-bottom { display: flex; flex-direction: column; gap: 15px; width: 100%; align-items: center; }
+        .nav-item { border:0; background:transparent; padding:0; font:inherit; width: 40px; height: 40px; border-radius: 12px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s; color: var(--text-secondary); position: relative; }
+        .nav-item:focus-visible { outline:2px solid var(--accent-color); outline-offset:3px; }
+        .nav-item svg { width: 22px; height: 22px; fill: currentColor; }
+        .nav-item:hover { background-color: #38383a; color: var(--text-main); }
+        [data-theme="light"] .nav-item:hover { background-color: #f2f2f7; color: var(--text-main); }
+        .nav-item.active { background-color: var(--accent-color); color: white; box-shadow: 0 4px 12px rgba(10, 132, 255, 0.4);}
+
+        /* --- MAIN SCREEN MANAGER / HAUPTBILDSCHIRM-MANAGER --- */
+        .view-container { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; background-color: var(--bg-main); border-radius: var(--border-radius-lg); }
+        .view { display: none; height: 100%; width: 100%; }
+        .view.active { display: flex; }
+
+        /* --- VIEW 1: HOME / ZUHAUSE --- */
+        #view-home { flex-direction: column; justify-content: center; align-items: center; position: relative; }
+        .live-clock { position: absolute; top: 30px; left: 30px; font-size: 32px; font-weight: 800; font-family: 'Consolas', 'Courier New', monospace; color: var(--text-main); text-shadow: 0 0 15px rgba(0,0,0,0.5); letter-spacing: 2px; }
+        [data-theme="light"] .live-clock { text-shadow: none; }
+        .stopwatch-widget { position: absolute; top: 30px; right: 30px; background: var(--bg-card); padding: 15px 25px; border-radius: var(--border-radius); border: 1px solid #38383a; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        [data-theme="light"] .stopwatch-widget { border-color: #e5e5ea; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .stopwatch-time { font-size: 32px; font-weight: 800; font-family: 'Consolas', 'Courier New', monospace; color: var(--text-main); text-shadow: 0 0 15px rgba(0,0,0,0.5); letter-spacing: 2px; }
+        [data-theme="light"] .stopwatch-time { text-shadow: none; }
+        .sw-controls { display: flex; gap: 8px; }
+        .btn-sw { background: #38383a; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; transition: 0.2s;}
+        [data-theme="light"] .btn-sw { background: #e5e5ea; color: #1c1c1e; }
+        .btn-sw:hover { opacity: 0.8; }
+        .btn-sw.start { background: var(--accent-success); color: #121214;}
+        [data-theme="light"] .btn-sw.start { color: white; }
+        .btn-sw.reset { background: var(--accent-danger); color: white;}
+        .home-quote { text-align: center; max-width: 750px; display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: -12vh; }
+        .home-quote .quote-icon { font-size: 50px; opacity: 0.8; }
+        .home-quote .quote-text { font-style: italic; font-size: 24px; line-height: 1.4; }
+        .home-quote .quote-author { color: var(--accent-color); font-weight: 600; font-size: 16px; }
+        
+        /* --- Heatmap / Heatmap --- */
+        .heatmap-widget { position: absolute; bottom: 30px; left: 30px; background: var(--bg-card); padding: 20px 25px; border-radius: var(--border-radius); border: 1px solid #38383a; display: flex; flex-direction: column; gap: 15px; }
+        [data-theme="light"] .heatmap-widget { border-color: #e5e5ea; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .heatmap-title { font-size: 15px; font-weight: 600; color: var(--text-main); display: flex; align-items: center; justify-content: space-between; gap: 20px;}
+        .heat-reset { font-size: 12px; color: var(--text-secondary); cursor: pointer; opacity: 0.6; transition: 0.2s; background: none; border: none; font-weight: bold;}
+        .heat-reset:hover { opacity: 1; color: var(--accent-danger); }
+        .heatmap-grid { display: grid; grid-template-columns: repeat(15, 1fr); gap: 6px; }
+        .heat-box { width: 18px; height: 18px; border-radius: 4px; background-color: #1a1a1c; transition: 0.2s; cursor: pointer;}
+        [data-theme="light"] .heat-box { background-color: #ebedf0; }
+        .heat-box:hover { transform: scale(1.2); }
+        .heat-box.lvl-1 { background-color: #0e4429; } [data-theme="light"] .heat-box.lvl-1 { background-color: #9be9a8; }
+        .heat-box.lvl-2 { background-color: #006d32; } [data-theme="light"] .heat-box.lvl-2 { background-color: #40c463; }
+        .heat-box.lvl-3 { background-color: #26a641; box-shadow: 0 0 5px rgba(38, 166, 65, 0.5); } [data-theme="light"] .heat-box.lvl-3 { background-color: #30a14e; }
+        .heat-box.lvl-4 { background-color: #39d353; box-shadow: 0 0 12px rgba(57, 211, 83, 0.8); } [data-theme="light"] .heat-box.lvl-4 { background-color: #216e39; }
+        .heat-box.lvl-5 { background-color: #3fff00; box-shadow: 0 0 15px #3fff00, 0 0 30px #3fff00; transform: scale(1.1); z-index: 10; position: relative; border: 1px solid #fff;} 
+        [data-theme="light"] .heat-box.lvl-5 { background-color: #148f32; box-shadow: 0 0 15px rgba(20,143,50,0.8), 0 0 30px rgba(20,143,50,0.6); border: 1px solid #000; }
+        .heat-box.exempt { border: 2px dashed var(--accent-danger); box-sizing: border-box; } /* Exempt Box Style */
+
+        /* --- VIEW 2: TASKS & FOLDERS / AUFGABEN & ORDNER --- */
+        #view-tasks { flex-direction: row; border-radius: var(--border-radius-lg); overflow: hidden; border: 1px solid #38383a;}
+        [data-theme="light"] #view-tasks { border-color: #e5e5ea; }
+        .sidebar { width: 340px; min-width: 220px; max-width: 600px; background-color: var(--bg-sidebar); display: flex; flex-direction: column; padding: 20px 16px; flex-shrink: 0; position: relative; } 
+        .sidebar-header { font-size: 20px; font-weight: 600; margin-bottom: 16px; padding-left: 8px;} 
+        .subject-list { flex: 1; overflow-y: auto; list-style: none; padding-right: 6px; min-height: 50%; padding-bottom: 50px; } 
+        .folder-group { margin-bottom: 4px; }
+        .folder-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border-radius: 10px; cursor: pointer; transition: 0.2s; user-select: none; font-weight: 600; font-size: 14px; color: var(--text-main); }
+        .folder-header:hover { background-color: #3a3a3c; }
+        [data-theme="light"] .folder-header:hover { background-color: #f2f2f7; }
+        .folder-header.drag-over { background-color: rgba(10, 132, 255, 0.2); border: 1px dashed var(--accent-color); }
+        .folder-header .folder-left { display: flex; align-items: center; gap: 8px; flex: 1; pointer-events: none;}
+        .folder-arrow { font-size: 10px; transition: transform 0.2s; color: var(--text-secondary); display: inline-block; pointer-events: auto; padding: 4px;}
+        .folder-group.open .folder-arrow { transform: rotate(90deg); }
+        .folder-content { display: none; padding-left: 14px; margin-top: 4px; border-left: 1px solid #38383a; margin-left: 18px; min-height: 10px;}
+        [data-theme="light"] .folder-content { border-left-color: #d1d1d6; }
+        .folder-group.open .folder-content { display: block; }
+        .subject-item { background-color: var(--bg-card); padding: 8px 12px; border-radius: 10px; margin-bottom: 4px; display: flex; align-items: center; justify-content: space-between; transition: 0.2s; cursor: grab; user-select: none; font-size: 14px; border: 1px solid transparent;} 
+        [data-theme="light"] .subject-item { background-color: #ffffff; border: 1px solid #e5e5ea; }
+        .subject-item:active { cursor: grabbing; }
+        .subject-item:hover { background-color: #3a3a3c; } 
+        [data-theme="light"] .subject-item:hover { background-color: #f2f2f7; }
+        .subject-item.active-day { border-color: var(--accent-color); background-color: rgba(10, 132, 255, 0.1); } 
+        .subject-item.drag-over { border-top: 2px solid var(--accent-color); }
+        .subject-info { display: flex; align-items: center; gap: 10px; flex: 1; pointer-events: none; } 
+        .checkbox-custom { width: 18px; height: 18px; border: 2px solid #5c5c5e; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; flex-shrink: 0; cursor: pointer; pointer-events: auto;} 
+        [data-theme="light"] .checkbox-custom { border-color: #c7c7cc; }
+        .subject-item.completed .checkbox-custom { background-color: var(--accent-success); border-color: var(--accent-success); } 
+        .subject-item.completed .checkbox-custom::after { content: "✓"; color: #121214; font-size: 11px; font-weight: bold; } 
+        .subject-item.completed span { text-decoration: line-through; color: var(--text-secondary); } 
+        .three-dots { padding: 2px 6px; font-size: 16px; font-weight: bold; color: var(--text-secondary); cursor: pointer; border-radius: 6px; transition: 0.2s;}
+        .three-dots:hover { background-color: #48484a; color: var(--text-main); }
+        [data-theme="light"] .three-dots:hover { background-color: #e5e5ea; color: var(--text-main); }
+        .btn-sidebar-add { background-color: var(--bg-card); color: var(--accent-color); border: 1px dashed #48484a; padding: 12px; border-radius: 10px; font-weight: 500; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 12px; transition: 0.2s;} 
+        [data-theme="light"] .btn-sidebar-add { border-color: #c7c7cc; }
+        .resizer { width: 6px; background-color: #38383a; cursor: col-resize; transition: 0.2s; z-index: 20;}
+        [data-theme="light"] .resizer { background-color: #e5e5ea; }
+        .resizer:hover, .resizer.active { background-color: var(--accent-color); }
+        
+        /* TASK MAIN SCREEN / AUFGABEN-HAUPTBILDSCHIRM */
+        .main-content { flex: 1; display: flex; flex-direction: column; padding: 40px; overflow-y: auto; background-color: var(--bg-main);} 
+        .main-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; flex-shrink: 0; } 
+        .main-title { font-size: 32px; font-weight: 700; letter-spacing: -1px; display: flex; flex-direction: column; gap: 4px;} 
+        .sub-title { font-size: 16px; font-weight: 500; color: var(--text-secondary); } 
+        .btn-primary { background-color: var(--accent-color); color: white; border: none; padding: 12px 24px; border-radius: 30px; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(10, 132, 255, 0.3); } 
+        .btn-primary:hover { opacity: 0.9; } 
+        .progress-section { background-color: var(--bg-card); padding: 24px 30px; border-radius: var(--border-radius-lg); margin-bottom: 32px; flex-shrink: 0; }
+        [data-theme="light"] .progress-section { border: 1px solid #e5e5ea; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+        .progress-info { display: flex; justify-content: space-between; margin-bottom: 16px; font-size: 15px; font-weight: 500; } 
+        .progress-bar-bg { background-color: #1c1c1e; height: 12px; border-radius: 6px; overflow: hidden; } 
+        [data-theme="light"] .progress-bar-bg { background-color: #e5e5ea; }
+        .progress-bar-fill { background: linear-gradient(90deg, #0a84ff, #5e5ce6); height: 100%; width: 0%; transition: 0.6s; border-radius: 6px; } 
+        .daily-tasks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; position: relative;} 
+        
+        /* TASK CARDS / AUFGABENKARTEN */
+        .task-card { background-color: var(--bg-card); border-radius: var(--border-radius-lg); padding: 24px; display: flex; flex-direction: column; border: 1px solid #38383a; transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s; min-height: 160px; justify-content: space-between; position: relative; cursor: grab; } 
+        [data-theme="light"] .task-card { border-color: #e5e5ea; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .task-card:active { cursor: grabbing; }
+        .task-card.dragging { opacity: 0.4; border: 2px dashed var(--accent-color); transform: scale(0.98); }
+        .task-card:hover { transform: translateY(-4px); box-shadow: 0 8px 30px rgba(0,0,0,0.3); border-color: var(--accent-color);} 
+        [data-theme="light"] .task-card:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.1); }
+        
+        .task-options { position: absolute; top: 12px; right: 12px; font-size: 22px; color: var(--text-secondary); cursor: pointer; padding: 0 10px; border-radius: 8px; font-weight: bold; transition: 0.2s;}
+        .task-options:hover { background-color: #48484a; color: var(--text-main); }
+        [data-theme="light"] .task-options:hover { background-color: #e5e5ea; color: var(--text-main); }
+        
+        .task-header { margin-bottom: 12px; display: flex; justify-content: space-between; align-items: flex-start; } 
+        .task-title { font-size: 18px; font-weight: 600; line-height: 1.3; flex: 1; padding-right: 10px; } 
+        
+        /* Rating System (?/10) / Bewertungssystem (?/10) */
+        .task-rating { background: transparent; color: var(--accent-color); border: 1px solid #38383a; border-radius: 8px; padding: 4px 8px; font-size: 12px; font-weight: bold; outline: none; cursor: pointer; appearance: none; margin-right: 32px; transition: 0.2s; }
+        [data-theme="light"] .task-rating { border-color: #e5e5ea; }
+        .task-rating option { background: var(--bg-card); color: var(--text-main); font-weight: bold;}
+        .task-rating:hover { border-color: var(--accent-color); background: rgba(10, 132, 255, 0.1); }
+
+        .task-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 20px; } 
+        .task-footer { display: flex; justify-content: flex-start; align-items: center; border-top: 1px solid #38383a; padding-top: 16px; gap: 8px;}
+        [data-theme="light"] .task-footer { border-top-color: #e5e5ea; }
+        .btn-status { background: #38383a; border: none; padding: 6px 14px; border-radius: 8px; color: var(--text-main); font-size: 12px; cursor: pointer; transition: 0.2s; font-weight: 600; } 
+        [data-theme="light"] .btn-status { background-color: #f2f2f7; color: #1c1c1e; }
+        
+        /* Completed / Missed Statuses / Abgeschlossen / Verpasst Status */
+        .task-card.completed .task-title, .task-card.completed .task-desc { text-decoration: line-through; opacity: 0.5; } 
+        .task-card.completed .btn-status.btn-done { background-color: rgba(50, 215, 75, 0.15); color: var(--accent-success); } 
+        
+        .task-card.missed .task-title, .task-card.missed .task-desc { text-decoration: line-through; opacity: 0.5; color: var(--accent-danger); }
+        .task-card.missed { border-color: rgba(255, 69, 58, 0.3); }
+        .btn-status.btn-missed:hover { background-color: rgba(255, 69, 58, 0.2); color: var(--accent-danger); }
+        .task-card.missed .btn-status.btn-missed { background-color: rgba(255, 69, 58, 0.15); color: var(--accent-danger); border: 1px solid rgba(255, 69, 58, 0.5);}
+
+        /* Block Lesson Chain (Link Icon) / Blockunterricht Kette (Link-Symbol) */
+        .block-link-icon { position: absolute; right: -22px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; display: flex; justify-content: center; align-items: center; z-index: 10; pointer-events: none; color: var(--accent-color); font-size: 20px; filter: drop-shadow(0 0 5px var(--accent-color)); }
+        
+        .exempt-badge { font-size: 10px; color: var(--accent-danger); border: 1px dashed var(--accent-danger); padding: 2px 6px; border-radius: 4px; margin-top: 5px; display: inline-block;}
+
+        /* --- OTHER SCREENS (Kept same) / ANDERE BILDSCHIRME (Gleich geblieben) --- */
+        #view-timers { flex-direction: column; align-items: center; justify-content: center; gap: 40px; position: relative;}
+        .timer-display { font-size: 120px; font-weight: 800; font-family: 'Consolas', 'Courier New', monospace; color: var(--text-main); text-shadow: 0 0 20px rgba(0,0,0,0.5); transition: 0.3s;}
+        [data-theme="light"] .timer-display { text-shadow: none; }
+        @keyframes shake { 0% { transform: translate(2px, 2px) rotate(0deg); } 20% { transform: translate(-3px, 0px) rotate(-2deg); } 40% { transform: translate(2px, -2px) rotate(2deg); } 60% { transform: translate(-3px, 3px) rotate(0deg); } 80% { transform: translate(3px, -2px) rotate(2deg); } 100% { transform: translate(2px, 2px) rotate(0deg); } }
+        .timer-display.shake { animation: shake 0.2s infinite; color: var(--accent-danger) !important; text-shadow: 0 0 35px rgba(255, 69, 58, 0.8) !important; }
+        .timer-presets { display: flex; gap: 15px; } .preset-btn { background: var(--bg-card); color: var(--text-main); border: 2px solid #38383a; padding: 15px 25px; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; } .preset-btn:hover { border-color: var(--accent-color); background: #38383a;}
+        [data-theme="light"] .preset-btn { border-color: #e5e5ea; } [data-theme="light"] .preset-btn:hover { border-color: var(--accent-color); background: #f2f2f7; }
+        .custom-timer-box { display: flex; gap: 10px; margin-top: 15px; align-items: center;} .custom-timer-box input { background: var(--bg-card); color: var(--text-main); border: 2px solid #38383a; padding: 13px 20px; border-radius: 12px; font-size: 18px; font-weight: bold; width: 140px; text-align: center; outline: none; transition: 0.2s;} .custom-timer-box input:focus { border-color: var(--accent-color); }
+        [data-theme="light"] .custom-timer-box input { border-color: #e5e5ea; }
+        .custom-timer-box button { background: transparent; color: var(--accent-color); border: 2px solid var(--accent-color); padding: 13px 25px; border-radius: 12px; font-weight: bold; font-size: 18px; cursor: pointer; transition: 0.2s;} .custom-timer-box button:hover { background: var(--accent-color); color: white; }
+        .timer-controls { display: flex; gap: 20px; margin-top: 20px;} .timer-controls button { padding: 15px 40px; border-radius: 30px; font-size: 18px; font-weight: bold; cursor: pointer; border: none; transition: 0.2s; } #btnTimerStart { background: var(--accent-success); color: #121214; } [data-theme="light"] #btnTimerStart { color: white; } #btnTimerPause { background: #38383a; color: white; } [data-theme="light"] #btnTimerPause { background: #e5e5ea; color: #1c1c1e; } #btnTimerReset { background: var(--accent-danger); color: white; }
+        
+        #view-obsidian { flex-direction: row; border-radius: var(--border-radius-lg); overflow: hidden; border: 1px solid #38383a; background-color: var(--bg-main); }
+        [data-theme="light"] #view-obsidian { border-color: #e5e5ea; }
+        .obs-editor-container { flex: 1; display: flex; flex-direction: column; }
+        .obs-editor-header { padding: 20px 40px; border-bottom: 1px solid #38383a; font-size: 24px; font-weight: bold; color: var(--text-main); }
+        [data-theme="light"] .obs-editor-header { border-bottom-color: #e5e5ea; }
+        .obs-editor { flex: 1; background: transparent; color: var(--text-main); border: none; padding: 40px; font-size: 16px; line-height: 1.6; resize: none; outline: none; font-family: var(--font-family); }
+        .obs-empty-state { flex: 1; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); font-size: 18px; flex-direction: column; gap: 15px; }
+
+        #view-notes { padding: 40px; flex-direction: column; overflow-y: auto; } .notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; } 
+        .post-it { color: #121214; padding: 20px; border-radius: 12px; min-height: 250px; box-shadow: 2px 4px 15px rgba(0,0,0,0.15); position: relative; font-family: 'Comic Sans MS', cursive, sans-serif; font-size: 16px; outline: none; transition: 0.2s; display: flex; flex-direction: column; cursor: grab;} 
+        .post-it:active { cursor: grabbing; }
+        .post-it.dragging { opacity: 0.5; transform: scale(0.95); }
+        .post-it-delete { position: absolute; top: 10px; right: 10px; cursor: pointer; color: rgba(0,0,0,0.4); font-weight: bold; border:none; background:none; font-size:18px; transition: 0.2s;} .post-it-delete:hover { color: red; }
+        .note-content { flex: 1; outline: none; padding-top: 10px; white-space: pre-wrap; cursor: text; }
+        .note-colors { display: flex; gap: 6px; margin-top: 15px; padding-top: 10px; border-top: 1px dashed rgba(0,0,0,0.1); }
+        .color-dot { width: 16px; height: 16px; border-radius: 50%; cursor: pointer; transition: 0.2s; border: 1px solid rgba(0,0,0,0.2); } .color-dot:hover { transform: scale(1.2); }
+        
+        .btn-delete-sm { background: transparent; border: 1px solid #48484a; color: var(--accent-danger); padding: 6px 14px; border-radius: 8px; font-size: 12px; cursor: pointer; transition: 0.2s; font-weight: 600;}
+        .btn-delete-sm:hover { background: var(--accent-danger); color: white; border-color: var(--accent-danger); }
+        #view-bookmarks { flex-direction: column; height: 100%; overflow: hidden; } .bookmarks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding: 0 40px 40px 40px; overflow-y: auto; } 
+        .bookmark-card { background-color: var(--bg-card); padding: 20px; border-radius: var(--border-radius-lg); border: 1px solid #38383a; display: flex; flex-direction: column; gap: 15px; position: relative; transition: 0.2s; cursor: grab; text-decoration: none; color: inherit; } 
+        [data-theme="light"] .bookmark-card { border-color: #e5e5ea; box-shadow: 0 4px 12px rgba(0,0,0,0.05); } 
+        .bookmark-card:active { cursor: grabbing; }
+        .bookmark-card.dragging { opacity: 0.5; border: 2px dashed var(--accent-color); }
+        .bookmark-card:hover { transform: translateY(-4px); box-shadow: 0 8px 30px rgba(0,0,0,0.3); border-color: var(--accent-color); } 
+        [data-theme="light"] .bookmark-card:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.1); } 
+        .bm-icon { background: rgba(10, 132, 255, 0.1); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--accent-color); font-size: 20px; font-weight: bold; flex-shrink: 0;} 
+        .bm-options { position: absolute; top: 15px; right: 15px; font-size: 20px; font-weight: bold; color: var(--text-secondary); cursor: pointer; padding: 0 8px; border-radius: 6px; transition: 0.2s; }
+        .bm-options:hover { background: #48484a; color: var(--text-main); }
+        [data-theme="light"] .bm-options:hover { background: #e5e5ea; color: var(--text-main); }
+        
+        #view-archive { flex-direction: column; height: 100%; } .archive-tabs { display: flex; gap: 10px; padding: 40px 40px 20px 40px; flex-shrink: 0; } .arch-tab { padding: 12px 24px; background: var(--bg-card); border-radius: 30px; border: 1px solid #38383a; color: var(--text-secondary); cursor: pointer; font-weight: 600; font-size: 15px; transition: 0.2s; } [data-theme="light"] .arch-tab { border-color: #e5e5ea; } .arch-tab.active { background: var(--accent-color); color: white; border-color: var(--accent-color); } .archive-content { flex: 1; overflow-y: auto; padding: 0 40px 40px 40px; } .archive-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 24px; display: none; } .archive-grid.active { display: grid; } .arch-card { background: var(--bg-card); border-radius: var(--border-radius-lg); padding: 24px; border: 1px solid #38383a; position: relative; transition: 0.2s; } [data-theme="light"] .arch-card { border-color: #e5e5ea; box-shadow: 0 4px 12px rgba(0,0,0,0.05); } .arch-card:hover { border-color: var(--accent-color); transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); } [data-theme="light"] .arch-card:hover { box-shadow: 0 10px 30px rgba(0,0,0,0.1); } .arch-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; } .arch-title { font-size: 20px; font-weight: bold; line-height: 1.3; margin-bottom: 5px; color: var(--text-main); } .arch-meta { font-size: 13px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px; } .arch-stars { color: #ffd60a; font-size: 18px; letter-spacing: 2px; } .arch-stars span.score-text { color: var(--text-secondary); font-size: 13px; letter-spacing: 0; margin-left: 8px; font-weight: bold;} .arch-desc { font-size: 14px; color: #d1d1d6; line-height: 1.5; margin-top: 15px; background: #1c1c1e; padding: 12px; border-radius: 10px; border-left: 3px solid var(--accent-color);} [data-theme="light"] .arch-desc { background: #f2f2f7; color: #1c1c1e; } .arch-comment { font-size: 14px; color: var(--text-main); font-style: italic; margin-top: 15px; border-top: 1px dashed #48484a; padding-top: 15px; } [data-theme="light"] .arch-comment { border-top-color: #e5e5ea; } .arch-delete { position: absolute; top: 24px; right: 24px; }
+        #view-vault { flex-direction: column; align-items: center; justify-content: center; padding: 40px; text-align: center; } .vault-container { background: var(--bg-card); padding: 40px; border-radius: var(--border-radius-lg); border: 1px solid #38383a; max-width: 500px; width: 100%; box-shadow: 0 10px 40px rgba(0,0,0,0.5);} [data-theme="light"] .vault-container { border-color: #e5e5ea; box-shadow: 0 10px 40px rgba(0,0,0,0.05); } .vault-icon { font-size: 60px; margin-bottom: 20px; } .vault-title { font-size: 24px; font-weight: bold; margin-bottom: 10px; } .vault-desc { color: var(--text-secondary); font-size: 14px; margin-bottom: 30px; line-height: 1.5; } .vault-actions { display: flex; flex-direction: column; gap: 15px; } .btn-vault { padding: 16px; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; border: none; display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.2s; } .btn-vault.export { background: var(--accent-color); color: white; } .btn-vault.import { background: #38383a; color: white; border: 1px solid #48484a; } [data-theme="light"] .btn-vault.import { background: #e5e5ea; color: #1c1c1e; border-color: #d1d1d6; } .btn-vault:hover { opacity: 0.8; transform: scale(1.02); }
+
+        /* Modals & Alerts / Modale & Benachrichtigungen */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); z-index: 2000; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.2s; } .modal-overlay.active { display: flex; opacity: 1; } .modal-content { background-color: var(--bg-modal); width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; border-radius: var(--border-radius-lg); padding: 32px; border: 1px solid #38383a; transform: scale(0.95); transition: 0.2s; } [data-theme="light"] .modal-content { border-color: #e5e5ea; box-shadow: 0 15px 40px rgba(0,0,0,0.1); } .modal-overlay.active .modal-content { transform: scale(1); } .modal-title { font-size: 20px; font-weight: 600; margin-bottom: 24px; text-align: center; } .input-group { margin-bottom: 16px; } .input-label { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; font-weight: 500; } .input-apple { width: 100%; background-color: #1c1c1e; border: 1px solid #38383a; color: var(--text-main); padding: 14px 16px; border-radius: 12px; font-size: 15px; outline: none; } [data-theme="light"] .input-apple { background-color: #f2f2f7; border-color: #d1d1d6; } .input-apple:focus { border-color: var(--accent-color); } textarea.input-apple { resize: vertical; min-height: 80px; } .modal-actions { display: flex; gap: 12px; margin-top: 28px; } .btn-cancel, .btn-save { flex: 1; border: none; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; transition: 0.2s;} .btn-cancel { background-color: #38383a; color: var(--text-main); } [data-theme="light"] .btn-cancel { background-color: #e5e5ea; color: #1c1c1e; } .btn-save { background-color: var(--accent-color); color: white; } .btn-cancel:hover, .btn-save:hover { opacity: 0.8; }
+        .score-slider { width: 100%; margin-top: 5px; } .score-display { text-align: center; font-size: 24px; font-weight: bold; color: var(--accent-color); margin-top: 10px; }
+        
+        .context-menu { position: absolute; background-color: #2c2c2e; border: 1px solid #48484a; border-radius: 12px; padding: 6px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: none; z-index: 1000; min-width: 180px; } [data-theme="light"] .context-menu { background-color: #ffffff; border-color: #e5e5ea; box-shadow: 0 10px 30px rgba(0,0,0,0.1); } .context-menu.active { display: block; } .context-menu-item { padding: 10px 14px; font-size: 14px; color: var(--text-main); cursor: pointer; border-radius: 8px; transition: 0.1s; display: flex; align-items: center; justify-content: space-between; gap:10px; } .context-menu-item:hover { background-color: var(--accent-color); color: white; } .context-menu-item.danger:hover { background-color: var(--accent-danger); color: white;} 
+        
+        .prompt-content { background-color: var(--bg-modal); border-radius: var(--border-radius-lg); padding: 32px; border: 1px solid #38383a; text-align: center; max-width: 400px; width: 90%; transform: scale(0.95); transition: 0.2s; box-shadow: 0 15px 40px rgba(0,0,0,0.5); } [data-theme="light"] .prompt-content { border-color: #e5e5ea; box-shadow: 0 15px 40px rgba(0,0,0,0.1); } .modal-overlay.active .prompt-content { transform: scale(1); } .prompt-message { font-size: 16px; margin-bottom: 25px; line-height: 1.5; color: var(--text-main); } .prompt-actions { display: flex; gap: 12px; justify-content: center; }
+
+        /* --- REMINDERS & TELEGRAM BOT UI --- */
+        #view-reminders { flex-direction: row; border-radius: var(--border-radius-lg); overflow: hidden; border: 1px solid #38383a;}
+        [data-theme="light"] #view-reminders { border-color: #e5e5ea; }
+        .rem-sidebar { width: 250px; background-color: var(--bg-sidebar); display: flex; flex-direction: column; padding: 20px 16px; flex-shrink: 0; border-right: 1px solid #38383a;}
+        [data-theme="light"] .rem-sidebar { border-right-color: #e5e5ea; }
+        .cat-item { padding: 12px 16px; border-radius: 10px; margin-bottom: 8px; cursor: pointer; transition: 0.2s; font-weight: 500; display: flex; align-items: center; justify-content: space-between;}
+        .cat-item:hover { background-color: #3a3a3c; } [data-theme="light"] .cat-item:hover { background-color: #f2f2f7; }
+        .cat-item.active { background-color: var(--accent-color); color: white; }
+        .cat-count { background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 12px; font-size: 12px; }
+        .cat-badge { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 10px; }
+        .rem-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; align-content: flex-start;}
+        .rem-card { background: var(--bg-card); border: 1px solid #38383a; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 12px; position: relative; transition: 0.2s;}
+        [data-theme="light"] .rem-card { border-color: #e5e5ea; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .rem-card.expired { opacity: 0.6; border-style: dashed; }
+        .rem-card:hover { border-color: var(--accent-color); transform: translateY(-3px); }
+        .rem-text { font-size: 15px; line-height: 1.5; color: var(--text-main); font-weight: 500; }
+        .rem-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-secondary); border-top: 1px solid #48484a; padding-top: 12px; align-items: center;}
+        [data-theme="light"] .rem-meta { border-top-color: #e5e5ea; }
+        .rem-tag { padding: 4px 10px; border-radius: 8px; color: #121214; font-weight: bold; font-size: 11px;}
+        .bot-status { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); padding: 12px; background: var(--bg-card); border-radius: 12px; margin-top: auto; border: 1px dashed #48484a;}
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent-danger); }
+        .status-dot.online { background: var(--accent-success); box-shadow: 0 0 10px var(--accent-success); }
+        /* Overflow fixes; existing layout, colors and spacing are retained. */
+        .view-container, .main-content, .obs-editor-container { min-width: 0; min-height: 0; }
+        .task-title, .task-desc, .bm-title, .arch-title, .arch-desc, .arch-comment, .rem-text,
+        .folder-left, .subject-info, .main-title { overflow-wrap: anywhere; min-width: 0; }
+        .subject-info span:last-child { min-width: 0; }
+        .folder-left { flex: 1; }
+        .three-dots, .task-options, .bm-options { flex-shrink: 0; }
+        .obsidian-nav { overflow-y: auto; gap: 20px; }
+        .nav-item { flex-shrink: 0; }
+        .context-menu { position: fixed; max-width: calc(100vw - 16px); max-height: calc(100vh - 16px); overflow-y: auto; }
+        .daily-tasks-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); }
+        .notes-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); }
+        .bookmarks-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); }
+        .archive-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 350px), 1fr)); }
+        .rem-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+        .block-link-icon svg { width: 20px; height: 20px; fill: currentColor; }
+        .rem-text, .arch-desc, .arch-comment { white-space: pre-wrap; }
+        .arch-header { padding-right: 65px; }
+        .main-header { gap: 16px; }
+        .main-header .btn-primary { flex-shrink: 0; }
+        .resizer { flex-shrink: 0; }
+        .prompt-message { white-space: pre-wrap; }
+        button:disabled { cursor: default; opacity: 0.5; }
+
+        /* Denemeler: the existing theme tokens and card language are shared. */
+        #view-exams { --exam-border: #38383a; --exam-input: #1c1c1e; flex-direction: column; padding: 40px; overflow-y: auto; }
+        [data-theme="light"] #view-exams, [data-theme="light"] #examModal { --exam-border: #e5e5ea; --exam-input: #f2f2f7; }
+        #examModal { --exam-border: #38383a; --exam-input: #1c1c1e; }
+        #view-exams [hidden], #examModal [hidden] { display: none !important; }
+        #view-exams .main-header { margin-bottom: 24px; flex-wrap: wrap; }
+        #view-exams .sub-title { margin-top: 5px; line-height: 1.5; }
+        .exam-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+        .exam-tabs { display: flex; gap: 8px; }
+        .exam-tab { border: 1px solid var(--exam-border); background: var(--bg-card); color: var(--text-secondary); border-radius: 30px; padding: 11px 24px; font-size: 15px; font-weight: 600; cursor: pointer; }
+        .exam-tab.active { background: var(--accent-color); border-color: var(--accent-color); color: white; }
+        .exam-filter { display: flex; align-items: center; gap: 10px; }
+        .exam-filter label { font-size: 14px; color: var(--text-secondary); }
+        .exam-select { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--exam-border); padding: 10px 12px; border-radius: 10px; font-size: 14px; max-width: 100%; min-width: 0; }
+        .exam-select option { background: var(--bg-card); color: var(--text-main); }
+        .exam-panel, .exam-card { background: var(--bg-card); border: 1px solid var(--exam-border); border-radius: var(--border-radius-lg); }
+        .exam-panel { padding: 24px; margin-bottom: 28px; flex-shrink: 0; }
+        .exam-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+        .exam-panel h3, .exam-list-heading h3 { font-size: 18px; font-weight: 600; }
+        .exam-panel-sub { color: var(--text-secondary); font-size: 13px; margin-top: 5px; }
+        .exam-chart-scroll { overflow-x: auto; }
+        .exam-chart-svg { width: 100%; height: auto; display: block; }
+        .exam-chart-svg text { fill: var(--text-secondary); font-family: var(--font-family); font-size: 13px; }
+        .exam-chart-grid { stroke: var(--text-secondary); opacity: 0.2; }
+        .exam-chart-line { fill: none; stroke: var(--accent-color); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+        .exam-chart-area { fill: var(--accent-color); opacity: 0.07; }
+        .exam-chart-dot { fill: var(--bg-card); stroke: var(--accent-color); stroke-width: 2.5; }
+        .exam-chart-dot:hover, .exam-chart-dot:focus { fill: var(--accent-color); stroke-width: 4; outline: none; }
+        .exam-chart-caption { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; color: var(--text-secondary); font-size: 13px; margin-top: 14px; }
+        .exam-chart-caption strong { color: var(--accent-color); font-size: 16px; }
+        .exam-empty { display: flex; min-height: 155px; align-items: center; justify-content: center; flex-direction: column; gap: 10px; text-align: center; color: var(--text-secondary); font-size: 15px; line-height: 1.5; padding: 24px 8px; }
+        .exam-empty svg { width: 38px; height: 38px; color: var(--accent-color); opacity: 0.7; }
+        .exam-list-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+        .exam-list-count { font-size: 14px; color: var(--text-secondary); }
+        .exam-record-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 410px), 1fr)); gap: 20px; padding-bottom: 8px; }
+        .exam-card { padding: 24px; min-width: 0; transition: border-color .2s; }
+        .exam-card:hover { border-color: var(--accent-color); }
+        .exam-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
+        .exam-card-title { font-size: 18px; line-height: 1.4; font-weight: 600; overflow-wrap: anywhere; }
+        .exam-card-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; color: var(--text-secondary); font-size: 13px; margin-top: 7px; }
+        .exam-type-badge { display: inline-block; color: var(--accent-color); border: 1px solid var(--exam-border); border-radius: 6px; padding: 2px 7px; font-size: 12px; font-weight: 600; }
+        .exam-card-net { text-align: right; flex-shrink: 0; color: var(--accent-color); }
+        .exam-card-net strong { display: block; font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.6px; }
+        .exam-card-net span { color: var(--text-secondary); font-size: 12px; }
+        .exam-card-counts { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 20px; font-size: 14px; color: var(--text-secondary); }
+        .exam-correct { color: var(--accent-success); }
+        .exam-wrong { color: var(--accent-danger); }
+        .exam-card-actions { display: flex; gap: 10px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--exam-border); }
+        .exam-edit-btn { background: transparent; color: var(--accent-color); border: 1px solid var(--exam-border); border-radius: 8px; padding: 8px 14px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .exam-edit-btn:hover { border-color: var(--accent-color); }
+        .exam-card .btn-delete-sm { font-size: 14px; }
+        .exam-details { margin-top: 18px; border-top: 1px solid var(--exam-border); padding-top: 14px; }
+        .exam-details summary { cursor: pointer; font-size: 14px; color: var(--text-secondary); font-weight: 500; }
+        .exam-details[open] summary { color: var(--text-main); margin-bottom: 12px; }
+        .exam-table-scroll { overflow-x: auto; }
+        .exam-table { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+        .exam-table th { font-weight: 500; color: var(--text-secondary); text-align: right; padding: 10px 8px; border-bottom: 1px solid var(--exam-border); }
+        .exam-table th:first-child, .exam-table td:first-child { text-align: left; }
+        .exam-table td { padding: 10px 8px; text-align: right; border-bottom: 1px solid var(--exam-border); }
+        .exam-table tr:last-child td { border-bottom: 0; }
+        .exam-table .exam-net { color: var(--accent-color); font-weight: 700; }
+        .exam-note { margin-top: 16px; padding: 12px 14px; background: var(--exam-input); border-radius: 10px; font-size: 14px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+        .exam-modal { max-width: 900px; width: 94%; padding: 28px; }
+        .exam-modal .modal-title { text-align: left; margin-bottom: 22px; }
+        .exam-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .exam-form-grid .input-group { margin-bottom: 0; min-width: 0; }
+        .exam-form-grid .exam-name-field { grid-column: 1 / -1; }
+        .exam-modal .input-label { font-size: 14px; }
+        .exam-form-grid .input-apple { padding: 11px 13px; }
+        .exam-score-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin: 24px 0 10px; }
+        .exam-score-head h3 { font-size: 16px; }
+        .exam-formula { font-size: 13px; color: var(--text-secondary); }
+        .exam-input-table { min-width: 510px; }
+        .exam-input-table th { font-size: 13px; }
+        .exam-input-table td:first-child { min-width: 150px; }
+        .exam-input-table .exam-group-row td { color: var(--text-secondary); font-weight: 600; font-size: 12px; padding-top: 18px; text-align: left; }
+        .exam-subject-name { display: block; line-height: 1.35; }
+        .exam-question-count { color: var(--text-secondary); font-size: 12px; margin-top: 3px; display: block; }
+        .exam-number { width: 68px; min-width: 55px; background: var(--exam-input); color: var(--text-main); border: 1px solid var(--exam-border); border-radius: 8px; padding: 9px 6px; text-align: center; font-size: 15px; outline: none; font-variant-numeric: tabular-nums; }
+        .exam-number:focus { border-color: var(--accent-color); }
+        .exam-number[aria-invalid="true"] { border-color: var(--accent-danger); }
+        .exam-number::-webkit-inner-spin-button { margin: 0; }
+        .exam-row-error { color: var(--accent-danger); font-size: 12px; line-height: 1.4; display: block; max-width: 230px; margin-top: 5px; }
+        .exam-input-help { font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin: 12px 0 18px; }
+        .exam-form-total { display: flex; align-items: center; justify-content: space-between; gap: 16px; border: 1px solid var(--exam-border); background: var(--bg-card); padding: 16px 20px; border-radius: 14px; margin: 16px 0 20px; }
+        .exam-form-total-label { font-size: 15px; font-weight: 600; }
+        #examFormCounts { font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-top: 4px; }
+        #examFormNet { color: var(--accent-color); font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; }
+        #examFormError { color: var(--accent-danger); font-size: 14px; line-height: 1.5; margin-top: 14px; }
+        #examFormError:empty { display: none; }
+        #examModal .modal-actions { margin-top: 18px; }
+        #view-exams button:focus-visible, #view-exams select:focus-visible, #examModal button:focus-visible, #examModal input:focus-visible, #examModal select:focus-visible { outline: 2px solid var(--accent-color); outline-offset: 3px; }
+        @media (max-width: 760px) {
+            #view-exams { padding: 22px 16px; }
+            #view-exams .main-title { font-size: 27px; }
+            .exam-panel, .exam-card { padding: 18px; }
+            .exam-filter { flex-wrap: wrap; }
+            .exam-modal { width: 96%; padding: 20px 16px; }
+            .exam-form-grid { grid-template-columns: 1fr; }
+            .exam-card-net strong { font-size: 25px; }
+            .exam-form-total { padding: 14px; }
+        }
+
+        /* Keep the desktop design; stack existing panes only on narrow screens. */
+        @media(max-width:700px){body{padding:8px;gap:8px}.obsidian-nav{width:46px;padding:12px 0}.nav-item{width:38px;height:40px}.view.active{min-width:0}#view-tasks,#view-obsidian,#view-reminders{flex-direction:column}.sidebar{width:100%!important;max-height:32vh;flex-shrink:0;border-right:0;border-bottom:1px solid #38383a}.resizer{display:none}.main-content{padding:18px 12px}.obs-editor-container{flex:1;min-height:180px}.live-clock{font-size:48px}.stopwatch-time{font-size:38px}.modal{max-width:calc(100vw - 24px);max-height:90dvh;overflow:auto}.input-apple{font-size:16px}#themeMenu{left:58px!important;bottom:16px!important;max-height:85dvh}#view-home{padding:18px 12px}.heatmap-widget{max-width:100%}.heatmap-grid{gap:4px}.heatmap-cell{width:auto;min-width:0}.home-quote{font-size:18px}}
+        /* Mobile positions flow vertically so every original widget remains reachable. */
+        @media(max-width:700px){
+            body{height:100dvh}.obsidian-nav{overflow-y:auto}.nav-top,.nav-bottom{gap:8px}.nav-bottom{padding-top:16px}
+            #view-home{justify-content:flex-start;gap:22px;overflow-y:auto;padding:20px 12px 40px}
+            #view-home .live-clock,#view-home .stopwatch-widget,#view-home .heatmap-widget{position:static;flex-shrink:0}
+            #view-home .live-clock{font-size:30px}#view-home .stopwatch-widget{width:100%;padding:18px 12px}
+            #view-home .heatmap-widget{width:100%;padding:18px 14px;order:4}
+            #view-home .heatmap-title{font-size:13px;gap:10px}.heatmap-grid{grid-template-columns:repeat(10,minmax(0,1fr))}.heat-box{width:100%;height:auto;aspect-ratio:1}
+            #view-home .home-quote{margin:0;padding:12px 0;gap:12px}#view-home .quote-text{font-size:18px}
+            #view-timers{overflow-y:auto;padding:20px 12px;gap:22px}#view-timers .live-clock{position:static;font-size:28px}.timer-display{font-size:clamp(46px,15vw,80px)}.timer-presets,.timer-controls{flex-wrap:wrap;justify-content:center;gap:8px}
+            .modal-content{max-height:90dvh;padding:24px 20px}.main-header{flex-wrap:wrap;gap:16px}.main-title{font-size:24px}
+            .rem-sidebar{width:100%;max-height:38dvh;flex-shrink:0}.sidebar{min-width:0}.main-content{overflow-y:auto}
+            #view-notes{padding:20px 12px}.notes-grid,.rem-grid{grid-template-columns:minmax(0,1fr)}
+            #view-bookmarks>.main-header{padding:20px 12px 0!important}.bookmarks-grid,.archive-content{padding:0 12px 32px}.archive-tabs{padding:16px 12px;flex-wrap:wrap}.arch-tab{padding:10px 14px}
+        }
+        #syncStatus{position:fixed;bottom:8px;right:16px;z-index:60;max-width:calc(100vw - 88px);border:0;border-radius:8px;background:var(--bg-card);color:var(--text-secondary);font-size:12px;padding:5px 9px;cursor:pointer}
+        #syncModal .modal-actions{flex-wrap:wrap}#syncModal p{line-height:1.6;margin:14px 0}#syncModal button{font-size:14px}#syncAccount{overflow-wrap:anywhere}
+    </style>
+<link rel="stylesheet" href="/mobile.css?v=1.7.3">
+<link rel="stylesheet" href="/account.css?v=1.7.3"><link rel="stylesheet" href="/weekly-summary.css?v=1.7.3">
+<link rel="stylesheet" href="/experience.css">
+<link rel="stylesheet" href="/release.css">
+<link rel="stylesheet" href="/upgrade.css">
+<link rel="stylesheet" href="/themes.css">
+<link rel="stylesheet" href="/exams.css">
+<link rel="stylesheet" href="/navigation.css">
+<link rel="stylesheet" href="/release-ui.css"><link rel="stylesheet" href="/features-1.5.css">
+<link rel="stylesheet" href="/lists.css"><link rel="stylesheet" href="/knowledge.css">
+    <link rel="stylesheet" href="/timer-views.css">
+<script src="/publisher.js"></script>
+<link rel="stylesheet" href="/calendar.css"><link rel="stylesheet" href="/planning-mobile.css">
+</head> 
+<body class="auth-locked">
+<div id="authRoot"><section class="launch-screen" role="status" aria-live="polite"><div class="launch-logo">P</div><h1>Procats</h1><p id="launchMessage">Kayıtların açılıyor…</p><div class="launch-track" aria-hidden="true"><span></span></div></section></div> 
+
+    <!-- FLOATING OBSIDIAN LEFT BAR / SCHWEBENDE OBSIDIAN LINKE LEISTE -->
+    <nav class="obsidian-nav">
+        <div class="nav-top">
+            <button type="button" class="nav-item active" data-action-click="switchView('home')" title="Ev" aria-label="Ev"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></button>
+            <button type="button" class="nav-item" data-action-click="switchView('obsidian')" title="Serbest Plan" aria-label="Serbest Plan"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></button>
+            <button type="button" class="nav-item" data-action-click="switchView('tasks')" title="Görevler" aria-label="Görevler"><svg viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></button>
+            <button type="button" class="nav-item" data-action-click="switchView('exams')" title="Denemeler" id="examNav" aria-label="Denemeler"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h2v16h16v2H3V3zm4 8h3v6H7v-6zm5-4h3v10h-3V7zm5-4h3v14h-3V3z"/></svg></button>
+            <button type="button" class="nav-item" id="knowledgeNav" data-action-click="switchView('knowledge')" title="Bilgi Hazinesi" aria-label="Bilgi Hazinesi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h6a4 4 0 0 1 2 1 4 4 0 0 1 2-1h6v17h-6a3 3 0 0 0-2 1 3 3 0 0 0-2-1H4V3zm2 2v13h4l1 .2V6a2 2 0 0 0-1-1H6zm7 1v12.2l1-.2h4V5h-4a2 2 0 0 0-1 1z"/></svg></button>
+            <button type="button" class="nav-item" id="listsNav" data-action-click="switchView('lists')" title="Listeler" aria-label="Listeler"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h6v6H3V4zm2 2v2h2V6H5zm6-1h10v2H11V5zM3 14h6v6H3v-6zm2 2v2h2v-2H5zm6-1h10v2H11v-2zm0-6h7v2h-7V9zm0 10h7v2h-7v-2z"/></svg></button>
+            <button type="button" class="nav-item" data-action-click="switchView('timers')" title="Sayaçlar" aria-label="Sayaçlar"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg></button>
+            <button type="button" class="nav-item" data-action-click="switchView('notes')" title="Post-it" aria-label="Post-it"><svg viewBox="0 0 24 24"><path d="M3 3v18h18V3H3zm16 16H5V5h14v14zM7 7h10v2H7zm0 4h10v2H7zm0 4h7v2H7z"/></svg></button>
+            
+            <button type="button" class="nav-item" data-action-click="switchView('bookmarks')" title="Dijital Cephanelik" aria-label="Dijital Cephanelik"><svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg></button>
+            
+        </div>
+        <div class="nav-bottom">
+            <button type="button" class="nav-item" data-action-click="switchView('vault')" title="Veri Kasası" aria-label="Veri Kasası"><svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg></button>
+            <button type="button" class="nav-item" data-action-click="toggleThemeMenu(event)" title="Ayarlar" aria-label="Ayarlar"><svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg></button>
+        </div>
+    </nav>
+
+    <!-- THEME & LANGUAGE MENU / THEMEN & SPRACHMENÜ -->
+    <div id="themeMenu" class="context-menu" style="bottom: 80px; left: 80px; top: auto;">
+<button class="context-menu-item" style="width:100%;background:none;border:0;color:inherit" data-action-click="procatsInstall()"><span>＋</span><span data-sync-text="install">Kısayol ekle</span></button><button class="context-menu-item" style="width:100%;background:none;border:0;color:inherit" data-action-click="procatsOpenSync()"><span>↻</span><span data-sync-text="sync">Cihaz eşitleme</span></button><div style="height:1px;background:#48484a;margin:4px 0"></div> 
+        <div style="padding: 5px 10px; color: var(--text-secondary); font-size: 11px; text-transform: uppercase;" data-i18n="menu_themes">TEMALAR</div>
+        <div class="context-menu-item" data-action-click="setTheme('default')"><span>🌑</span> <span data-i18n="theme_dark">Klasik Koyu</span></div> 
+        <div class="context-menu-item" data-action-click="setTheme('light')"><span>☀️</span> <span data-i18n="theme_light">Açık Tema</span></div> 
+        <div class="context-menu-item" data-action-click="setTheme('oled')"><span>🌌</span> <span data-i18n="theme_oled">Derin Siyah</span></div> 
+        <div class="context-menu-item" data-action-click="setTheme('hacker')"><span>💻</span> <span data-i18n="theme_hacker">Siber Güvenlik</span></div> 
+        <div class="context-menu-item" data-action-click="setTheme('crimson')"><span>🔴</span> <span data-i18n="theme_crimson">Kızıl Gece</span></div> 
+        <div style="height: 1px; background: #48484a; margin: 4px 0;"></div> 
+        <div style="padding: 5px 10px; color: var(--text-secondary); font-size: 11px; text-transform: uppercase;" data-i18n="menu_lang">DİL / LANGUAGE</div>
+        <div class="context-menu-item" data-action-click="setLang('tr')">🇹🇷 Türkçe</div> 
+        <div class="context-menu-item" data-action-click="setLang('en')">🇬🇧 English</div> 
+        <div class="context-menu-item" data-action-click="setLang('de')">🇩🇪 Deutsch</div> 
+    </div>
+
+    <!-- CONTEXT MENUS / KONTEXTMENÜS -->
+    <div id="sidebarEmptyMenu" class="context-menu">
+        <div class="context-menu-item" data-action-click="actionSidebar('new_folder')"><span data-i18n="ctx_new_folder">Yeni Klasör Oluştur</span></div>
+    </div>
+    <div id="folderContextMenu" class="context-menu">
+        <div class="context-menu-item" data-action-click="actionFolder('summary')"><span data-i18n="ctx_summary">Özet çıkar (PNG)</span></div>
+        <div class="context-menu-item" data-action-click="actionFolder('new_day')"><span data-i18n="ctx_new_day">İçine Gün Ekle</span></div>
+        <div class="context-menu-item" data-action-click="actionFolder('rename')"><span data-i18n="ctx_rename">Yeniden Adlandır</span></div>
+        <div class="context-menu-item" data-action-click="actionFolder('copy')"><span data-i18n="ctx_copy">Kopyala</span></div>
+        <div style="height: 1px; background: #48484a; margin: 4px 0;"></div> 
+        <div class="context-menu-item danger" data-action-click="actionFolder('delete')"><span data-i18n="ctx_delete">Klasörü Sil</span></div>
+    </div>
+    <div id="dayContextMenu" class="context-menu"> 
+        <div class="context-menu-item" data-action-click="actionDay('rename')"><span data-i18n="ctx_rename">Yeniden Adlandır</span></div> 
+        <div class="context-menu-item" data-action-click="actionDay('copy')"><span data-i18n="ctx_copy">Kopyala</span></div> 
+        <div class="context-menu-item" data-action-click="actionDay('move')"><span data-i18n="ctx_move">Klasöre Taşı</span></div> 
+        <div style="height: 1px; background: #48484a; margin: 4px 0;"></div> 
+        <div class="context-menu-item danger" data-action-click="actionDay('delete')"><span data-i18n="ctx_delete">Sil</span></div> 
+    </div> 
+    <div id="taskContextMenu" class="context-menu">
+        <div class="context-menu-item" data-action-click="taskMenuAction('toggle_link')"><span data-i18n="ctx_link">Zincirle (Blok Ders)</span></div>
+        <div class="context-menu-item" data-action-click="taskMenuAction('toggle_exempt')"><span data-i18n="ctx_exempt">Isı Haritasından Muaf Tut</span></div>
+        <div class="context-menu-item" data-action-click="taskMenuAction('edit')"><span data-i18n="ctx_edit">Düzenle</span></div>
+        <div style="height: 1px; background: #48484a; margin: 4px 0;"></div> 
+        <div class="context-menu-item danger" data-action-click="taskMenuAction('delete')"><span data-i18n="ctx_delete">Sil</span></div>
+    </div>
+    <div id="bmContextMenu" class="context-menu">
+        <div class="context-menu-item" data-action-click="bmMenuAction('edit')"><span data-i18n="ctx_edit">Düzenle</span></div>
+        <div style="height: 1px; background: #48484a; margin: 4px 0;"></div> 
+        <div class="context-menu-item danger" data-action-click="bmMenuAction('delete')"><span data-i18n="btn_delete">Sil</span></div>
+    </div>
+    <div id="obsSidebarEmptyMenu" class="context-menu">
+        <div class="context-menu-item" data-action-click="obsActionSidebar('new_folder')"><span data-i18n="ctx_new_folder">Yeni Klasör</span></div>
+    </div>
+    <div id="obsFolderMenu" class="context-menu">
+        <div class="context-menu-item" data-action-click="obsActionFolder('new_note')"><span data-i18n="btn_new_note">İçine Not Ekle</span></div>
+        <div class="context-menu-item" data-action-click="obsActionFolder('rename')"><span data-i18n="ctx_rename">Yeniden Adlandır</span></div>
+        <div style="height: 1px; background: #48484a; margin: 4px 0;"></div> 
+        <div class="context-menu-item danger" data-action-click="obsActionFolder('delete')"><span data-i18n="ctx_delete">Klasörü Sil</span></div>
+    </div>
+    <div id="obsNoteMenu" class="context-menu"> 
+        <div class="context-menu-item" data-action-click="obsActionNote('rename')"><span data-i18n="ctx_rename">Yeniden Adlandır</span></div> 
+        <div style="height: 1px; background: #48484a; margin: 4px 0;"></div> 
+        <div class="context-menu-item danger" data-action-click="obsActionNote('delete')"><span data-i18n="ctx_delete">Sil</span></div> 
+    </div>
+    <!-- MAIN CONTENT AREA / HAUPTINHALTSBEREICH -->
+    <main class="view-container">
+        <!-- 1. HOME / ZUHAUSE -->
+<div id="view-home" class="view active">
+            <div class="live-clock" id="liveClockHome">00:00:00</div>
+            <div class="stopwatch-widget">
+                <div class="stopwatch-time" id="swDisplay">00:00.00</div>
+                <div class="sw-controls"><button class="btn-sw start" id="swStartBtn" data-action-click="swToggle()" data-i18n="btn_start">Başlat</button><button class="btn-sw reset" data-action-click="swReset()" data-i18n="btn_reset">Sıfırla</button></div>
+            </div>
+            <div class="heatmap-widget">
+                <div class="heatmap-title"><span data-i18n="heat_title">Son 30 Günlük Odaklanma Isı Haritası</span><button class="heat-reset" data-action-click="resetHeatmap()"><span data-i18n="btn_reset_all">Sıfırla</span></button></div>
+                <div class="heatmap-grid" id="heatmapGrid"></div>
+            </div>
+            <div class="home-quote" id="homeQuoteContainer"></div>
+        </div>
+        
+        <!-- 8. OBSIDIAN FREE PLAN / OBSIDIAN FREIER PLAN -->
+        <div id="view-obsidian" class="view">
+            <div class="sidebar" id="obsSidebar"> 
+                <div class="sidebar-header" data-i18n="obs_title">Serbest Plan</div> 
+                <div class="subject-list" id="obsList"></div> 
+                <button class="btn-sidebar-add" data-action-click="openModal('obsFolderModal')" data-i18n="ctx_new_folder">+ Yeni Klasör</button> 
+            </div> 
+            <div class="resizer" id="obsResizer"></div>
+            <div class="obs-editor-container"> 
+                <div id="obsEditorHeader" class="obs-editor-header" style="display:none;"></div>
+                <textarea id="obsEditorArea" class="obs-editor" style="display:none;" data-action-input="saveObsNoteContent()" placeholder="Düşüncelerini buraya dök..."></textarea>
+                <div id="obsEmptyState" class="obs-empty-state">
+                    <svg style="width:64px;height:64px;opacity:0.3;fill:currentColor" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                    <div data-i18n="obs_empty">Soldan bir sayfa seçin veya yeni oluşturun.</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-lists" class="view"></div><div id="view-knowledge" class="view"></div>
+
+        <!-- 2. TASKS / AUFGABEN -->
+        <div id="view-tasks" class="view">
+            <div class="sidebar" id="sidebar"> 
+                <div class="sidebar-header" data-i18n="tasks_title">Görev Günleri</div> 
+                <div class="subject-list" id="dayList"></div> 
+                <button class="btn-sidebar-add" data-action-click="openModal('dayModal')" data-i18n="btn_new_day">+ Yeni Gün Ekle</button> 
+            </div> 
+            <div class="resizer" id="resizer"></div>
+            <div class="main-content"> 
+                <div class="main-header"> 
+                    <div class="main-title"><span id="activeMainTitle" data-i18n="lib_title">Kütüphane Paneli</span><span class="sub-title" id="activeSubTitle" data-i18n="lib_sub">Sol taraftan ayrıntılamak için bir gün seçin.</span></div> 
+                    <button class="btn-primary" id="btnAddTask" data-action-click="openModal('taskModal')" disabled><span data-i18n="btn_new_task">+ Yeni Görev</span></button> 
+                </div> 
+                <div class="progress-section" id="progressSection"> 
+                    <div class="progress-info"><span data-i18n="progress_text">Bu Klasördeki İlerleme</span><span id="progressPercentage" style="color: var(--accent-color); font-weight: 700;">0%</span></div> 
+                    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBar"></div></div> 
+                </div> 
+                <div class="daily-tasks-grid" id="tasksGrid"></div> 
+            </div>
+        </div>
+
+        <!-- TYT / AYT practice exams -->
+        <section id="view-exams" class="view" aria-labelledby="examPageTitle">
+            <div class="main-header">
+                <div class="main-title"><span id="examPageTitle" data-i18n="exam_title">Denemeler</span><span class="sub-title" data-i18n="exam_subtitle">Ders sonuçların ve net gelişimin.</span></div>
+                <button class="btn-primary" type="button" data-action-click="openExamModal()" data-i18n="exam_new">+ Yeni Deneme</button>
+            </div>
+            <div class="exam-toolbar">
+                <div class="exam-tabs" role="group" aria-label="Deneme türü">
+                    <button type="button" id="examTabTyt" class="exam-tab active" data-action-click="switchExamType('tyt')" aria-pressed="true">TYT</button>
+                    <button type="button" id="examTabAyt" class="exam-tab" data-action-click="switchExamType('ayt')" aria-pressed="false">AYT</button>
+                </div>
+                <div class="exam-filter" id="examTrackFilterWrap" hidden>
+                    <label for="examTrackFilter" data-i18n="exam_track">Alan</label>
+                    <select id="examTrackFilter" class="exam-select" data-action-change="changeExamTrack(this.value)">
+                        <option value="say" data-i18n="exam_say">Sayısal</option><option value="ea" data-i18n="exam_ea">Eşit Ağırlık</option><option value="soz" data-i18n="exam_soz">Sözel</option><option value="all" data-i18n="exam_all">Tüm testler</option>
+                    </select>
+                </div>
+            </div>
+            <div class="exam-panel">
+                <div class="exam-panel-head">
+                    <div><h3 data-i18n="exam_trend">Net gelişimi</h3><div class="exam-panel-sub" id="examChartScope"></div></div>
+                    <div class="exam-filter"><label for="examChartSubject" data-i18n="exam_subject">Ders</label><select id="examChartSubject" class="exam-select" data-action-change="changeExamChartSubject(this.value)"><option value="total">Toplam net</option></select></div>
+                </div>
+                <div id="examChart" class="exam-chart-scroll"></div>
+                <div id="examChartCaption" class="exam-chart-caption"></div>
+            </div>
+            <div class="exam-list-heading"><h3 data-i18n="exam_records">Deneme kayıtları</h3><span id="examListCount" class="exam-list-count"></span></div>
+            <div id="examRecordList" class="exam-record-grid"></div>
+        </section>
+
+        <!-- 3. TIMERS / TIMER -->
+        <div id="view-timers" class="view">
+            <div class="live-clock" id="liveClockTimers">00:00:00</div>
+            <div class="timer-display" id="timerDisplay">00:00</div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
+                <div class="timer-presets">
+                    <button class="preset-btn" data-action-click="setTimer(90)">90 <span data-i18n="min">Dk</span></button><button class="preset-btn" data-action-click="setTimer(45)">45 <span data-i18n="min">Dk</span></button>
+                    <button class="preset-btn" data-action-click="setTimer(15)">15 <span data-i18n="min">Dk</span></button><button class="preset-btn" data-action-click="setTimer(10)">10 <span data-i18n="min">Dk</span></button>
+                </div>
+                <div class="custom-timer-box"><input type="number" id="customTimerInput" data-i18n="ph_min" placeholder="Süre (Dk)" min="1"><button data-action-click="setCustomTimer()" data-i18n="btn_set">Ayarla</button></div>
+            </div>
+            <div class="timer-controls">
+                <button id="btnTimerStart" data-action-click="startTimer()" data-i18n="btn_start">Başlat</button><button id="btnTimerPause" data-action-click="pauseTimer()" data-i18n="btn_pause">Duraklat</button><button id="btnTimerReset" data-action-click="resetTimer()" data-i18n="btn_cancel">İptal Et</button>
+            </div>
+        </div>
+
+        <!-- 4. POST-IT / NOTIZEN -->
+        <div id="view-notes" class="view">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 30px; align-items: center; flex-shrink: 0;">
+                <h2 data-i18n="notes_title">Hızlı Notlar</h2><button class="btn-primary" data-action-click="addNote()" data-i18n="btn_new_note">+ Yeni Not</button>
+            </div>
+            <div class="notes-grid" id="notesGrid"></div>
+        </div>
+
+        <!-- 5. BOOKMARKS / LESEZEICHEN -->
+        <div id="view-bookmarks" class="view">
+            <div class="main-header" style="width: 100%; padding: 40px 40px 0 40px; margin-bottom: 30px; flex-shrink: 0;">
+                <div class="main-title"><span data-i18n="bm_title">Dijital Cephanelik</span><span class="sub-title" data-i18n="bm_sub">Sık kullandığın kamp oynatma listeleri.</span></div>
+                <button class="btn-primary" data-action-click="openModal('linkModal')" data-i18n="btn_new_bm">+ Yeni Kaynak Ekle</button>
+            </div>
+            <div class="bookmarks-grid" id="bookmarksGrid"></div>
+        </div>
+
+        <!-- 6. ARCHIVE / ARCHIV -->
+        
+
+        <!-- 7. DATA VAULT / DATENTRESOR -->
+        <div id="view-vault" class="view">
+            <div class="vault-container">
+                <div class="vault-icon">🗄️</div>
+                <div class="vault-title" data-i18n="vault_title">Kişisel Veri Kasası</div>
+                <div class="vault-desc" data-i18n="vault_sub">Tüm görevlerin, notların, arşivin ve ısı haritası verilerin tarayıcında saklanıyor. Yıllar boyunca kaybolmaması için ara sıra verilerini indirerek yedekle.</div>
+                <div class="vault-actions">
+                    <button class="btn-vault export" data-action-click="exportData()"><span data-i18n="btn_export">Verileri İndir (.json)</span></button>
+                    <div style="position: relative; overflow: hidden;">
+                        <button class="btn-vault import" style="width: 100%;"><span data-i18n="btn_import">Yedek Yükle</span></button>
+                        <input type="file" id="importFile" accept=".json" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;" data-action-change="importData(event)">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- CUSTOM PROMPT MODAL / BENUTZERDEFINIERTER PROMPT MODAL -->
+    <div class="modal-overlay" id="customPromptOverlay" style="z-index: 3000;">
+        <div class="prompt-content">
+            <div class="prompt-message" id="customPromptMessage"></div>
+            <div class="prompt-actions" id="customPromptActions"></div>
+        </div>
+    </div>
+
+    <!-- PLUG-IN MODALS / ZUSATZ-MODALE -->
+    <div class="modal-overlay" id="folderModal"> 
+        <div class="modal-content"> 
+            <div class="modal-title" id="folderModalTitle" data-i18n="mod_folder_title">Klasör Oluştur</div> 
+            <div class="input-group"><label class="input-label" data-i18n="mod_folder_name">Klasör Adı</label><input type="text" id="mFolderTitle" class="input-apple" data-i18n="ph_folder" placeholder="Örn: 1. Hafta"></div> 
+            <div class="modal-actions"><button class="btn-cancel" data-action-click="closeModal('folderModal')" data-i18n="btn_cancel">İptal</button><button class="btn-save" data-action-click="saveFolder()" data-i18n="btn_save">Kaydet</button></div> 
+        </div> 
+    </div> 
+
+    <div class="modal-overlay" id="dayModal"> 
+        <div class="modal-content"> 
+            <div class="modal-title" id="dayModalTitle" data-i18n="mod_day_title">Gün Ekle</div> 
+            <div class="input-group"><label class="input-label" data-i18n="mod_day_name">Gün Adı</label><input type="text" id="mDayTitle" class="input-apple" data-i18n="ph_day" placeholder="Örn: Pazartesi"></div> 
+            <div class="input-group"><label class="input-label" data-i18n="mod_day_folder">Klasör Seçimi (Opsiyonel)</label><select id="mDayFolderSelect" class="input-apple" style="appearance: none;"></select></div> 
+            <div class="modal-actions"><button class="btn-cancel" data-action-click="closeModal('dayModal')" data-i18n="btn_cancel">İptal</button><button class="btn-save" data-action-click="saveDay()" data-i18n="btn_save">Kaydet</button></div> 
+        </div> 
+    </div> 
+
+    <div class="modal-overlay" id="moveDayModal"> 
+        <div class="modal-content"> 
+            <div class="modal-title" data-i18n="ctx_move">Klasöre Taşı</div> 
+            <div class="input-group"><label class="input-label" data-i18n="mod_day_folder">Hedef Klasör</label><select id="mMoveFolderSelect" class="input-apple" style="appearance: none;"></select></div> 
+            <div class="modal-actions"><button class="btn-cancel" data-action-click="closeModal('moveDayModal')" data-i18n="btn_cancel">İptal</button><button class="btn-save" data-action-click="executeMoveDay()" data-i18n="btn_save">Kaydet</button></div> 
+        </div> 
+    </div>
+
+    <div class="modal-overlay" id="taskModal"> 
+        <div class="modal-content"> 
+            <div class="modal-title" data-i18n="mod_task_title">Görev Ekle / Düzenle</div> 
+            <div class="input-group"><label class="input-label" data-i18n="mod_task_name">Görev Başlığı</label><input type="text" id="mTaskTitle" class="input-apple" data-i18n="ph_task" placeholder="Örn: 05.00 Kalkış"></div> 
+            <div class="input-group"><label class="input-label" data-i18n="mod_task_desc">Detaylar</label><textarea id="mTaskDesc" class="input-apple" data-i18n="ph_desc" placeholder="Açıklama..."></textarea></div> 
+            <div class="modal-actions"><button class="btn-cancel" data-action-click="closeModal('taskModal')" data-i18n="btn_cancel">İptal</button><button class="btn-save" data-action-click="saveTask()" data-i18n="btn_save">Kaydet</button></div> 
+        </div> 
+    </div> 
+
+    <div class="modal-overlay" id="linkModal"> 
+        <div class="modal-content"> 
+            <div class="modal-title" data-i18n="btn_new_bm">Kaynak Ekle / Düzenle</div> 
+            <div class="input-group"><label class="input-label" data-i18n="mod_link_title">Başlık</label><input type="text" id="mLinkTitle" class="input-apple"></div> 
+            <div class="input-group"><label class="input-label" data-i18n="mod_link_url">URL (Link)</label><input type="url" id="mLinkUrl" class="input-apple"></div> 
+            <div class="modal-actions"><button class="btn-cancel" data-action-click="closeModal('linkModal')" data-i18n="btn_cancel">İptal</button><button class="btn-save" data-action-click="saveLink()" data-i18n="btn_save">Kaydet</button></div> 
+        </div> 
+    </div> 
+
+    <div class="modal-overlay" id="obsFolderModal"> 
+        <div class="modal-content"> 
+            <div class="modal-title" data-i18n="mod_folder_title">Klasör Oluştur</div> 
+            <div class="input-group"><label class="input-label" data-i18n="mod_folder_name">Klasör Adı</label><input type="text" id="mObsFolderTitle" class="input-apple" placeholder="Örn: Ders Notları"></div> 
+            <div class="modal-actions"><button class="btn-cancel" data-action-click="closeModal('obsFolderModal')" data-i18n="btn_cancel">İptal</button><button class="btn-save" data-action-click="saveObsFolder()" data-i18n="btn_save">Kaydet</button></div> 
+        </div> 
+    </div>
+    
+    <div class="modal-overlay" id="obsNoteModal"> 
+        <div class="modal-content"> 
+            <div class="modal-title" data-i18n="mod_day_title">Not Ekle</div> 
+            <div class="input-group"><label class="input-label" data-i18n="mod_day_name">Sayfa Adı</label><input type="text" id="mObsNoteTitle" class="input-apple" placeholder="Örn: Günlük Özet"></div> 
+            <div class="modal-actions"><button class="btn-cancel" data-action-click="closeModal('obsNoteModal')" data-i18n="btn_cancel">İptal</button><button class="btn-save" data-action-click="saveObsNote()" data-i18n="btn_save">Kaydet</button></div> 
+        </div> 
+    </div>
+
+    <!-- NEW MODALS FOR REMINDERS & BOT -->
+    
+
+    <div class="modal-overlay" id="examModal" role="dialog" aria-modal="true" aria-labelledby="examModalTitle">
+        <form class="modal-content exam-modal" id="examForm" novalidate data-action-submit="event.preventDefault();saveExam();">
+            <div class="modal-title" id="examModalTitle">Yeni Deneme</div>
+            <div class="exam-form-grid">
+                <div class="input-group exam-name-field"><label class="input-label" for="mExamTitle" data-i18n="exam_name">Deneme adı / yayın</label><input class="input-apple" type="text" id="mExamTitle" maxlength="140" required data-i18n="exam_name_hint" placeholder="Örn: TYT Genel Deneme 1" autocomplete="off"></div>
+                <div class="input-group"><label class="input-label" for="mExamDate" data-i18n="exam_date">Deneme tarihi</label><input class="input-apple" type="date" id="mExamDate" required></div>
+                <div class="input-group"><label class="input-label" for="mExamType" data-i18n="exam_type">Deneme türü</label><select class="input-apple" id="mExamType" data-action-change="changeExamFormType()"><option value="tyt">TYT</option><option value="ayt">AYT</option></select></div>
+                <div class="input-group" id="mExamTrackWrap" hidden><label class="input-label" for="mExamTrack" data-i18n="exam_track">Alan</label><select class="input-apple" id="mExamTrack" data-action-change="changeExamFormType()"><option value="say" data-i18n="exam_say">Sayısal</option><option value="ea" data-i18n="exam_ea">Eşit Ağırlık</option><option value="soz" data-i18n="exam_soz">Sözel</option><option value="all" data-i18n="exam_all">Tüm testler</option></select></div>
+            </div>
+            <div class="exam-score-head"><h3 data-i18n="exam_results">Ders sonuçları</h3><span class="exam-formula" data-i18n="exam_formula">Net = Doğru − Yanlış / 4</span></div>
+            <div class="exam-table-scroll">
+                <table class="exam-table exam-input-table"><thead><tr><th scope="col" data-i18n="exam_subject">Ders</th><th scope="col" data-i18n="exam_correct">Doğru</th><th scope="col" data-i18n="exam_wrong">Yanlış</th><th scope="col" data-i18n="exam_blank">Boş</th><th scope="col">Net</th></tr></thead><tbody id="examScoreRows"></tbody></table>
+            </div>
+            <p class="exam-input-help" data-i18n="exam_input_help">Boş sayısı doğru ve yanlış girdikçe otomatik tamamlanır; elle de değiştirebilirsin. Her derste toplam, soru sayısına eşit olmalı.</p>
+            <div class="exam-form-total"><div><div class="exam-form-total-label" data-i18n="exam_total">Toplam net</div><div id="examFormCounts"></div></div><output id="examFormNet" aria-live="polite">0,00</output></div>
+            <div class="input-group"><label class="input-label" for="mExamNotes" data-i18n="exam_note_label">Not / yanlış analizi (isteğe bağlı)</label><textarea class="input-apple" id="mExamNotes" maxlength="3000" data-i18n="exam_note_hint" placeholder="Tekrar bakacağın konular, dikkat hataları..."></textarea></div>
+            <div id="examFormError" role="alert"></div>
+            <div class="modal-actions"><button type="button" class="btn-cancel" data-action-click="closeModal('examModal')" data-i18n="btn_cancel">İptal</button><button type="submit" id="examSaveButton" class="btn-save" data-i18n="btn_save">Kaydet</button></div>
+        </form>
+    </div>
+
+ 
+<button id="syncStatus" data-action-click="procatsOpenSync()" aria-live="polite">Bağlanıyor…</button>
+<div class="modal-overlay" id="syncModal" role="dialog" aria-modal="true" aria-labelledby="syncTitle"><div class="modal-content"><div class="modal-title" id="syncTitle" data-sync-text="sync">Cihaz eşitleme</div><p id="syncAccount"></p><p id="syncDetail"></p><div class="modal-actions"><button class="btn-save" data-action-click="procatsSyncNow()" data-sync-text="retry">Şimdi eşitle</button><button class="btn-cancel" data-action-click="closeModal('syncModal')" data-sync-text="close">Kapat</button></div><div id="syncConflict" hidden><p data-sync-text="conflictHelp">İki cihazda aynı kayıt değişti. Seçim yapmadan önce iki sürümün yedeğini indirebilirsin.</p><button class="btn-cancel" data-action-click="procatsConflictBackup()" data-sync-text="both">İki sürümü indir</button><button class="btn-save" data-action-click="procatsResolve('local')" data-sync-text="local">Bu cihazdaki sürümü kullan</button><button class="btn-cancel" data-action-click="procatsResolve('remote')" data-sync-text="remote">Diğer sürümü kullan</button></div></div></div>
+<script src="/firebase-config.js"></script><script type="module" src="/firebase-client.js"></script>
+<script src="/ui-actions.js"></script><script src="/navigation-a11y.js"></script>
+</body> 
+</html>

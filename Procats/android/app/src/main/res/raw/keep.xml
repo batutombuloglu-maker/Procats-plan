@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The alarm sound uses getIdentifier; resource shrinking must retain it. -->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@raw/procats_alarm" />

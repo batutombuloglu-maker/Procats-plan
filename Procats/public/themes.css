@@ -1,0 +1,59 @@
+/* Only the new themes receive palette overrides; classic dark retains its original styles. */
+:root[data-theme="cream"]{--bg-main:#f4efe5;--bg-nav:#faf6ee;--bg-sidebar:#faf6ee;--bg-card:#fffaf3;--bg-modal:#fffaf3;--accent-color:#816044;--accent-success:#357149;--accent-danger:#b33d40;--text-main:#332d27;--text-secondary:#706558}
+:root[data-theme="light"]{--bg-main:#f4f7fb;--bg-nav:#fff;--bg-sidebar:#fff;--bg-card:#fff;--bg-modal:#fff;--accent-color:#3262ba;--accent-success:#297349;--accent-danger:#bd3443;--text-main:#202c40;--text-secondary:#5d687c}
+:root[data-theme="dark"]{--bg-main:#171e2b;--bg-nav:#202938;--bg-sidebar:#202938;--bg-card:#2a3548;--bg-modal:#232e40;--accent-color:#9caff4;--accent-success:#84d9a7;--accent-danger:#ff9eaa;--text-main:#f0f3fc;--text-secondary:#bdc6da}
+:root[data-theme="alpine"]{--bg-main:#101d1c;--bg-nav:#172826;--bg-sidebar:#172826;--bg-card:#213330;--bg-modal:#1b2c29;--accent-color:#bdd6ab;--accent-success:#9bdda5;--accent-danger:#ffaaa0;--text-main:#f1f4e9;--text-secondary:#c2d0c4}
+:root[data-theme="solar"]{--bg-main:#ede5d5;--bg-nav:#f4eddf;--bg-sidebar:#f4eddf;--bg-card:#faf4e8;--bg-modal:#faf4e8;--accent-color:#785b31;--accent-success:#3b6845;--accent-danger:#ae3842;--text-main:#302a20;--text-secondary:#6e604c}
+:root[data-theme="velvet"]{--bg-main:#28181e;--bg-nav:#35212a;--bg-sidebar:#35212a;--bg-card:#432d35;--bg-modal:#39242d;--accent-color:#e4b7a1;--accent-success:#acd6ab;--accent-danger:#ffa7aa;--text-main:#fff2e8;--text-secondary:#dbbdb8}
+:root[data-theme="swan"]{--bg-main:#eceee6;--bg-nav:#f5f5ec;--bg-sidebar:#f5f5ec;--bg-card:#fafaf2;--bg-modal:#fafaf2;--accent-color:#476254;--accent-success:#366948;--accent-danger:#ac4144;--text-main:#293b32;--text-secondary:#58685f}
+:root[data-theme="heritage"]{--bg-main:#eee8d8;--bg-nav:#f6f0e1;--bg-sidebar:#f6f0e1;--bg-card:#fbf7eb;--bg-modal:#fbf7eb;--accent-color:#76613b;--accent-success:#44683f;--accent-danger:#aa4141;--text-main:#3b3225;--text-secondary:#6e624e}
+:root[data-theme="starlit"]{--bg-main:#132438;--bg-nav:#1a2e44;--bg-sidebar:#1a2e44;--bg-card:#243b51;--bg-modal:#20354c;--accent-color:#f0d37b;--accent-success:#a5d6ac;--accent-danger:#ffaaa0;--text-main:#f8f4e9;--text-secondary:#c2d3df}
+:root[data-theme="hibiscus"]{--bg-main:#170e15;--bg-nav:#251820;--bg-sidebar:#251820;--bg-card:#34222d;--bg-modal:#2c1d26;--accent-color:#f0a7bb;--accent-success:#a9d1ae;--accent-danger:#ffaca5;--text-main:#fff0f4;--text-secondary:#d4b6c6}
+:root[data-theme="lily"]{--bg-main:#131d21;--bg-nav:#1d2a30;--bg-sidebar:#1d2a30;--bg-card:#29393e;--bg-modal:#223237;--accent-color:#ebc0b7;--accent-success:#acddba;--accent-danger:#ffaaa5;--text-main:#faf3ef;--text-secondary:#c6d2d3}
+:root[data-theme="starry"]{--bg-main:#14223a;--bg-nav:#1c2c49;--bg-sidebar:#1c2c49;--bg-card:#283e5e;--bg-modal:#223552;--accent-color:#f2d371;--accent-success:#a4d7b2;--accent-danger:#ffaba2;--text-main:#fcf7e8;--text-secondary:#c5d3e7}
+:root[data-theme="vinyl"]{--bg-main:#241015;--bg-nav:#331a22;--bg-sidebar:#331a22;--bg-card:#44232e;--bg-modal:#391d26;--accent-color:#f0a6b2;--accent-success:#bfd6ad;--accent-danger:#ffb0a8;--text-main:#fff1f2;--text-secondary:#dfb9c2}
+
+:root[data-theme]:not([data-theme="default"]){--theme-border:color-mix(in srgb,var(--text-main) 16%,transparent);--theme-soft:color-mix(in srgb,var(--text-main) 7%,var(--bg-card));--theme-on-accent:#182133;--exam-border:var(--theme-border);--exam-input:var(--theme-soft);color-scheme:dark}
+:root[data-theme-tone="light"]{--theme-on-accent:#fff;color-scheme:light}
+html[data-theme]:not([data-theme="default"]) :is(.obsidian-nav,.stopwatch-widget,.heatmap-widget,.task-card,.bookmark-card,.arch-card,.vault-container,.modal-content,.prompt-content,.rem-card,.preset-btn,.task-rating,.custom-timer-box input,.subject-item,.arch-tab,.input-apple,.btn-vault.import,.btn-sidebar-add,.checkbox-custom,.context-menu,.obs-editor-header,.rem-sidebar,.folder-content,.task-footer,.arch-comment,.rem-meta,#view-tasks,#view-reminders,#view-obsidian){border-color:var(--theme-border)}
+html[data-theme]:not([data-theme="default"]) :is(.input-apple,.btn-cancel,.btn-status,.arch-desc,.btn-sw,.btn-vault.import,#btnTimerPause){background:var(--theme-soft);color:var(--text-main)}
+html[data-theme]:not([data-theme="default"]) :is(.nav-item:hover,.folder-header:hover,.subject-item:hover,.three-dots:hover,.task-options:hover,.bm-options:hover,.cat-item:hover,.preset-btn:hover){background:var(--theme-soft);color:var(--text-main)}
+html[data-theme]:not([data-theme="default"]) .context-menu{background:var(--bg-modal)}
+html[data-theme]:not([data-theme="default"]) .progress-bar-bg,html[data-theme]:not([data-theme="default"]) .resizer{background:var(--theme-soft)}
+html[data-theme]:not([data-theme="default"]) .progress-bar-fill{background:var(--accent-color)}
+html[data-theme]:not([data-theme="default"]) :is(.btn-primary,.btn-save,.btn-vault.export,.nav-item.active,.cat-item.active,.arch-tab.active,.context-menu-item:hover,.btn-sw.start,.weekly-panel button:not(#weeklyClose):not(#weeklyShare)){background:var(--accent-color);color:var(--theme-on-accent);box-shadow:none}
+html[data-theme]:not([data-theme="default"]) .btn-sw.reset{background:var(--theme-soft);color:var(--text-main)}
+html[data-theme]:not([data-theme="default"]) #btnTimerStart{color:var(--bg-main)}
+html[data-theme-tone="light"] #btnTimerStart{color:white}
+html[data-theme]:not([data-theme="default"]) #btnTimerReset{color:var(--bg-main)}
+html[data-theme-tone="light"] #btnTimerReset{color:white}
+html[data-theme]:not([data-theme="default"]) .btn-status.btn-done:hover,html[data-theme]:not([data-theme="default"]) .task-card.completed .btn-status.btn-done{color:var(--accent-success);background:color-mix(in srgb,var(--accent-success) 12%,var(--bg-card))}
+html[data-theme]:not([data-theme="default"]) .btn-status.btn-missed:hover,html[data-theme]:not([data-theme="default"]) .task-card.missed .btn-status.btn-missed{color:var(--accent-danger);background:color-mix(in srgb,var(--accent-danger) 12%,var(--bg-card))}
+html[data-theme]:not([data-theme="default"]) .settings-action.danger{color:var(--accent-danger)}
+html[data-theme]:not([data-theme="default"]) :is(.stopwatch-widget,.heatmap-widget,.task-card,.bookmark-card,.arch-card,.vault-container){box-shadow:0 5px 18px #0000000b}
+html[data-theme-tone="light"] .heat-box:not([class*="lvl-"]){background:color-mix(in srgb,var(--text-main) 10%,var(--bg-card))}
+html[data-theme-tone="light"] .heat-box.lvl-1{background:#9be9a8}html[data-theme-tone="light"] .heat-box.lvl-2{background:#40c463}html[data-theme-tone="light"] .heat-box.lvl-3{background:#30a14e}html[data-theme-tone="light"] .heat-box.lvl-4{background:#216e39}html[data-theme-tone="light"] .heat-box.lvl-5{background:#148f32;border-color:#1a4c2a;box-shadow:0 0 8px #148f3244}
+/* A single picture sits behind every workspace tab. Opaque reading surfaces keep content legible. */
+html[data-theme-art] .view-container{isolation:isolate}
+html[data-theme-art] .view-container::before{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;background-image:linear-gradient(color-mix(in srgb,var(--bg-main) 58%,transparent),color-mix(in srgb,var(--bg-main) 68%,transparent)),var(--theme-image);background-size:cover;background-position:var(--theme-position-desktop,center)}
+html[data-theme-landscape] .view-container::before{inset:auto;left:50%;top:50%;width:var(--theme-canvas-height,100vh);height:var(--theme-canvas-width,100vw);transform:translate(-50%,-50%) rotate(-90deg)}
+html[data-theme-art] :is(.view,.main-content,.obs-editor-area){background-color:transparent!important}
+html[data-theme-art] .sidebar,html[data-theme-art] .rem-sidebar{background:color-mix(in srgb,var(--bg-sidebar) 96%,transparent)}
+html[data-theme-art] :is(.mobile-header,.mobile-tabs,.obsidian-nav){border-color:color-mix(in srgb,var(--accent-color) 24%,transparent)}
+html[data-theme-art] #view-home .home-quote{background:color-mix(in srgb,var(--bg-main) 78%,transparent);border-radius:12px;padding:16px}
+html[data-theme]:not([data-theme="default"]) :is(.live-clock,.stopwatch-time,.timer-display){text-shadow:none}
+html[data-theme]:not([data-theme="default"]) :is(#view-exams,#examModal){--exam-border:var(--theme-border);--exam-input:var(--theme-soft)}
+/* The timer uses the same readable system typeface as the rest of the app. */
+.live-clock,.stopwatch-time{font-family:var(--font-family);font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.timer-display{font-family:var(--font-family);font-variant-numeric:tabular-nums;letter-spacing:-.045em;font-weight:600;line-height:1.12;font-feature-settings:"tnum";max-width:100%;white-space:nowrap}
+@media(max-width:760px){.timer-display{font-size:clamp(54px,18vw,92px);letter-spacing:-.04em}.custom-timer-box{flex-wrap:wrap;justify-content:center}.custom-timer-box input{max-width:150px}.timer-help{overflow-wrap:anywhere}}
+
+/* Status colors remain distinct from every image palette. */
+:root{--status-done:#4ade80;--status-missed:#ff757e;--status-ink:#101917}
+:root[data-theme-tone="light"]{--status-done:#147a3e;--status-missed:#bd283b;--status-ink:#fff}
+html #view-tasks .task-card.completed{border-left:5px solid var(--status-done);background:color-mix(in srgb,var(--status-done) 19%,var(--bg-card))}
+html #view-tasks .task-card.missed{border-left:5px solid var(--status-missed);background:color-mix(in srgb,var(--status-missed) 19%,var(--bg-card))}
+html #view-tasks .task-card.completed .btn-status.btn-done{background:var(--status-done);color:var(--status-ink);font-weight:700}
+html #view-tasks .task-card.missed .btn-status.btn-missed{background:var(--status-missed);color:var(--status-ink);font-weight:700}
+html .task-card.completed .task-title,html .task-card.missed .task-title{color:var(--text-main);opacity:1}
+@media(max-width:760px){html[data-theme-art] .view-container::before{background-position:var(--theme-position-mobile,center)}}

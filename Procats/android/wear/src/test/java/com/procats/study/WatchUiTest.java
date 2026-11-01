@@ -1,0 +1,21 @@
+package com.procats.study;
+import org.junit.*;import static org.junit.Assert.*;import org.junit.runner.RunWith;
+import org.robolectric.*;import org.robolectric.annotation.*;
+import android.content.*;import android.view.*;import android.widget.*;import android.graphics.*;
+import com.procats.companion.*;import org.json.*;import java.io.*;
+@RunWith(RobolectricTestRunner.class)
+@Config(sdk=35,qualifiers="w192dp-h192dp-round-xhdpi")
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
+public class WatchUiTest {
+ Context c;Store s;
+ @Before public void setup()throws Exception{c=RuntimeEnvironment.getApplication();Shadows.shadowOf(c.getPackageManager()).setSystemFeature("android.hardware.type.watch",true);c.getSharedPreferences("procats_companion_v1",0).edit().clear().commit();s=new Store(c);JSONObject snapshot=new JSONObject("{\"schema\":1,\"scope\":\"watch-preview-account\",\"sequence\":1,\"date\":\""+Model.today()+"\",\"lang\":\"tr\",\"done\":2,\"missed\":0,\"total\":6,\"colors\":{\"accent\":\"#168CFF\"},\"tasks\":[{\"id\":\"10\",\"identity\":\"a-b\",\"title\":\"Matematik\",\"desc\":\"Problemler · 30 soru\",\"status\":0},{\"id\":\"11\",\"identity\":\"c-d\",\"title\":\"Paragraf\",\"desc\":\"20 soru çöz\",\"status\":0}]}");assertTrue(s.receive("phone-preview",snapshot));}
+ WatchActivity activity(){return Robolectric.buildActivity(WatchActivity.class).create().get();}
+ void capture(WatchActivity a,String name)throws Exception{View view=a.findViewById(android.R.id.content);int w=384;view.measure(View.MeasureSpec.makeMeasureSpec(w,View.MeasureSpec.EXACTLY),View.MeasureSpec.makeMeasureSpec(w,View.MeasureSpec.EXACTLY));view.layout(0,0,w,w);Bitmap b=Bitmap.createBitmap(w,w,Bitmap.Config.ARGB_8888);Canvas canvas=new Canvas(b);canvas.drawColor(Color.BLACK);view.draw(canvas);File dir=new File(System.getProperty("procats.qa.dir","build/previews"));dir.mkdirs();try(FileOutputStream out=new FileOutputStream(new File(dir,name+".png"))){b.compress(Bitmap.CompressFormat.PNG,100,out);}}
+ boolean contains(View v,String text){if(v instanceof TextView&&((TextView)v).getText().toString().contains(text))return true;if(v instanceof ViewGroup){ViewGroup g=(ViewGroup)v;for(int i=0;i<g.getChildCount();i++)if(contains(g.getChildAt(i),text))return true;}return false;}
+ Button findButton(View v,String text){if(v instanceof Button&&((Button)v).getText().toString().contains(text))return (Button)v;if(v instanceof ViewGroup){ViewGroup g=(ViewGroup)v;for(int i=0;i<g.getChildCount();i++){Button found=findButton(g.getChildAt(i),text);if(found!=null)return found;}}return null;}
+ @Test public void realButtonClickAdvancesAndUndoClickRestores()throws Exception{WatchActivity a=activity();findButton(a.findViewById(android.R.id.content),"Yapıldı").performClick();assertEquals("11",Model.next(s.view()).optString("id"));findButton(a.findViewById(android.R.id.content),"Geri al").performClick();assertEquals("10",Model.next(s.view()).optString("id"));assertEquals(2,Model.array(s.commands(),"operations").length());}
+ @Test public void roundScreenShowsCurrentTask()throws Exception{WatchActivity a=activity();assertTrue(contains(a.findViewById(android.R.id.content),"Matematik"));assertTrue(contains(a.findViewById(android.R.id.content),"Yapıldı"));capture(a,"watch-192dp-focus");}
+ @Test public void completeAdvancesAndUndoRestores()throws Exception{WatchActivity a=activity();assertTrue(s.act("10",1));a.render(false);assertEquals("11",Model.next(s.view()).optString("id"));assertTrue(contains(a.findViewById(android.R.id.content),"Geri al"));capture(a,"watch-192dp-next");assertTrue(s.undo());a.render(false);assertEquals("10",Model.next(s.view()).optString("id"));}
+ @Test public void lockedStateHasNoTasks()throws Exception{s.erase();WatchActivity a=activity();assertFalse(contains(a.findViewById(android.R.id.content),"Matematik"));assertTrue(contains(a.findViewById(android.R.id.content),"Telefonda başla"));capture(a,"watch-192dp-locked");}
+ @Test public void stalePhoneSnapshotDoesNotAllowWrites()throws Exception{JSONObject v=s.view();v.put("sequence",5);v.put("date","2020-01-01");assertTrue(s.receive("phone-preview",v));assertFalse(s.act("10",1));WatchActivity a=activity();capture(a,"watch-192dp-stale");}
+}
