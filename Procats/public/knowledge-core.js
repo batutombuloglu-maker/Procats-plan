@@ -43,7 +43,7 @@
  }
  function calendarDue(now,days){const date=new Date(now);date.setDate(date.getDate()+days);date.setHours(0,0,0,0);const due=date.getTime();if(!Number.isSafeInteger(due)||due<=now)throw Error('knowledge-date');return due;}
  function schedule(card){
-  const r=card.review;if(!r.grade||!r.at||r.interval===0||r.dueAt===0)return {dueAt:r.dueAt,interval:r.interval};
+  const r=card.review;if(!r.grade||!r.at||r.dueAt===0)return {dueAt:r.dueAt,interval:r.interval};
   const interval=r.grade!=='knew'?1:r.interval<=1?1:r.interval<=3?3:r.interval<=7?7:30;
   return {interval,dueAt:calendarDue(r.at,interval)};
  }

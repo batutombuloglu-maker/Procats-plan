@@ -16,6 +16,7 @@ test('hard and forgot always restart tomorrow, even after the monthly stage',()=
 });
 test('legacy dates are interpreted without mutating records; edited answers are immediately due',()=>{
  for(const [grade,interval,expected]of [['again',0,0],['hard',200,1],['knew',6,7],['knew',365,30]]){const c=make();c.review={dueAt:interval?now+9999999999:0,interval,count:1,lapses:0,at:now,grade};const original=JSON.stringify(c),schedule=C.schedule(c);assert.equal(schedule.interval,expected);assert.equal(schedule.dueAt,expected?C.calendarDue(now,expected):0);assert.equal(JSON.stringify(c),original);assert.equal(C.valid([c]),true);}
+ const forgotten=make();forgotten.review={...forgotten.review,dueAt:now+120000,interval:0,at:now,grade:'again'};const original=JSON.stringify(forgotten);assert.equal(C.schedule(forgotten).dueAt,C.calendarDue(now,1));assert.equal(JSON.stringify(forgotten),original);
  let c=C.rate(make(),'knew',now);c=C.make({...c,answer:'Changed answer'},now+1,c);assert.equal(C.schedule(c).dueAt,0);
 });
 test('content types and multiple subjects retain the existing backup schema',()=>{
