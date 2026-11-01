@@ -26,9 +26,11 @@ test('nested category, tags and Turkish search include specialised card text',()
  const cards=[card(1,{kind:'quote',passage:'Olmak ya da olmamak',author:'Shakespeare',category:['Edebiyat','Shakespeare','Hamlet']}),card(2,{kind:'word',origin:'İtalyanca',example:'Bir tirat okudu.'})];
  assert.deepEqual(C.filter(cards,{category:'Edebiyat › Shakespeare',query:'olmak shakespeare'}).map(c=>c.id),[1]);assert.deepEqual(C.filter(cards,{query:'italyanca',kind:'word',tag:'TİYATRO'}).map(c=>c.id),[2]);assert.equal(C.filter(cards,{category:'Tarih'}).length,0);
 });
-test('review schedules increasing intervals and forgotten cards sooner without daily streaks',()=>{
- let c=card();c=C.rate(c,'knew',10000);assert.equal(c.review.interval,1);c=C.rate(c,'knew',20000);assert.equal(c.review.interval,3);c=C.rate(c,'knew',30000);assert.equal(c.review.interval,6);c=C.rate(c,'hard',40000);assert.equal(c.review.interval,4);c=C.rate(c,'again',50000);assert.equal(c.review.dueAt,170000);assert.equal(c.review.lapses,1);assert.equal(c.review.count,5);
- assert.deepEqual(C.queue([c,card(2)],{now:100000}),[2]);assert.equal(C.queue([c],{mode:'random',now:0}).length,1);assert.equal(C.rate({...c,review:{...c.review,interval:300}},'knew',100000).review.interval,365);
+test('scheduled review progresses 1, 3, 7, then monthly and missed cards restart tomorrow',()=>{
+ let c=card();for(const interval of [1,3,7,30,30,30]){c=C.rate(c,'knew',10000+c.review.count*1000);assert.equal(c.review.interval,interval);}
+ c=C.rate(c,'hard',40000);assert.equal(c.review.interval,1);assert.equal(c.review.dueAt,C.calendarDue(40000,1));c=C.rate(c,'knew',45000);assert.equal(c.review.interval,1);
+ c=C.rate(c,'again',50000);assert.equal(c.review.dueAt,C.calendarDue(50000,1));assert.equal(c.review.lapses,1);assert.equal(c.review.count,9);
+ assert.deepEqual(C.queue([c,card(2)],{now:100000}),[2]);assert.equal(C.queue([c],{mode:'random',now:0}).length,1);assert.equal(C.rate({...c,review:{...c.review,grade:'knew',interval:300}},'knew',100000).review.interval,30);
 });
 test('answer edits reset the due interval; stale grades and stale editor saves are rejected',()=>{
  const c=C.rate(card(),'knew',5000),cards=[c],edited=save(cards,{...c,answer:'Yeni cevap'});assert.equal(edited[0].review.interval,0);assert.equal(edited[0].review.dueAt,0);assert.equal(edited[0].review.count,1);

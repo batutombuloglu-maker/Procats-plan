@@ -1,7 +1,16 @@
 /* Personal knowledge cards. No generated answers, daily targets or streaks. */
 (()=>{'use strict';
  const key='procats_knowledge_v1',metaKey='procats_knowledge_sync_v1',maxBytes=2000000,maxCards=2000;
- const categories=['Edebiyat','Sinema','Tarih','Sanat','Felsefe','Coğrafya','Bilim','Genel kültür','Kelimeler','Özlü sözler'];
+ // Content types use the existing kind + category fields. No new storage schema
+ // or destructive migration is needed for older archives or encrypted backups.
+ const typeGroups={general:['Genel','General','Allgemein'],works:['Eserler','Works','Werke'],people:['İnsanlar ve dünya','People and the world','Menschen und Welt'],subjects:['Alanlar ve dersler','Subjects','Themen und Fächer']};
+ const contentTypes=[
+  ['fact','fact','','general','Bilgi','Knowledge','Wissen'],['word','word','Kelimeler','general','Kelime','Word','Wort'],['quote','quote','Özlü sözler','general','Özlü söz','Quote','Zitat'],['poem','quote','Şiir','general','Şiir','Poem','Gedicht'],['visual','visual','','general','Görsel bilgi','Visual knowledge','Bildwissen'],
+  ['book','work','Kitaplar','works','Kitap','Book','Buch'],['film','work','Sinema','works','Film','Film','Film'],['series','work','Diziler','works','Dizi','TV series','Serie'],['game','work','Oyunlar','works','Oyun','Game','Spiel'],['artwork','work','Sanat eserleri','works','Sanat eseri','Artwork','Kunstwerk'],['music','work','Müzik','works','Müzik / şarkı','Music / song','Musik / Lied'],['work','work','','works','Diğer eser','Other work','Anderes Werk'],
+  ['scientist','fact','Bilim insanları','people','Bilim insanı','Scientist','Wissenschaftler'],['artist','fact','Sanatçılar','people','Sanatçı','Artist','Künstler'],['person','fact','Kişiler','people','Kişi / biyografi','Person / biography','Person / Biografie'],['history','fact','Tarih','people','Tarih','History','Geschichte'],['event','fact','Olaylar','people','Olay','Event','Ereignis'],['geography','fact','Coğrafya','people','Coğrafya','Geography','Geografie'],['place','fact','Yerler','people','Yer / ülke','Place / country','Ort / Land'],
+  ['math','fact','Matematik','subjects','Matematik','Mathematics','Mathematik'],['physics','fact','Fizik','subjects','Fizik','Physics','Physik'],['chemistry','fact','Kimya','subjects','Kimya','Chemistry','Chemie'],['biology','fact','Biyoloji','subjects','Biyoloji','Biology','Biologie'],['science','fact','Bilim','subjects','Bilim','Science','Wissenschaft'],['philosophy','fact','Felsefe','subjects','Felsefe','Philosophy','Philosophie'],['literature','fact','Edebiyat','subjects','Edebiyat','Literature','Literatur'],['technology','fact','Teknoloji','subjects','Teknoloji','Technology','Technik'],['psychology','fact','Psikoloji','subjects','Psikoloji','Psychology','Psychologie'],['mythology','fact','Mitoloji','subjects','Mitoloji','Mythology','Mythologie'],['economics','fact','Ekonomi','subjects','Ekonomi','Economics','Wirtschaft'],['language','fact','Diller','subjects','Dil / dil bilgisi','Language / grammar','Sprache / Grammatik']
+ ].map(([id,kind,category,group,tr,en,de])=>({id,kind,category,group,labels:{tr,en,de}}));
+ const categories=[...new Set([...contentTypes.map(t=>t.category).filter(Boolean),'Sanat','Genel kültür'])];
  const kinds=['fact','word','quote','work','visual'];
  const fields=new Set(['id','kind','question','answer','explanation','source','category','tags','related','image','imageSide','author','work','origin','example','meaning','passage','createdAt','updatedAt','review']),reviewFields=new Set(['dueAt','interval','count','lapses','at','grade']);
  const object=x=>x!==null&&typeof x==='object'&&!Array.isArray(x),id=x=>Number.isSafeInteger(x)&&x>0;
@@ -32,10 +41,17 @@
   if(previous&&(previous.question!==c.question||previous.answer!==c.answer||previous.image!==c.image)){c.review={...c.review,dueAt:0,interval:0};}
   if(!valid([c]))throw Error('knowledge-invalid');return c;
  }
+ function calendarDue(now,days){const date=new Date(now);date.setDate(date.getDate()+days);date.setHours(0,0,0,0);const due=date.getTime();if(!Number.isSafeInteger(due)||due<=now)throw Error('knowledge-date');return due;}
+ function schedule(card){
+  const r=card.review;if(!r.grade||!r.at||r.interval===0||r.dueAt===0)return {dueAt:r.dueAt,interval:r.interval};
+  const interval=r.grade!=='knew'?1:r.interval<=1?1:r.interval<=3?3:r.interval<=7?7:30;
+  return {interval,dueAt:calendarDue(r.at,interval)};
+ }
  function rate(card,grade,now=Date.now()){
   if(!valid([card])||!['knew','hard','again'].includes(grade)||!Number.isSafeInteger(now)||now<0)throw Error('knowledge-invalid');
-  const c=structuredClone(card),r=c.review;const interval=grade==='again'?0:grade==='hard'?Math.max(1,Math.min(7,Math.round(r.interval*0.6))):r.interval<1?1:r.interval<3?3:Math.min(365,Math.round(r.interval*2));
-  c.review={dueAt:now+(grade==='again'?120000:interval*86400000),interval,count:r.count+1,lapses:r.lapses+(grade==='again'?1:0),at:now,grade};return c;
+  const c=structuredClone(card),r=c.review,prior=schedule(card).interval;
+  const interval=grade!=='knew'||r.grade!=='knew'||prior<1?1:prior<3?3:prior<7?7:30;
+  c.review={dueAt:calendarDue(now,interval),interval,count:r.count+1,lapses:r.lapses+(grade==='again'?1:0),at:now,grade};return c;
  }
  function update(cards,action){
   check(cards);let next=structuredClone(cards);
@@ -46,12 +62,21 @@
  }
  function filter(cards,{query='',category='',tag='',kind=''}={}){
   const terms=fold(query).split(/\s+/).filter(Boolean),path=category.split(' › ').filter(Boolean).map(fold);
-  return cards.filter(c=>(!kind||c.kind===kind)&&(!tag||c.tags.some(t=>fold(t)===fold(tag)))&&path.every((x,i)=>fold(c.category[i])===x)&&terms.every(q=>fold([c.question,c.answer,c.explanation,c.source,c.author,c.work,c.origin,c.example,c.meaning,c.passage,...c.tags,...c.category].join(' ')).includes(q)));
+  return cards.filter(c=>(!kind||matchesType(c,kind))&&(!tag||c.tags.some(t=>fold(t)===fold(tag)))&&(path.length===1?[...c.category,...c.tags].some(x=>fold(x)===path[0]):path.every((x,i)=>fold(c.category[i])===x))&&terms.every(q=>fold([c.question,c.answer,c.explanation,c.source,c.author,c.work,c.origin,c.example,c.meaning,c.passage,...c.tags,...c.category].join(' ')).includes(q)));
+ }
+ function typeInfo(value){return contentTypes.find(t=>t.id===value)||contentTypes[0];}
+ function typeOf(card){return contentTypes.find(t=>t.category&&t.kind===card.kind&&fold(t.category)===fold(card.category[0]))?.id||card.kind;}
+ function matchesType(card,value){const t=contentTypes.find(t=>t.id===value);return !!t&&(typeOf(card)===value||!!t.category&&[...card.category,...card.tags].some(c=>fold(c)===fold(t.category)));}
+ function withType(input,value){
+  const t=typeInfo(value),category=[...(input.category||[])];
+  if(t.category&&fold(category[0])!==fold(t.category))category.unshift(t.category);
+  if(category.length>5)throw Error('knowledge-category-depth');
+  return {...input,kind:t.kind,category};
  }
  function queue(cards,{mode='due',now=Date.now(),random=Math.random,limit=20}={}){
-  let result=cards.filter(c=>mode==='random'||c.review.dueAt<=now);
+  let result=cards.filter(c=>mode==='random'||schedule(c).dueAt<=now);
   if(mode==='random')for(let i=result.length-1;i>0;i--){const j=Math.floor(Math.max(0,Math.min(.999999999,random()))*(i+1));[result[i],result[j]]=[result[j],result[i]];}
-  else result.sort((a,b)=>a.review.dueAt-b.review.dueAt||a.createdAt-b.createdAt);
+  else result.sort((a,b)=>schedule(a).dueAt-schedule(b).dueAt||a.createdAt-b.createdAt);
   return result.slice(0,limit).map(c=>c.id);
  }
  function pack(cards){check(cards);const shards=[[],[],[],[]];let i=0;for(const c of cards){if(bytes({[key]:[...shards[i],c]})>600000)i++;if(i>=4)throw Error('knowledge-limit');shards[i].push(c);}return shards.map(a=>({[key]:a}));}
@@ -60,5 +85,5 @@
   const total=cards.length,pages=Math.max(1,Math.ceil(total/size)),page=Math.max(0,Math.min(pages-1,Number.isFinite(index)?Math.floor(index):0)),offset=page*size;
   return {items:cards.slice(offset,offset+size),page,pages,total,start:total?offset+1:0,end:Math.min(total,offset+size)};
  }
- globalThis.ProcatsKnowledgeCore={key,metaKey,categories,kinds,maxBytes,maxCards,valid,snapshot,check,make,rate,update,filter,queue,pack,fold,paginate};
+ globalThis.ProcatsKnowledgeCore={key,metaKey,categories,kinds,maxBytes,maxCards,valid,snapshot,check,make,rate,update,filter,queue,pack,fold,paginate,calendarDue,schedule,typeGroups,contentTypes,typeInfo,typeOf,matchesType,withType};
 })();

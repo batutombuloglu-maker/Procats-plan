@@ -21,3 +21,7 @@ The release-like personal variant uses its own application ID, disabled debuggin
 ## Validation and limits
 
 The current snapshot passed automated authorization, cross-device merge, offline journal, backup and input-validation tests, plus focused checks of compiled APK security flags and signatures. The knowledge archive renders at most 36 cards per page; 2,000-card navigation was tested. Current archive limits are 2,000 cards / 2,000,000 bytes, including compressed images. These controls are not a penetration-test certification or a guarantee of indefinite retention. Physical device and long-term recovery checks remain important.
+
+## Dependency checks
+
+The 1.7.4 locked trees have no high or critical npm audit findings. The shared app production dependency audit reports zero findings. Moderate issues remain in development/build tools: 17 in the app project and 15 in the Windows tooling. No major-version downgrade or forced audit fix was applied. These checks do not certify Android, Electron, the operating system or the entire application as vulnerability-free.

@@ -1,9 +1,9 @@
-# Procats 1.7.3
+# Procats application source — 1.7.4
 
-Bilgi Hazinesi ve mevcut Procats özellikleri. Telefon kod 22, Wear OS kod 23. docs/1.7.3-BILGI-HAZINESI.md ve docs/TEST-SONUCLARI.md dosyalarını oku.
+Shared web interface and Android/Companion/Wear OS modules. See the repository root README for architecture, screenshots and installation commands, [Knowledge Treasury notes](docs/1.7.4-BILGI-HAZINESI.md) for behavior, and [validation](docs/TEST-SONUCLARI.md) for test coverage.
 
-Node.js 22+, Java 21, Android SDK 36 gerekir. npm ci, npm test, npm run test:rules, npm run android:sync komutları kullanılır. Android testleri: android klasöründe gradlew :companion:testDebugUnitTest :app:testDebugUnitTest :wear:testDebugUnitTest. scripts/release.mjs yayın APK/AAB'lerini üretir; Play'e göndermez.
+Use Node.js 22+, Java 21 and Android SDK 36. Run `npm ci`, `npm test`, `npm run build` and `npm run preview`. Local Firestore tests use `npm run test:rules` with the demo project. For Android, run `npm run android:sync`, configure your own SDK path in `android/local.properties`, then build the required variant with Gradle.
 
-Yayın için özgün özel imza anahtarını kullan. PROCATS_KEYSTORE_FILE, PROCATS_KEYSTORE_PASSWORD, PROCATS_KEY_ALIAS, PROCATS_KEY_PASSWORD ortam değişkenlerinin dördü veya özel signing/keystore.properties gerekir. Anahtar/parola bu arşive konmadı. Yeni anahtar üretme. Android local.properties dosyasını kendi SDK yolunla oluştur.
+Personal phone/watch packages use `com.procats.study.personal`; debug packages use `.preview`. Signed personal builds require the original private keystore and its four environment variables (`PROCATS_KEYSTORE_FILE`, `PROCATS_KEYSTORE_PASSWORD`, `PROCATS_KEY_ALIAS`, `PROCATS_KEY_PASSWORD`) or a private signing configuration. No signing keys or passwords are supplied here. The `scripts/release.mjs` helper is retained as source tooling; preparing this personal release does not upload to any app store.
 
-Bilgi Hazinesi Firestore kurallarının da güncellenmesini gerektirir. Görevler ve listeler mevcut ayrı şemalarında kalır. Hazine bağımsız manifest + dört veri belgesine atomik yazılır. Mevcut Wear OS ve araç işlevleri korunmuştur. Fiziksel saat eşleme testi ayrıca gerekir.
+The public repository uses example Firebase configuration. To connect your own account service, copy `public/firebase-config.example.js` to the Git-ignored `public/firebase-config.js`, fill your own Firebase web settings, update `.firebaserc` and `publisher.json`, and deploy the owner-only Firestore rules. The personal delivery keeps the user's existing client configuration separately; never commit private runtime records or backups.

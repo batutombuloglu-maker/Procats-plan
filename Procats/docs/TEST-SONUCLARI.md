@@ -1,13 +1,9 @@
-# Doğrulama · 1 Kasım 2026
+# Validation — 1 November 2026
 
-Uygulama mantık testleri: **202/202** geçti. Firestore yerel testleri: **96 kontrol** geçti (45 mevcut güvenlik/silme, 26 listeler, 25 yeni Bilgi Hazinesi). Windows: **7/7** geçti. Android birim/Robolectric testleri: **42/42** geçti. Test günlüklerinde görünen PERMISSION_DENIED satırları, yetkisiz isteklerin reddedilmesini bekleyen güvenlik testleridir.
+- 208 Node application tests pass, including the fixed 1/3/7/30-day sequence, monthly repetition, tomorrow/reset behavior, legacy schedule interpretation without mutation, calendar-day boundaries, independent random grades, inbox removal, overlapping subjects and the existing 2,000-card pagination and encrypted-backup checks.
+- 7 Windows shell security tests pass. Android unit/Robolectric and Firestore emulator results are included in the personal delivery's validation report; physical phone/watch pairing was not tested on this computer.
+- In a fresh local guest account, a fictional Newton card was created as Scientist with Physics and Mathematics. Discovery's Physics filter found it. Answering in discovery left it in the review inbox; a scheduled Hard answer removed it and displayed Tomorrow under upcoming reviews. Desktop and 390×844 mobile card layouts were inspected. These fictional browser records are not bundled into installations or published as user data.
+- Source publication excludes production Firebase configuration, private signing material, credentials, account data, runtime journals and backups. The public source uses example configuration and can build a local guest demo.
+- npm audit reported no high or critical findings in the current locked dependency trees. The shared app's production dependency audit reported 0 findings. Moderate findings remain in development/build dependencies (17 app, 15 Windows); this is not a complete security certification. See the personal delivery for the audit JSON reports.
 
-Yeni bölümde doğrulananlar: kart doğrulama, kategori ve Türkçe arama, etiketler, tekrar aralıkları, eski form/puanlama koruması, ilişkili kart silme, görsellerin parçalara bölünmesi, iki cihazın bağımsız düzenlemelerinin birleşmesi, çakışmada iki sürümün korunması, çevrimdışı yeniden açılış, başka sekmenin eşitlenmemiş kaydı, şifreli büyük görsel yedeğinin açılıp hazırlanması, hesap ayrımı, atomik belge revizyonları ve hesap silme.
-
-Yerel tarayıcıda misafir modunda bilgi ekleme, kelime ayrıntıları, kategori/etiket arama, ilişkilendirme, soru/cevap geçişi, Bilemedim sonrası tekrar, söz/şiir ezber görünümü ve PNG seçip JPEG'e küçültme denendi. 390×844 telefon görünümü ve masaüstü görünümü kontrol edildi. Örnek kartlar yalnız test tarayıcısındadır; paket yeni kuruluma bu örnekleri eklemez. Son kontrol sırasında tarayıcı konsolunda hata görünmedi.
-
-Telefon ve saat önizleme/yayın APK'ları ile AAB'ler üretildi. AAB yapısı, sürüm adları/kodları, özgün yükleme sertifikası ve paketlenmiş 115 web dosyasının birebir bütünlüğü kontrol edildi. Windows ASAR içindeki 115 web dosyası ve kabuk dosyaları kaynaklarla eşleşti. Ayrıntılar paket-dogrulama.json içinde.
-
-Android lint: telefon 0 hata / 47 uyarı; saat 0 hata / 3 uyarı. Mevcut kaynak/yardımcı metin ve derleme önerileri dahil bütün uyarılar giderildi sayılmadı. Windows EXE'leri yayıncı sertifikasıyla imzalı değildir.
-
-Gerçek telefon/Galaxy Watch bağlı olmadığı için fiziksel cihaz, Bluetooth/Data Layer, gerçek bildirim, üretici pil yönetimi ve uzun süreli kullanım testi yapılmadı. Firebase testleri yerel emülatördeydi; canlı projeye bu sürüm yayımlanmadı. Yayından önce kendi test hesabında ve cihazında son kontrol yap.
+Automated checks do not guarantee indefinite retention or cover device power management, Bluetooth/Wear Data Layer behavior, all operating-system components or a professional penetration test. Independent encrypted backups and real-device restore/sync checks remain necessary.

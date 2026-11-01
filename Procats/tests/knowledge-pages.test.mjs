@@ -27,7 +27,7 @@ class Node {
 }
 const all=node=>node.children.flatMap(child=>[child,...all(child)]);
 test('actual archive UI keeps only 36 cards mounted; page jump, filtering and deletion stay correct',()=>{
- let cards=sample();const root=new Node('main'),nav=new Node('button'),ctx={currentLang:'tr',ProcatsKnowledgeCore:C,ProcatsKnowledgeStore:{get:()=>structuredClone(cards),getState:()=>({status:'synced',invalid:false,conflict:false})},document:{getElementById:id=>id==='view-knowledge'?root:nav,createElement:tag=>new Node(tag),documentElement:new Node('html')},MutationObserver:class{observe(){}},addEventListener(){},switchView(){}};ctx.window=ctx;
+ let cards=sample();const root=new Node('main'),nav=new Node('button'),ctx={currentLang:'tr',setInterval(){},ProcatsKnowledgeCore:C,ProcatsKnowledgeStore:{get:()=>structuredClone(cards),getState:()=>({status:'synced',invalid:false,conflict:false})},document:{addEventListener(){},getElementById:id=>id==='view-knowledge'?root:nav,createElement:tag=>new Node(tag),documentElement:new Node('html')},MutationObserver:class{observe(){}},addEventListener(){},switchView(){}};ctx.window=ctx;
  vm.createContext(ctx);vm.runInContext(fs.readFileSync(new URL('../public/knowledge.js',import.meta.url),'utf8'),ctx);
  const visible=()=>all(root).filter(n=>n.className.split(' ').includes('kh-archive-card'));
  const pageSelect=()=>all(root).find(n=>n.className==='kh-page-select');

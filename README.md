@@ -1,6 +1,6 @@
 # Procats
 
-Personal study planning and knowledge management across Android, Windows and the web. Developed by **Batu**. Current source snapshot: **1.7.3**.
+Personal study planning and knowledge management across Android, Windows and the web. Developed by **Batu**. Current source snapshot: **1.7.4**.
 
 ![Knowledge treasury on desktop](docs/screenshots/knowledge-desktop.png)
 
@@ -11,7 +11,8 @@ Procats combines day-by-day tasks, focus timers, quick notes, study resources, p
 - Day and task organization, completion tracking and focus history.
 - Countdown, analog exam-clock and OLED timer views.
 - Notes, study links and practice-exam progress charts.
-- Knowledge cards with categories, tags, optional images, related cards and self-assessed review intervals. The compact desktop archive renders at most 36 cards per page and searches the complete archive.
+- A knowledge treasury with compact cards, optional images, linked entries and overlapping subjects. One Newton card can appear under Scientists, Physics and Mathematics. The archive renders at most 36 cards per page and searches all records.
+- A scheduled review inbox: correct answers progress through 1, 3, 7 and recurring 30-day intervals; Hard or Forgot restarts tomorrow. Random discovery has independent subject filters and never changes this schedule.
 - An account-scoped device journal, offline edits, revision-based Firestore synchronization and explicit conflict handling.
 - Authenticated encrypted backups, import validation and a standalone offline recovery tool.
 - Android home-screen widgets and a companion Wear OS task application.
@@ -86,6 +87,6 @@ The password is entered privately at the terminal. The recovered JSON is unencry
 
 ## Validation
 
-202 Node application tests, including 2,000-card pagination and offline recovery, pass in the current local snapshot. The same 1.7.3 backend rules previously passed 96 local authorization/sync checks; Android modules passed 42 unit/Robolectric tests and the Windows shell passed 7 tests. Desktop and mobile layouts were checked in a browser. Physical phone/watch pairing, device power management and long-term reliability are separate validation tasks; automated tests do not guarantee indefinite data retention.
+208 Node application tests, including 2,000-card pagination and offline recovery, pass in the current local snapshot. The backend rules pass 96 local authorization/sync checks; Android modules passed 42 unit/Robolectric tests and the Windows shell passed 7 tests. Desktop and mobile layouts were checked in a browser. Physical phone/watch pairing, device power management and long-term reliability are separate validation tasks; automated tests do not guarantee indefinite data retention.
 
-See [development notes](Procats/docs/1.7.3-BILGI-HAZINESI.md) and [validation details](Procats/docs/TEST-SONUCLARI.md).
+See [development notes](Procats/docs/1.7.4-BILGI-HAZINESI.md) and [validation details](Procats/docs/TEST-SONUCLARI.md).

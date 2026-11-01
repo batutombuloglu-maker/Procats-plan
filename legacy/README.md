@@ -1,3 +1,5 @@
+> Archived original prototype. Active 1.7.4 sources and current security/data behavior are documented in the repository root. The historical description below applies only to this prototype.
+
 # 🚀 Procats - Premium Local Task Manager & Focus App
 
 Procats is a privacy-first, fully local desktop productivity suite designed to keep you deeply focused. Built with Electron.js, it offers a seamless, distraction-free environment that runs entirely on your machine without requiring cloud accounts, subscriptions, or internet access.
