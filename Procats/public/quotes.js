@@ -335,7 +335,7 @@ window.ProcatsQuotes.added.push(...[
   }
 ]);
 
-// 1.7.6: original reflections and explicitly labelled adaptations.
+// 1.7.7: original reflections and explicitly labelled adaptations.
 window.ProcatsQuotes.added.push(...[
   {
     "tr": "İlerlemeni başkasının hızıyla ölçersen kendi yolunu göremezsin.",

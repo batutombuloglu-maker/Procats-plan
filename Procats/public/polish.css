@@ -1,0 +1,13 @@
+/* Match the existing clock without moving the home layout. */
+#view-home #swDisplay{display:flex;align-items:baseline;justify-content:center;font-family:var(--font-family);font-weight:800;font-variant-numeric:tabular-nums lining-nums;font-feature-settings:"tnum" 1;letter-spacing:2px;min-inline-size:8ch;white-space:nowrap}
+#swDisplay .sw-number{display:inline-block;inline-size:calc(2ch + 4px);text-align:center;flex:none}
+/* A little space and a soft edge separate the fixed week strip from scrolling tasks. */
+#view-tasks>.calendar-toolbar{position:relative;padding-bottom:16px;z-index:2;background:var(--bg-main)}
+.calendar-toolbar::after{content:"";position:absolute;left:0;right:0;bottom:-12px;height:12px;background:linear-gradient(to bottom,var(--bg-main),transparent);pointer-events:none}
+#view-tasks>.main-content{color-scheme:dark;scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--text-secondary) 48%,transparent) transparent;scrollbar-gutter:stable;padding-top:20px;padding-bottom:36px}
+html[data-theme="light"] #view-tasks>.main-content{color-scheme:light}
+#view-tasks>.main-content::-webkit-scrollbar{width:8px}
+#view-tasks>.main-content::-webkit-scrollbar-track{background:transparent;margin-block:12px}
+#view-tasks>.main-content::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--text-secondary) 42%,transparent);border:2px solid var(--bg-main);border-radius:10px}
+#view-tasks>.main-content::-webkit-scrollbar-thumb:hover{background:var(--text-secondary)}
+#view-tasks>.main-content::-webkit-scrollbar-button{display:none;width:0;height:0}

@@ -548,7 +548,7 @@
                 box.title = `${dateStr}: ${count} ${t('task_count')}`; 
                 grid.appendChild(box);
             }
-            window.ProcatsProgressSteps?.render(activityData);
+
         }
         function resetHeatmap() { showCustomConfirm(t('reset_heatmap'), () => { const next=ProcatsActivity.reset(ProcatsSync.getData(),tasks);if(!commitAppSections({yks_v3_tasks:next.yks_v3_tasks,yks_v6_activity:next.yks_v6_activity,procats_activity_v1:next.procats_activity_v1}))return;tasks=next.yks_v3_tasks;renderApp();refreshActivity(); }); }
 
@@ -559,13 +559,18 @@
         const timerRemainingMs=()=>durationClock()?.remaining(tEndTime)??Math.max(0,tEndTime-Date.now());
         const stopwatchTime=()=>swSavedTime+(swRunning?stopwatchElapsed():0);
         function durationViewVisible(id){return !document.hidden&&!!document.getElementById(id)?.classList.contains('active');}
-        let swLastDisplay=null,swLastText='';
+        let swLastDisplay=null,swLastText='',swParts=[];
         function swUpdateDisplay(ms) {
             const m = Math.floor(ms / 60000).toString().padStart(2, '0'); const s = Math.floor((ms % 60000) / 1000).toString().padStart(2, '0'); const milli = Math.floor((ms % 1000) / 10).toString().padStart(2, '0'); 
             const display=document.getElementById('swDisplay'),text=`${m}:${s}.${milli}`;
             // innerText reads force layout. Keep the previous value in memory so
             // the centisecond display only replaces changed text, without layout reads.
-            if(display&&(display!==swLastDisplay||text!==swLastText)){display.textContent=text;swLastDisplay=display;swLastText=text;}
+            if(display&&(display!==swLastDisplay||text!==swLastText)){
+                if(display!==swLastDisplay)swParts=Array.from(display.querySelectorAll?.('[data-sw-part]')||[]);
+                if(swParts.length===3){const values=[m,s,milli];if(m.length!==swLastText.split(':')[0].length&&swParts[0].style)swParts[0].style.inlineSize=`calc(${m.length}ch + ${m.length*2}px)`;for(let i=0;i<3;i++)if(swParts[i].textContent!==values[i])swParts[i].textContent=values[i];}
+                else display.textContent=text;
+                swLastDisplay=display;swLastText=text;
+            }
         }
         function swRefreshScheduler(){
             clearInterval(swInterval);swInterval=null;
@@ -751,7 +756,7 @@
             if(!appStorage.setItem('yks_v5_notes', JSON.stringify(notes)))notes=ProcatsSync.getData().yks_v5_notes||[];
             const grid = document.getElementById('notesGrid'); if(!grid) return; grid.innerHTML = ''; 
             notes.forEach((note, index) => { 
-                if(note.homePinned)return;
+
                 const div = document.createElement('div'); div.className = `post-it`; div.style.background = /^#[0-9a-f]{3,8}$/i.test(note.color || '') ? note.color : noteColors[0]; div.draggable = false;
                 div.innerHTML = `<button class="post-it-delete" data-action-click="deleteNote(${note.id})">✕</button><div class="note-content" contenteditable="true" data-action-input="updateNote(${note.id}, this.innerText)" data-action-paste="pasteNoteText(event, ${note.id})" data-action-drop="pasteNoteText(event, ${note.id})">${escapeHtml(note.text)}</div><div class="note-colors">${noteColors.map(c => `<div class="color-dot" style="background:${c}" data-action-click="changeNoteColor(${note.id}, '${c}')"></div>`).join('')}</div>`; 
                 grid.appendChild(div); 

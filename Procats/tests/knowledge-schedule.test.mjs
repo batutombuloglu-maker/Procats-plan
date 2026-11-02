@@ -1,9 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
-import vm from 'node:vm';
 import '../public/knowledge-core.js';
-import '../public/discovery-core.js';
 const C=globalThis.ProcatsKnowledgeCore;
 const now=new Date(2026,10,1,21,30).getTime();
 const make=(id=1,type='fact',extra={})=>C.make(C.withType({id,question:'Question '+id,answer:'Answer '+id,category:[],tags:[],...extra},type),now-1000);
@@ -29,25 +26,3 @@ test('content types and multiple subjects retain the existing backup schema',()=
  for(const type of C.contentTypes)assert.equal(C.valid([make(100,type.id)]),true);
  assert.throws(()=>C.withType({category:['a','b','c','d','e']},'film'),/depth/);
 });
-class Node {
- constructor(tag){this.tagName=tag;this.children=[];this.attributes={};this.className='';this.textContent='';this.value='';this.dataset={};this.style={};this.classList={contains:name=>this.className.split(' ').includes(name),toggle:(name,on)=>{const names=new Set(this.className.split(' ').filter(Boolean));if(on??!names.has(name))names.add(name);else names.delete(name);this.className=[...names].join(' ');},add:name=>this.classList.toggle(name,true)};}
- append(...nodes){this.children.push(...nodes);}replaceChildren(...nodes){this.children=[...nodes];}get lastChild(){return this.children.at(-1);}get childElementCount(){return this.children.length;}setAttribute(k,v){this.attributes[k]=String(v);}addEventListener(){}focus(){}
- querySelector(selector){return all(this).find(n=>selector==='[data-grade]'?n.dataset.grade:n.className.split(' ').includes(selector.slice(1)))||null;}
-}
-const all=node=>node.children.flatMap(child=>[child,...all(child)]);
-function ui(initial){
- let cards=structuredClone(initial),writes=0;const root=new Node('main'),nav=new Node('button'),ctx={currentLang:'tr',setInterval(){},ProcatsKnowledgeCore:C,ProcatsGeography:{country:()=>null,facts:()=>null,prose:c=>c.explanation},ProcatsDiscovery:globalThis.ProcatsDiscovery,document:{hidden:false,addEventListener(){},getElementById:id=>id==='view-knowledge'?root:nav,createElement:tag=>new Node(tag),documentElement:new Node('html')},MutationObserver:class{observe(){}},addEventListener(){},switchView(){},showCustomAlert(message){throw Error(message);}};
- ctx.ProcatsKnowledgeStore={get:()=>structuredClone(cards),commit(next){cards=structuredClone(next);writes++;ctx.ProcatsKnowledgeUI.render();},getState:()=>({status:'synced',invalid:false,conflict:false})};ctx.window=ctx;vm.createContext(ctx);vm.runInContext(fs.readFileSync(new URL('../public/knowledge.js',import.meta.url),'utf8'),ctx);
- return {root,get:()=>cards,writes:()=>writes,find:fn=>all(root).find(fn),click(text){const b=all(root).find(n=>n.tagName==='button'&&n.textContent===text);assert.ok(b,'Button '+text);b.onclick();},grade(grade){const b=all(root).find(n=>n.dataset.grade===grade);assert.ok(b);b.onclick();}};
-}
-test('random discovery filters are independent and all grades leave persistent dates untouched',()=>{
- const cards=[make(1,'series'),make(2,'book')],u=ui(cards);u.click('Rastgele keşfet');const type=u.find(n=>n.tagName==='select'&&n.attributes['aria-label']==='İçerik türü');type.value='series';type.onchange();u.click('Keşfe başla · 1');
- u.click('Cevabı göster');u.grade('again');u.click('Bir tur daha');u.click('Cevabı göster');u.grade('hard');u.click('Bir tur daha');u.click('Cevabı göster');u.grade('knew');assert.equal(u.writes(),0);assert.deepEqual(u.get(),cards);
- u.click('Hazinem');assert.equal(all(u.root).filter(n=>n.className.includes('kh-archive-card')).length,2);u.click('Rastgele keşfet');assert.ok(u.find(n=>n.textContent==='Keşfe başla · 1'));
-});
-test('answering the review inbox persists once and removes the answered card from the due list',()=>{
- const u=ui([make(1),make(2)]);u.click('Tekrar et · 2');assert.equal(all(u.root).filter(n=>n.className==='kh-due-row').length,2);u.click('Yanıtla');u.click('Cevabı göster');u.grade('hard');assert.equal(u.writes(),1);assert.equal(u.get()[0].review.interval,1);assert.equal(u.get()[0].review.dueAt,C.calendarDue(Date.now(),1));u.click('Tekrar kutusuna dön');assert.equal(all(u.root).filter(n=>n.className==='kh-due-row').length,1);assert.ok(u.find(n=>n.className==='kh-upcoming'));
- u.click('Sırayla yanıtla · 1');u.click('Cevabı göster');u.grade('knew');u.click('Tekrar kutusuna dön');assert.equal(all(u.root).filter(n=>n.className==='kh-due-row').length,0);assert.equal(u.writes(),2);
-});
-
-test('capital continent chips keep their selected filter and exclude other continents',()=>{const u=ui([make(1,'visual',{category:['Coğrafya','Afrika'],tags:['Başkentler','Afrika']}),make(2,'visual',{category:['Coğrafya','Asya'],tags:['Başkentler','Asya']}),make(3,'book')]);u.click('Rastgele keşfet');u.click('Başkentler');u.click('Afrika');assert.ok(u.find(n=>n.textContent==='Keşfe başla · 1'));u.click('Asya');assert.ok(u.find(n=>n.textContent==='Keşfe başla · 1'));u.click('Avrupa');assert.ok(u.find(n=>n.textContent==='Bu filtrelerde kart yok.'));});

@@ -17,10 +17,6 @@ import {createListsStore} from './lists-store.js';
 import {createKnowledgeStore} from './knowledge-store.js';
 import {createKnowledgeCloud} from './knowledge-cloud.js';
 import './knowledge-image.js';
-import './discovery-core.js';
-import './progress-steps.js';
-import './home-note.js';
-import './geography-map.js';
 window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();window.procatsInstallPrompt=event;});
 const root=document.getElementById('authRoot');
 const translations={
@@ -117,7 +113,7 @@ async function openWorkspace(user,demo=false){
   window.addEventListener('focus',()=>void window.ProcatsListsStore.sync());
   document.addEventListener('visibilitychange',()=>void window.ProcatsListsStore.sync());
   if(!window.procatsStorage.getItem('procats_lang'))window.procatsStorage.setItem('procats_lang',language);
-  await loadScript('/quotes.js');await loadScript('/daily-quote.js');await loadScript('/planning-core.js');await loadScript('/calendar-core.js');await loadScript('/navigation.js');await loadScript('/exams-data.js');await loadScript('/app.js');await loadScript('/exams.js');await loadScript('/themes.js');await loadScript('/sync-ui.js?v=1.7.6');await loadScript('/weekly-summary.js?v=1.7.6');await loadScript('/mobile.js?v=1.7.6');await loadScript('/experience.js');await loadScript('/release-ui.js');window.renderHeatmap?.();window.ProcatsHomeNote.start();await loadScript('/calendar.js');await loadScript('/task-touch.js');await loadScript('/free-plan-mobile.js');await loadScript('/tour.js');await loadScript('/resources-core.js');await loadScript('/theme-colors.js');await loadScript('/resources.js');await loadScript('/custom-themes.js');await loadScript('/lists.js');await loadScript('/knowledge.js');await loadScript('/lists-drag.js');await loadScript('/timer-views-core.js');await loadScript('/timer-views.js');
+  await loadScript('/quotes.js');await loadScript('/daily-quote.js');await loadScript('/planning-core.js');await loadScript('/calendar-core.js');await loadScript('/navigation.js');await loadScript('/exams-data.js');await loadScript('/app.js');await loadScript('/exams.js');await loadScript('/themes.js');await loadScript('/sync-ui.js?v=1.7.7');await loadScript('/weekly-summary.js?v=1.7.7');await loadScript('/mobile.js?v=1.7.7');await loadScript('/experience.js');await loadScript('/release-ui.js');window.renderHeatmap?.();await loadScript('/calendar.js');await loadScript('/task-touch.js');await loadScript('/free-plan-mobile.js');await loadScript('/tour.js');await loadScript('/resources-core.js');await loadScript('/theme-colors.js');await loadScript('/resources.js');await loadScript('/custom-themes.js');await loadScript('/lists.js');await loadScript('/lists-drag.js');await loadScript('/timer-views-core.js');await loadScript('/timer-views.js');
   await window.ProcatsTimerClockReady;window.procatsInitialize();await window.ProcatsCustomThemes.ready();await window.procatsInitializeSyncUI();window.ProcatsListsStore.start();window.ProcatsKnowledgeStore.start();
   window.dispatchEvent(new CustomEvent('procats-sync-status'));
   await startCompanion(user.uid).catch(()=>{});

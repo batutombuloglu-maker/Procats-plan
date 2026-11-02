@@ -19,7 +19,8 @@
  let tabs=navModel.normalize(savedTabs),suppressClickUntil=0;
  const navWords={tr:{edit:'Alt barı düzenle',help:'Basılı tutup bir alt bar yuvasına sürükle. Oklarla da sıralayabilir veya Sabitle ile bir yuva seçebilirsin.',pin:'Sabitle',replace:'Yerine sabitle',remove:'Kaldır',left:'Sola taşı',right:'Sağa taşı',reset:'Varsayılanı yükle',saved:'Alt bar kaydedildi',cancel:'Vazgeç',drop:'Bırakarak sabitle'},en:{edit:'Customize bottom tabs',help:'Hold and drag to a bottom tab. You can also use the arrows or Pin to choose a slot.',pin:'Pin',replace:'Replace this tab',remove:'Remove',left:'Move left',right:'Move right',reset:'Restore default',saved:'Tabs saved',cancel:'Cancel',drop:'Drop to pin'},de:{edit:'Untere Leiste anpassen',help:'Gedrückt halten und auf einen Tab ziehen. Alternativ Pfeile oder Anheften verwenden.',pin:'Anheften',replace:'Diesen Tab ersetzen',remove:'Entfernen',left:'Nach links',right:'Nach rechts',reset:'Standard wiederherstellen',saved:'Tabs gespeichert',cancel:'Abbrechen',drop:'Zum Anheften loslassen'}};
  const navText=key=>(navWords[currentLang]||navWords.tr)[key];
- function visibleTabs(){return tabs.filter(v=>v!=='exams'||window.ProcatsPreferences?.get().examsVisible!==false);}
+ function sectionVisible(view){const prefs=window.ProcatsPreferences;return prefs?.sectionVisible(view,prefs.get())!==false;}
+ function visibleTabs(){return tabs.filter(sectionVisible);}
  function activate(view){if(Date.now()<suppressClickUntil)return;if(view==='more')openMore();else if(view==='settings'){closeMore(false);window.ProcatsUI?.settings();}else{closeMore(false);switchView(view);}}
  function renderBar(){bar.replaceChildren();for(const view of visibleTabs()){const b=document.createElement('button');b.type='button';b.dataset.mobileView=view;b.innerHTML=(view==='more'?moreIcon:view==='settings'?settingsIcon:iconFor(view))+'<span></span>';b.onclick=()=>activate(view);b.addEventListener('pointerdown',e=>beginHold(e,view));bar.append(b);}bar.style.gridTemplateColumns='repeat('+visibleTabs().length+',minmax(0,1fr))';}
  renderBar();
@@ -27,7 +28,7 @@
  document.addEventListener('click',event=>{if(Date.now()<suppressClickUntil&&event.target.closest('.mobile-tabs,.mobile-more-grid')){event.preventDefault();event.stopImmediatePropagation();}},true);
  const overlay=document.createElement('div');overlay.className='modal-overlay mobile-more';overlay.id='mobileMore';overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-labelledby','mobileMoreTitle');
  overlay.innerHTML='<div class="modal-content"><div class="mobile-sheet-heading"><h2 id="mobileMoreTitle"></h2><button type="button" id="mobileMoreClose">×</button></div><div class="mobile-more-grid"></div></div>';
- for(const view of ['home','tasks','obsidian','exams','timers','notes','bookmarks','lists','knowledge','vault']){
+ for(const view of ['home','tasks','obsidian','exams','timers','notes','bookmarks','lists','vault']){
   const button=document.createElement('button');button.type='button';button.dataset.mobileTarget=view;button.innerHTML=iconFor(view)+'<span></span>';button.onclick=()=>activate(view);button.addEventListener('pointerdown',e=>beginHold(e,view));overlay.querySelector('.mobile-more-grid').append(button);
  }
  const settings=document.createElement('button');settings.type='button';settings.dataset.mobileTarget='settings';settings.innerHTML=settingsIcon+'<span></span>';settings.onclick=()=>activate('settings');settings.addEventListener('pointerdown',e=>beginHold(e,'settings')); overlay.querySelector('.mobile-more-grid').append(settings);
@@ -50,13 +51,13 @@
  function persistTabs(next){if(!navModel.valid(next)||!appStorage.setItem(navModel.key,JSON.stringify(next)))return;tabs=next;renderBar();renderEditor();refresh();announcement.textContent=navText('saved');}
  function control(label,action){const b=document.createElement('button');b.type='button';b.textContent=label;b.onclick=action;return b;}
  function renderEditor(){editor.replaceChildren();const heading=document.createElement('h3');heading.textContent=pinCandidate?navText('pin')+': '+text(pinCandidate):navText('edit');editor.append(heading);
-  tabs.forEach((view,index)=>{const row=document.createElement('div');row.className='navigation-slot';const title=document.createElement('span');title.textContent=(index+1)+'. '+text(view);row.append(title);
+  tabs.forEach((view,index)=>{if(!sectionVisible(view))return;const row=document.createElement('div');row.className='navigation-slot';const title=document.createElement('span');title.textContent=(index+1)+'. '+text(view);row.append(title);
    if(pinCandidate){const b=control(navText('replace'),()=>{persistTabs(navModel.place(tabs,pinCandidate,index));pinCandidate=null;renderEditor();});b.disabled=view==='more'&&!tabs.includes(pinCandidate)&&tabs.length===5;row.append(b);}
    else{const left=control('←',()=>persistTabs(navModel.place(tabs,view,index-1)));left.setAttribute('aria-label',text(view)+' · '+navText('left'));left.disabled=index===0;const right=control('→',()=>persistTabs(navModel.place(tabs,view,index+1)));right.setAttribute('aria-label',text(view)+' · '+navText('right'));right.disabled=index===tabs.length-1;row.append(left,right);if(view!=='more'){const remove=control('×',()=>persistTabs(navModel.remove(tabs,view)));remove.setAttribute('aria-label',text(view)+' · '+navText('remove'));row.append(remove);}}
    editor.append(row);
   });
   if(pinCandidate){editor.append(control(navText('cancel'),()=>{pinCandidate=null;renderEditor();}));}
-  else{const available=document.createElement('div');available.className='navigation-pin-options';for(const view of navModel.allowed.filter(v=>!tabs.includes(v)&&!(v==='exams'&&window.ProcatsPreferences?.get().examsVisible===false))){available.append(control(text(view)+' · '+navText('pin'),()=>{if(tabs.length<5)persistTabs(navModel.place(tabs,view,tabs.length-1));else{pinCandidate=view;renderEditor();}}));}editor.append(available,control(navText('reset'),()=>persistTabs([...navModel.defaults])));}
+  else{const available=document.createElement('div');available.className='navigation-pin-options';for(const view of navModel.allowed.filter(v=>!tabs.includes(v)&&sectionVisible(v))){available.append(control(text(view)+' · '+navText('pin'),()=>{if(tabs.length<5)persistTabs(navModel.place(tabs,view,tabs.length-1));else{pinCandidate=view;renderEditor();}}));}editor.append(available,control(navText('reset'),()=>persistTabs([...navModel.defaults])));}
  }
  editButton.onclick=()=>{editor.hidden=!editor.hidden;pinCandidate=null;editButton.setAttribute('aria-expanded',String(!editor.hidden));renderEditor();};
  let hold=null,drag=null;
@@ -95,7 +96,7 @@
    const selected=target===view||(target==='more'&&!visibleTabs().includes(view));button.classList.toggle('active',selected);
    if(selected)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');
   }
-  for(const button of overlay.querySelectorAll('[data-mobile-target]')){button.querySelector('span').textContent=text(button.dataset.mobileTarget);button.hidden=button.dataset.mobileTarget==='exams'&&window.ProcatsPreferences?.get().examsVisible===false;}editButton.textContent=navText('edit');editHelp.textContent=navText('help');
+  for(const button of overlay.querySelectorAll('[data-mobile-target]')){button.querySelector('span').textContent=text(button.dataset.mobileTarget);button.hidden=!sectionVisible(button.dataset.mobileTarget);}editButton.textContent=navText('edit');editHelp.textContent=navText('help');
   document.getElementById('mobileMoreTitle').textContent=text('more');document.getElementById('mobileMoreClose').setAttribute('aria-label',text('close'));
   document.getElementById('mobileSettings').setAttribute('aria-label',text('settings'));
   for(const [view,key] of [['obsidian','pages']]){

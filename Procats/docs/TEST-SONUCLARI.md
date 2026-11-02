@@ -1,9 +1,6 @@
-# Release verification — 1 November 2026
+# Verification — 2 November 2026
 
-- 239 Node application tests, 42 Android unit/Robolectric tests, 7 Windows shell security tests, and 96 local Firestore emulator checks passed.
-- New checks cover map refresh, identity/review/link preservation, protected user edits, missing-country additions, idempotence, refresh-only durable commits, invalid input, shuffle-bag exhaustion/early exit/filtering, 15-day quote cooldown/pool expansion, persistent home-note edits/conflicts and read-only bounded progress models.
-- The complete 197-card dataset and all 197 flag/geometry references are validated. A separate personal-style sample card survives refresh; the total stays 198. Current geography source dates and licensing are included. All tests use fictional/local or public educational data.
-- Desktop/mobile UI checks cover maps, compact titles, capitals/continent filters, review/discovery separation, home-note persistence, progress mode selection and the full-screen clock. Evidence is shipped separately with the personal package.
-- Phone/watch package versions, original signing certificates and security flags are checked. Bundled web-file hashes are compared against phone APK and Windows ASAR contents. Windows EXEs are not publisher-signed.
-- Runtime web dependency audit: zero findings. Development/build tools retain moderate advisories (17 app, 15 Windows), with no high/critical findings in the recorded scan. No dependencies were added.
-- Physical phone/watch pairing, vendor battery management, indefinite data retention and a professional penetration test are outside this validation. No production records or live deployment were used.
+- 227 app tests passed, including legacy notes/card backup, import and sync coverage. Tests for retired interfaces were removed, while pure data-compatibility coverage remains.
+- New checks verify that centisecond updates only repaint their field and that retired navigation entries do not reorder active tabs.
+- Desktop/mobile UI checks use fictional guest records. Release evidence includes the common clock font/weight, fixed stopwatch columns, removed interface elements, task scrollbar and spacing below the week strip.
+- Physical phone/watch pairing was not tested. The release is prepared for personal APK, Windows and Firebase hosting installation; no live deployment was performed.
