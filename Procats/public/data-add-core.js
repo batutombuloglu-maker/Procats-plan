@@ -1,12 +1,10 @@
 import {checkStructure,checkChange,limits} from './security-limits.js';
 import {validateSnapshot} from './validation.js';
-import './knowledge-core.js';
-import {planKnowledgeRefresh} from './knowledge-refresh-core.js';
 import './lists-core.js';
 
 // Additive imports only operate on record collections. Preferences, running
 // clocks, selection state and activity ledgers are never replaced here.
-export const addKeys=Object.freeze(['procats_folders','yks_v3_days','yks_v3_tasks','yks_v5_notes','yks_v7_bookmarks','yks_v8_archives','procats_obs_folders','procats_obs_notes','procats_reminders','procats_exams_v1','procats_lists_v1','procats_knowledge_v1']);
+export const addKeys=Object.freeze(['procats_folders','yks_v3_days','yks_v3_tasks','yks_v5_notes','yks_v7_bookmarks','yks_v8_archives','procats_obs_folders','procats_obs_notes','procats_reminders','procats_exams_v1','procats_lists_v1']);
 const independent=new Set(['procats_lists_v1','procats_knowledge_v1']);
 const ignoredKeys=new Set(['yks_v6_activity','procats_activity_v1','procats_sw','procats_timer','procats_exam_selection_v1','procats_navigation_v1','procats-device-settings-v1','procats_theme','procats_lang','yks_v3_sidebarWidth','procats_obs_sidebarWidth']);
 const metadata=new Set(['format','version','exportDate','id','title','description','source','createdAt']);
@@ -18,7 +16,6 @@ const stable=x=>JSON.stringify(canonical(x));
 function canonical(x){if(Array.isArray(x))return x.map(canonical);if(!object(x))return x;return Object.fromEntries(Object.keys(x).sort().map(k=>[k,canonical(x[k])]));}
 const volatile=new Set(['id','createdAt','updatedAt','position','expanded','completed','missed','rating','score','isExempt','completedDate','activityDate','lastSentTimestamp','timesSentToday','active','itemOrder','review','x','y','w','h','width','height','z']);
 function identity(key,item){
- if(key==='procats_knowledge_v1')return stable({kind:item.kind,question:fold(item.question),answer:fold(item.answer),image:item.image||'',map:globalThis.ProcatsKnowledgeCore.mapOf(item)});
  if(key==='procats_lists_v1')return stable({title:fold(item.title),items:item.items.map(i=>fold(i.title))});
  const value=Object.fromEntries(Object.entries(item).filter(([k])=>!volatile.has(k)));
  // Cosmetic note movement or progress changes do not cause repeat imports.
@@ -36,13 +33,12 @@ function readCollections(value){
  const incoming={},ignored=[];
  for(const [key,raw]of Object.entries(source)){
   if(source===value&&metadata.has(key)){checkStructure(raw);continue;}
-  if(ignoredKeys.has(key)){ignored.push(key);continue;}
+  if(ignoredKeys.has(key)||key==='procats_knowledge_v1'){ignored.push(key);continue;}
   if(!addKeys.includes(key))throw Error('add-section');
   if(raw===null)continue;
   const records=typeof raw==='string'?JSON.parse(raw):clone(raw);checkStructure(records);
   if(!Array.isArray(records))throw Error('add-invalid');
   const ids=new Set();for(const item of records){if(!object(item)||!Number.isFinite(item.id)||item.id<=0||ids.has(item.id))throw Error('add-invalid');ids.add(item.id);}
-  if(key==='procats_knowledge_v1')globalThis.ProcatsKnowledgeCore.check(records);
   if(key==='procats_lists_v1'&&!globalThis.ProcatsListsCore.valid(records))throw Error('add-invalid');
   incoming[key]=records;
  }
@@ -53,7 +49,6 @@ function guardedKeys(incoming){const keys=new Set(Object.keys(incoming));if(keys
 export function additionSignature(current,incoming){return stable(Object.fromEntries(guardedKeys(incoming).map(k=>[k,current[k]??[]])));}
 export function planAddition(current,file,{now=Date.now()}={}){
  if(!object(current)||!Number.isSafeInteger(now)||now<0)throw Error('add-invalid');
- if(file?.format==='procats-knowledge-refresh')return planKnowledgeRefresh(current,file,{now,signature:additionSignature(current,{procats_knowledge_v1:[]})});
  const {incoming,ignored}=readCollections(file),signature=additionSignature(current,incoming),updates={},counts={},skipped={},mappings={};
  for(const key of Object.keys(incoming))if(!Array.isArray(current[key]??[]))throw Error('add-current');
  const reference=(section,id)=>{
@@ -64,11 +59,10 @@ export function planAddition(current,file,{now=Date.now()}={}){
  };
  for(const key of addKeys){
   if(!Object.hasOwn(incoming,key))continue;
-  const old=current[key]||[];if(key==='procats_knowledge_v1')globalThis.ProcatsKnowledgeCore.check(old);if(key==='procats_lists_v1'&&!globalThis.ProcatsListsCore.valid(old))throw Error('add-current');
+  const old=current[key]||[];if(key==='procats_lists_v1'&&!globalThis.ProcatsListsCore.valid(old))throw Error('add-current');
   const next=clone(old),known=new Map(old.map(item=>[identity(key,item),item.id])),used=new Set(old.map(item=>item.id)),mapping=new Map();mappings[key]=mapping;counts[key]=0;skipped[key]=0;
   let candidate=Math.max(1,Math.min(now,Number.MAX_SAFE_INTEGER-100000));
   const allocate=()=>{while(used.has(candidate)){candidate=candidate<Number.MAX_SAFE_INTEGER?candidate+1:1;}const id=candidate;used.add(id);candidate=candidate<Number.MAX_SAFE_INTEGER?candidate+1:1;return id;};
-  const appended=[];
   for(const source of incoming[key]){
    const item=clone(source);
    if(key==='yks_v3_days')item.folderId=reference('procats_folders',item.folderId);
@@ -83,11 +77,7 @@ export function planAddition(current,file,{now=Date.now()}={}){
     if(item.itemOrder)item.itemOrder=item.itemOrder.filter(id=>itemMap.has(id)).map(id=>itemMap.get(id));
     item.position=Math.max(-1,...old.map((x,i)=>x.position??i))+counts[key];
    }
-   next.push(item);appended.push(item);
-  }
-  if(key==='procats_knowledge_v1'){
-   for(const item of appended)item.related=[...new Set(item.related.map(id=>reference(key,id)))].filter(id=>id!==item.id);
-   globalThis.ProcatsKnowledgeCore.check(next);
+   next.push(item);
   }
   if(key==='procats_lists_v1'&&(!globalThis.ProcatsListsCore.valid(next)||bytes({[key]:next})>750000))throw Error('add-limit');
   if(counts[key])updates[key]=next;

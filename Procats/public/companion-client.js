@@ -28,7 +28,7 @@ async function pump(){
    const v=css.getPropertyValue(key).trim();if(/^#[0-9a-f]{6}$/i.test(v))colors[name]=v;
   }
   const snap=todaySnapshot(S.getData(),window.ProcatsCalendarCore.dateKey(new Date()),colors);
-  snap.cloudPending=S.getState().pending;snap.lang=['tr','en','de'].includes(document.documentElement.lang)?document.documentElement.lang:'tr';
+  snap.cloudPending=S.getState().pending;snap.lang=['tr','en','de'].includes(document.documentElement.lang)?document.documentElement.lang:'en';
   const raw=JSON.stringify(snap);
   if(raw!==last||results.length){await bridge.publish({scope,snapshot:snap,results});last=raw;}
   if(results.some(r=>r.result!=='applied'))notify('Bazı saat/araç işlemleri uygulanmadı: ilgili görev başka yerde değişmiş veya silinmiş. Güncel planın korundu.');

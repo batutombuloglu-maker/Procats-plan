@@ -26,3 +26,4 @@
 *.zip
 *.procats.json
 Procats-Kurtarilmis-*.json
+**/.kotlin/

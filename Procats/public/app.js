@@ -86,7 +86,7 @@
                 ['string', 'number'].includes(typeof value.chatId) && (value.lastSentTime == null || isTimestamp(value.lastSentTime));
             if (key === 'procats_sw') return isRecord(value) && typeof value.isRunning === 'boolean' && isTimestamp(value.startTime) && isTimestamp(value.savedTime);
             if (key === 'procats_timer') return isRecord(value) && typeof value.isRunning === 'boolean' && isTimestamp(value.endTime) && isCount(value.remainingTime);
-            if (key === 'procats_lang') return ['tr', 'en', 'de'].includes(value);
+            if (key === 'procats_lang') return globalThis.ProcatsLocale?.supported(value) ?? ['tr', 'en', 'de'].includes(value);
             if (key === 'procats_theme') return ["default","cream","light","dark","alpine","solar","velvet","swan","heritage","starlit","hibiscus","lily","starry","vinyl","oled","hacker","crimson"].includes(value);
             if (key.endsWith('sidebarWidth')) return typeof value === 'string' && /^\d+(\.\d+)?px$/.test(value) && parseFloat(value) >= 220 && parseFloat(value) <= 600;
             return false;
@@ -290,13 +290,13 @@
         };
         Object.keys(examTranslations).forEach(lang => Object.assign(dict[lang], examTranslations[lang]));
         let currentLang = appStorage.getItem('procats_lang') || 'tr';
-        if (!Object.hasOwn(dict, currentLang)) currentLang = 'tr';
-        function t(key) { return dict[currentLang]?.[key] ?? dict.tr[key] ?? key; }
+        if (!Object.hasOwn(dict, currentLang) && !globalThis.ProcatsLocale?.supported(currentLang)) currentLang = 'tr';
+        function t(key) { return globalThis.ProcatsLocale?.message(dict, currentLang, key) ?? dict[currentLang]?.[key] ?? dict.tr[key] ?? key; }
 
         function setLang(lang) {
-            if (!Object.hasOwn(dict, lang)) return;
+            if (!Object.hasOwn(dict, lang) && !globalThis.ProcatsLocale?.supported(lang)) return;
             currentLang = lang; appStorage.setItem('procats_lang', lang);
-            document.documentElement.lang = lang;
+            if(globalThis.ProcatsLocale) ProcatsLocale.apply(lang); else document.documentElement.lang = lang;
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = t(key);
@@ -844,9 +844,10 @@
         ];
         const backupTextKeys = ['procats_theme', 'procats_lang', 'yks_v3_sidebarWidth', 'procats_obs_sidebarWidth'];
         function createBackupData() {
+            window.ProcatsLegacyArchive?.refresh();
             const snapshot = {
                 procats_lists_v1: window.ProcatsListsStore.get(),
-                procats_knowledge_v1: window.ProcatsKnowledgeStore.get(),
+                procats_knowledge_v1: window.ProcatsLegacyArchive?.get() || [],
                 procats_folders: folders, yks_v3_days: days, yks_v3_tasks: tasks, yks_v5_notes: notes,
                 yks_v6_activity: activityData, procats_activity_v1: ProcatsSync.getData().procats_activity_v1, yks_v7_bookmarks: bookmarks, yks_v8_archives: archives,
                 procats_obs_folders: obsFolders, procats_obs_notes: obsNotes, procats_reminders: reminders,
@@ -936,7 +937,7 @@
                     document.getElementById('addDataResult').textContent=message;
                     try{
                         if(result.mainChanged)window.procatsApplyRemote(result.previous,ProcatsSync.getData());
-                        window.ProcatsKnowledgeStore?.refresh();window.ProcatsListsStore?.refresh();
+                        window.ProcatsLegacyArchive?.refresh();window.ProcatsListsStore?.refresh();
                     }catch{showCustomAlert(ProcatsDataAddUI.text().refresh);return;}
                     showCustomAlert(message);
                 });

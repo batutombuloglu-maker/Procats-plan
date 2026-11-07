@@ -3,7 +3,7 @@
  const section=document.getElementById('view-obsidian'),sidebar=document.getElementById('obsSidebar'),empty=document.getElementById('obsEmptyState');
  const media=matchMedia('(max-width:760px), (pointer:coarse) and (max-width:1024px)');
  const words={tr:{title:'Düşüncelerine yer aç.',help:'Planlarını, fikirlerini ve uzun notlarını kendi sayfalarında tut.',create:'Yeni sayfa',pages:'Sayfalarım',blank:'Henüz not yazılmadı'},en:{title:'Make room for your thoughts.',help:'Keep plans, ideas and longer notes in your own pages.',create:'New page',pages:'My pages',blank:'No notes yet'},de:{title:'Platz für deine Gedanken.',help:'Pläne, Ideen und längere Notizen auf eigenen Seiten festhalten.',create:'Neue Seite',pages:'Meine Seiten',blank:'Noch keine Notizen'}};
- const L=k=>(words[currentLang]||words.tr)[k];
+ const L=k=>(globalThis.ProcatsLocale?.messages(words,currentLang) || words[currentLang]||words.tr)[k];
  const heading=document.createElement('div');heading.className='free-plan-mobile-heading';heading.innerHTML='<span></span><small></small>';sidebar.prepend(heading);
  const detail=document.createElement('div');detail.className='free-plan-mobile-intro';const title=document.createElement('h2'),help=document.createElement('p'),add=document.createElement('button');add.type='button';add.onclick=()=>{activeObsFolderId=null;openModal('obsNoteModal');};detail.append(title,help,add);empty.append(detail);
  function refresh(){

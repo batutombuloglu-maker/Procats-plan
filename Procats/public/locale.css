@@ -1,0 +1,16 @@
+.account-card .account-create {
+  border: 1px solid #49617f;
+  border-radius: 12px;
+  min-height: 46px;
+  width: 100%;
+}
+[dir="rtl"] :is(.live-clock, .stopwatch-time, .timer-display, .heatmap-grid) {
+  direction: ltr;
+}
+[dir="rtl"] .calendar-actions #calendarOpen {
+  margin-right: 0;
+  margin-left: auto;
+}
+.mobile-tabs button span, .nav-item span {
+  overflow-wrap: anywhere;
+}

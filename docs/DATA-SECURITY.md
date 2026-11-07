@@ -4,7 +4,7 @@ This public source repository contains no account database, session, signing key
 
 ## Accounts and synchronization
 
-Firestore rules permit reads/writes only for the verified owner of the account. Revisions prevent silent stale overwrites. The knowledge archive is committed atomically across a manifest and four bounded shards. Current-account checks are repeated before remote operations. Device journals separate accounts, preserve offline drafts and block an exit that would discard pending records. Conflict resolution keeps recovery copies.
+Firestore rules permit reads/writes only for the verified owner of the account. Revisions prevent silent stale overwrites. Older versions store the retired archive across a manifest and four bounded shards. Current versions access these records for legacy backup compatibility and account deletion. Current-account checks are repeated before remote operations. Device journals separate accounts, preserve offline drafts and block an exit that would discard pending records. Conflict resolution keeps recovery copies.
 
 Cloud records are not end-to-end encrypted; project administrators can technically access the Firebase project. A source-code repository is not a backup of private application records.
 
@@ -20,8 +20,4 @@ The release-like personal variant uses its own application ID, disabled debuggin
 
 ## Validation and limits
 
-The current snapshot passed automated authorization, cross-device merge, offline journal, backup and input-validation tests, plus focused checks of compiled APK security flags and signatures. The knowledge archive renders at most 36 cards per page; 2,000-card navigation was tested. Current archive limits are 2,000 cards / 2,000,000 bytes, including compressed images. These controls are not a penetration-test certification or a guarantee of indefinite retention. Physical device and long-term recovery checks remain important.
-
-## Dependency checks
-
-The 1.7.5 locked trees have no high or critical npm audit findings. The shared app production dependency audit reports zero findings. Moderate issues remain in development/build tools: 17 in the app project and 15 in the Windows tooling. No major-version downgrade or forced audit fix was applied. These checks do not certify Android, Electron, the operating system or the entire application as vulnerability-free.
+The current snapshot passed automated authorization, cross-device merge, offline journal, backup and input-validation tests, plus focused checks of compiled APK security flags and signatures. Legacy archive backup limits are 2,000 cards and 2,000,000 bytes, including compressed images. These controls are not a penetration-test certification or a guarantee of indefinite retention. Physical device and long-term recovery checks remain important.

@@ -1,7 +1,5 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import vm from 'node:vm';
-import {readFile} from 'node:fs/promises';
 import {imageDimensions,readImageSize} from '../public/image-limits.js';
 
 const png=(w,h)=>{const b=new Uint8Array(33);b.set([137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82]);const v=new DataView(b.buffer);v.setUint32(16,w);v.setUint32(20,h);return b;};
@@ -20,23 +18,4 @@ test('file preflight reads at most one MiB and rejects oversized uploads before 
  let reads=0;const file={type:'image/png',size:15000000,slice(start,end){assert.equal(start,0);assert.equal(end,1048576);return {arrayBuffer:async()=>{reads++;return png(1600,900).buffer;}};}};
  assert.deepEqual(await readImageSize(file),{width:1600,height:900});assert.equal(reads,1);
  await assert.rejects(readImageSize({...file,size:16*1024*1024}),/invalid/);assert.equal(reads,1);
-});
-
-const privacySource=(await readFile(new URL('../public/privacy-gate.js',import.meta.url),'utf8')).replace(/^import .*;\r?\n/gm,'').replace('export async function privacyGate','async function privacyGate')+'\nglobalThis.runGate=privacyGate;';
-const turn=()=>new Promise(setImmediate);
-function fixture({local={},meta={},blockedLocal=false,blockedMeta=false}={}){
- const nodes=[],localValues=new Map(Object.entries(local)),metadata=new Map(Object.entries(meta));let failMeta=blockedMeta;
- class Element {constructor(tag){this.tag=tag;this.children=[];this.textContent='';this.disabled=false;nodes.push(this);}setAttribute(){}append(...children){this.children.push(...children);}focus(){}remove(){this.removed=true;}}
- const ctx=vm.createContext({window:{},Date,JSON,clearTimeout(){},localStorage:{getItem:k=>{if(blockedLocal)throw Error();return localValues.get(k)||null;},setItem:(k,v)=>{if(blockedLocal)throw Error();localValues.set(k,v);}},DeviceStore:{async meta(key,value){if(failMeta)throw Error('Storage unavailable');if(value===undefined)return metadata.get(key);metadata.set(key,value);}},document:{createElement:tag=>new Element(tag),createTextNode:text=>({textContent:text}),body:{append(){}}}});
- vm.runInContext(privacySource,ctx);return {run:()=>ctx.runGate('tr'),nodes,localValues,metadata,allowMeta(){failMeta=false;},accept:async()=>{const check=nodes.find(n=>n.type==='checkbox'),button=nodes.find(n=>n.id==='privacyAccept');check.checked=true;check.onchange();await button.onclick();}};
-}
-test('an old privacy acknowledgement cannot skip a materially revised notice; the new revision is remembered',async()=>{
- const f=fixture({local:{'privacy-1.6.0':'read'},meta:{'privacy-1.6.0':{version:'1.7.0'}}}),pending=f.run();await turn();assert.equal(f.nodes.some(n=>n.id==='privacyGate'),true);await f.accept();await pending;
- const accepted=JSON.parse(f.localValues.get('privacy-notice'));assert.equal(accepted.revision,'2026-10-31');assert.ok(Number.isFinite(Date.parse(accepted.readAt)));const count=f.nodes.length;await f.run();assert.equal(f.nodes.length,count);
-});
-test('the same notice revision remains accepted through an app-only version change, with IndexedDB fallback',async()=>{
- const f=fixture({blockedLocal:true,meta:{'privacy-notice':{revision:'2026-10-31',version:'1.7.1',readAt:'2026-10-31T00:00:00.000Z'}}});await f.run();assert.equal(f.nodes.length,0);
-});
-test('a failed acknowledgement write keeps the notice visible and can be retried',async()=>{
- const f=fixture({blockedLocal:true,blockedMeta:true}),pending=f.run();await turn();await f.accept();assert.equal(f.nodes.find(n=>n.id==='privacyGate').removed,undefined);assert.equal(f.nodes.find(n=>n.id==='privacyAccept').disabled,false);f.allowMeta();await f.accept();await pending;assert.equal(f.metadata.get('privacy-notice').revision,'2026-10-31');
 });

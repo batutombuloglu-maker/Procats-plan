@@ -3,7 +3,7 @@
 (()=>{'use strict';
  const grid=document.getElementById('tasksGrid'),scrollArea=grid.closest('.main-content');
  const words={tr:{move:'Sıralamak için basılı tut ve sürükle',drag:'Görevi yeni yerine sürükle',saved:'Görev sırası kaydedildi'},en:{move:'Hold and drag to reorder',drag:'Drag the task to its new position',saved:'Task order saved'},de:{move:'Zum Sortieren gedrückt halten und ziehen',drag:'Aufgabe an die neue Position ziehen',saved:'Aufgabenreihenfolge gespeichert'}};
- const L=k=>(words[currentLang]||words.tr)[k];
+ const L=k=>(globalThis.ProcatsLocale?.messages(words,currentLang) || words[currentLang]||words.tr)[k];
  let hold=null,drag=null,frame=0,suppressUntil=0;
  const status=document.createElement('div');status.className='sr-only';status.setAttribute('role','status');document.body.append(status);
  function clearHold(){clearTimeout(hold?.timer);if(hold?.card.isConnected)hold.card.draggable=true;hold=null;}

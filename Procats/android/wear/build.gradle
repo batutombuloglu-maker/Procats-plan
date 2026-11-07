@@ -20,7 +20,7 @@ android {
 
  namespace 'com.procats.study'
  compileSdk 36
- defaultConfig { applicationId 'com.procats.study'; minSdk 30; targetSdk 36; versionCode 33; versionName '1.7.7' }
+ defaultConfig { applicationId 'com.procats.study'; minSdk 30; targetSdk 36; versionCode 35; versionName '2.0.0' }
  signingConfigs { if(canSign) { upload { storeFile file(uploadStore);storePassword uploadPassword;keyAlias uploadAlias;keyPassword uploadKeyPassword } } }
  buildTypes {
   debug { applicationIdSuffix '.preview'; versionNameSuffix '-preview' }

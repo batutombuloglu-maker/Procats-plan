@@ -7,7 +7,7 @@
   en:{classic:'Classic',exam:'Exam clock',oled:'OLED',views:'Timer view',remaining:'Time left',end:'Ends',estimate:'If started now',clock:'Exam clock',hint:'Blue shows the time remaining until the finish.',tap:'Tap for controls',exit:'Go back',idle:'Choose a duration and start',paused:'Ready / paused',running:'Countdown running',complete:'Time is up',oledHelp:'Black background · dim display · gentle movement'},
   de:{classic:'Klassisch',exam:'Prüfungsuhr',oled:'OLED',views:'Timeransicht',remaining:'Verbleibend',end:'Ende',estimate:'Bei Start jetzt',clock:'Prüfungsuhr',hint:'Blau zeigt die Zeit bis zum Ende.',tap:'Für Steuerung tippen',exit:'Zurück',idle:'Dauer wählen und starten',paused:'Bereit / pausiert',running:'Countdown läuft',complete:'Zeit abgelaufen',oledHelp:'Schwarzer Hintergrund · gedimmt · sanfte Bewegung'}
  };
- const L=k=>(words[currentLang]||words.tr)[k],el=(tag,cls)=>{const n=document.createElement(tag);n.className=cls;return n;};
+ const L=k=>(globalThis.ProcatsLocale?.messages(words,currentLang) || words[currentLang]||words.tr)[k],el=(tag,cls)=>{const n=document.createElement(tag);n.className=cls;return n;};
  let mode='classic',sleepAt=Date.now()+6000,finished=false,lastRemaining=0,keyboard=false,suppressClickUntil=0;
  try{const value=appStorage.getItem('procats_timer_view_v1');if(['classic','exam','oled'].includes(value))mode=value;}catch{}
  const toolbar=el('div','timer-view-toolbar'),back=el('button','timer-view-back'),tabs=el('div','timer-view-tabs');back.type='button';tabs.setAttribute('role','group');

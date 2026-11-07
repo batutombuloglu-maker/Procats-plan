@@ -6,7 +6,7 @@ const extra = {
  de:{back:'Zurück zu Einstellungen',close:'Schließen',notifications:'Benachrichtigungen',appearanceHelp:'Design und Sprache',workspaceHelp:'Sichtbare Bereiche und untere Leiste',notificationsHelp:'Ton, Vibration, Alarme und Berechtigungen',accountHelp:'Einträge und Cloud-Synchronisierung',share:'Links und Teilen',shareHelp:'Weblink und Startbildschirm-Verknüpfung',helpHelp:'Anleitung, Datenschutz und Support',palettes:'Farbdesigns',pictures:'Bilddesigns',themeHelp:'Das Design gilt für alle Bereiche und wird automatisch gespeichert.',selected:'Ausgewählt',permissions:'Berechtigungen',allowed:'Aktiviert',required:'Erlauben',unsupported:'In diesem Browser nicht verfügbar',webAlarm:'Für akustische Hinweise diese Seite geöffnet lassen. Der Browser kann Timer im Hintergrund anhalten.',webLink:'Weblink',copy:'Link kopieren',copied:'Link kopiert.',copyHelp:'Markiere den Link und wähle auf deinem Gerät Kopieren.',shareAction:'Procats teilen',shareText:'Procats für Aufgaben, Notizen und Fokuszeit.',linkHelp:'Auf iPhone und iPad die Web-App nutzen, auf Android Google Play öffnen.',android:'In Google Play öffnen',install:'Zum Startbildschirm hinzufügen',installed:'Zum Startbildschirm hinzugefügt',installIOS:'In Safari Teilen öffnen und Zum Home-Bildschirm wählen. Falls nicht verfügbar, den Link in Safari öffnen.',installAndroid:'Im Browsermenü App installieren oder Zum Startbildschirm hinzufügen wählen. Falls nicht verfügbar, den Link in Chrome öffnen.',installDesktop:'Das Installationssymbol in der Adressleiste oder App installieren im Browsermenü verwenden.',installWait:'Den Installationsschritten des Browsers folgen.',installDismissed:'Du kannst die Verknüpfung später hier hinzufügen.',navEdit:'Untere Leiste anpassen',navHelp:'Unter Mehr einen Bereich gedrückt halten und in die untere Leiste ziehen. Untere Leiste anpassen bietet auch Pfeile und Anheften.',failed:'Die Aktion ist fehlgeschlagen. Bitte erneut versuchen.'}
 };
 for(const lang of Object.keys(extra)) Object.assign(copy[lang],extra[lang]);
-const L = key => (copy[currentLang] || copy.tr)[key];
+const L = key => (globalThis.ProcatsLocale?.messages(copy,currentLang) || copy[currentLang] || copy.tr)[key];
 const prefs = ProcatsPreferences, originalSwitch = window.switchView, removeAccount = ProcatsUI.deleteAccount;
 const modal = document.getElementById('appSettings'), body = modal.querySelector('.experience-body');
 const heading = modal.querySelector('h2'), close = modal.querySelector('.sheet-close');
@@ -49,10 +49,10 @@ function overview(){
   const button=action(list,'',()=>show(page),'settings-category');button.dataset.settingsPage=page;
   const text=document.createElement('span'),strong=document.createElement('strong'),small=document.createElement('small');strong.textContent=L(page);small.textContent=L(page+'Help');text.append(strong,small);button.append(text);
  }
- const footer=document.createElement('p');footer.className='settings-version';footer.textContent='Procats Studio · '+(window.PROCATS_PUBLISHER?.version||'1.7.7');body.append(footer);
+ const footer=document.createElement('p');footer.className='settings-version';footer.textContent='Procats Studio · '+(window.PROCATS_PUBLISHER?.version||'2.0.0');body.append(footer);
 }
 function appearance(){
- const language=section(L('language'));select(language,'settingsLanguage',L('language'),[['tr','Türkçe'],['en','English'],['de','Deutsch']],currentLang,value=>{setLang(value);try{localStorage.setItem('procats-login-language',value);}catch{}show('appearance');});
+ const language=section(L('language'));select(language,'settingsLanguage',L('language'),ProcatsLocale.options,currentLang,value=>{setLang(value);try{localStorage.setItem('procats-login-language',value);}catch{}show('appearance');});
  const themes=window.ProcatsThemes;if(!themes)return;
  for(const picture of [false,true]){
   const group=section(L(picture?'pictures':'palettes'));group.classList.add('settings-theme-grid');
@@ -132,7 +132,7 @@ function sharing(){
  const status=document.createElement('p');status.id='settingsShareStatus';status.className='settings-share-status';status.setAttribute('role','status');status.setAttribute('aria-live','polite');body.append(status);
 }
 function help(){
- const panel=section(L('help'));action(panel,L('tour'),()=>{closeSettings();ProcatsTour.start();});action(panel,L('privacy'),()=>location.assign('/privacy.html?lang='+currentLang));action(panel,L('support'),()=>location.assign('/support.html?lang='+currentLang));
+ const panel=section(L('help'));action(panel,L('tour'),()=>{closeSettings();ProcatsTour.start();});action(panel,L('support'),()=>location.assign('/support.html?lang='+currentLang));
 }
 const pages={appearance,workspace,notifications,account,share:sharing,help};
 function show(page=''){

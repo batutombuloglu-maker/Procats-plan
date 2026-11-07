@@ -5,7 +5,7 @@
   en:{knowledge:'Knowledge treasury',lists:'Lists',home:'Home',tasks:'Tasks',obsidian:'Plan',exams:'Exams',more:'More',timers:'Timers',notes:'Quick notes',bookmarks:'Resources',archive:'Life archive',vault:'Data vault',settings:'Settings',close:'Close',days:'Days and folders',pages:'Pages and folders',folder:'New folder',choose:'Choose a day',browse:'Choose a page',focus:'FOCUS TIME',clock:'RIGHT NOW',reflection:'TODAY’S REFLECTION'},
   de:{knowledge:'Wissensschatz',lists:'Listen',home:'Start',tasks:'Aufgaben',obsidian:'Plan',exams:'Prüfungen',more:'Mehr',timers:'Timer',notes:'Kurznotizen',bookmarks:'Ressourcen',archive:'Lebensarchiv',vault:'Datentresor',settings:'Einstellungen',close:'Schließen',days:'Tage und Ordner',pages:'Seiten und Ordner',folder:'Neuer Ordner',choose:'Tag auswählen',browse:'Seite auswählen',focus:'FOKUSZEIT',clock:'JETZT',reflection:'GEDANKE DES TAGES'}
  };
- const text=key=>(words[currentLang]||words.en)[key];
+ const text=key=>(globalThis.ProcatsLocale?.messages(words,currentLang) || words[currentLang]||words.en)[key];
  const mobile=matchMedia('(max-width: 760px), (pointer: coarse) and (max-width: 1024px)');
  const iconFor=view=>document.querySelector(`.obsidian-nav [data-action-click="switchView('${view}')"] svg`)?.outerHTML||'';
  const moreIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>';
@@ -18,7 +18,7 @@
  let savedTabs;try{savedTabs=JSON.parse(appStorage.getItem(navModel.key)||'null');}catch{}
  let tabs=navModel.normalize(savedTabs),suppressClickUntil=0;
  const navWords={tr:{edit:'Alt barı düzenle',help:'Basılı tutup bir alt bar yuvasına sürükle. Oklarla da sıralayabilir veya Sabitle ile bir yuva seçebilirsin.',pin:'Sabitle',replace:'Yerine sabitle',remove:'Kaldır',left:'Sola taşı',right:'Sağa taşı',reset:'Varsayılanı yükle',saved:'Alt bar kaydedildi',cancel:'Vazgeç',drop:'Bırakarak sabitle'},en:{edit:'Customize bottom tabs',help:'Hold and drag to a bottom tab. You can also use the arrows or Pin to choose a slot.',pin:'Pin',replace:'Replace this tab',remove:'Remove',left:'Move left',right:'Move right',reset:'Restore default',saved:'Tabs saved',cancel:'Cancel',drop:'Drop to pin'},de:{edit:'Untere Leiste anpassen',help:'Gedrückt halten und auf einen Tab ziehen. Alternativ Pfeile oder Anheften verwenden.',pin:'Anheften',replace:'Diesen Tab ersetzen',remove:'Entfernen',left:'Nach links',right:'Nach rechts',reset:'Standard wiederherstellen',saved:'Tabs gespeichert',cancel:'Abbrechen',drop:'Zum Anheften loslassen'}};
- const navText=key=>(navWords[currentLang]||navWords.tr)[key];
+ const navText=key=>(globalThis.ProcatsLocale?.messages(navWords,currentLang) || navWords[currentLang]||navWords.tr)[key];
  function sectionVisible(view){const prefs=window.ProcatsPreferences;return prefs?.sectionVisible(view,prefs.get())!==false;}
  function visibleTabs(){return tabs.filter(sectionVisible);}
  function activate(view){if(Date.now()<suppressClickUntil)return;if(view==='more')openMore();else if(view==='settings'){closeMore(false);window.ProcatsUI?.settings();}else{closeMore(false);switchView(view);}}

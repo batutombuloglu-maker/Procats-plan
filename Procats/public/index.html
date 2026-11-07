@@ -401,8 +401,8 @@
         #syncStatus{position:fixed;bottom:8px;right:16px;z-index:60;max-width:calc(100vw - 88px);border:0;border-radius:8px;background:var(--bg-card);color:var(--text-secondary);font-size:12px;padding:5px 9px;cursor:pointer}
         #syncModal .modal-actions{flex-wrap:wrap}#syncModal p{line-height:1.6;margin:14px 0}#syncModal button{font-size:14px}#syncAccount{overflow-wrap:anywhere}
     </style>
-<link rel="stylesheet" href="/mobile.css?v=1.7.7">
-<link rel="stylesheet" href="/account.css?v=1.7.7"><link rel="stylesheet" href="/weekly-summary.css?v=1.7.7">
+<link rel="stylesheet" href="/mobile.css?v=2.0.0">
+<link rel="stylesheet" href="/account.css?v=2.0.0"><link rel="stylesheet" href="/weekly-summary.css?v=2.0.0">
 <link rel="stylesheet" href="/experience.css">
 <link rel="stylesheet" href="/release.css">
 <link rel="stylesheet" href="/upgrade.css">
@@ -414,6 +414,7 @@
     <link rel="stylesheet" href="/timer-views.css">
 <script src="/publisher.js"></script>
 <link rel="stylesheet" href="/calendar.css"><link rel="stylesheet" href="/planning-mobile.css">
+<link rel="stylesheet" href="/locale.css">
 </head> 
 <body class="auth-locked">
 <div id="authRoot"><section class="launch-screen" role="status" aria-live="polite"><div class="launch-logo">P</div><h1>Procats</h1><p id="launchMessage">Kayıtların açılıyor…</p><div class="launch-track" aria-hidden="true"><span></span></div></section></div> 
@@ -738,7 +739,7 @@
  
 <button id="syncStatus" data-action-click="procatsOpenSync()" aria-live="polite">Bağlanıyor…</button>
 <div class="modal-overlay" id="syncModal" role="dialog" aria-modal="true" aria-labelledby="syncTitle"><div class="modal-content"><div class="modal-title" id="syncTitle" data-sync-text="sync">Cihaz eşitleme</div><p id="syncAccount"></p><p id="syncDetail"></p><div class="modal-actions"><button class="btn-save" data-action-click="procatsSyncNow()" data-sync-text="retry">Şimdi eşitle</button><button class="btn-cancel" data-action-click="closeModal('syncModal')" data-sync-text="close">Kapat</button></div><div id="syncConflict" hidden><p data-sync-text="conflictHelp">İki cihazda aynı kayıt değişti. Seçim yapmadan önce iki sürümün yedeğini indirebilirsin.</p><button class="btn-cancel" data-action-click="procatsConflictBackup()" data-sync-text="both">İki sürümü indir</button><button class="btn-save" data-action-click="procatsResolve('local')" data-sync-text="local">Bu cihazdaki sürümü kullan</button><button class="btn-cancel" data-action-click="procatsResolve('remote')" data-sync-text="remote">Diğer sürümü kullan</button></div></div></div>
-<script src="/firebase-config.js"></script><script type="module" src="/firebase-client.js"></script>
+<script src="/firebase-config.js"></script><script src="/language-packs.js"></script><script src="/locale.js"></script><script type="module" src="/firebase-client.js"></script>
 <script src="/ui-actions.js"></script><script src="/navigation-a11y.js"></script>
 </body> 
 </html>

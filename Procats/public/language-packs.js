@@ -1,0 +1,105 @@
+// The rows in each group follow the English source order. The build checks their lengths.
+globalThis.ProcatsLanguagePacks = {
+  ar: [
+    'تسجيل الدخول|إنشاء حساب|البريد الإلكتروني|كلمة المرور|تأكيد كلمة المرور|نسيت كلمة المرور|إرسال رابط إعادة التعيين|العودة إلى تسجيل الدخول|مهامك وملاحظاتك وخططك على جميع أجهزتك.|تحقق من بريدك الإلكتروني|افتح الرابط في بريدك ثم عد إلى هنا للمتابعة.|لقد تحققت من بريدي|إعادة إرسال رسالة التحقق|استخدام حساب آخر|جارٍ فتح سجلاتك…|جرّب دون حساب · على هذا الجهاز فقط|حذف حسابي|البريد الإلكتروني أو كلمة المرور غير صحيحة.|تعذر الاتصال. تحقق من الإنترنت وحاول مجددًا.|اختر كلمة مرور من 12 حرفًا على الأقل.|كلمتا المرور غير متطابقتين.',
+    'الرئيسية|المهام|الخطة|الاختبارات|المؤقتات|ملاحظات سريعة|المصادر|القوائم|خزنة البيانات|الإعدادات|المزيد|اللغة|المظهر|السمة|مساحة العمل|الإشعارات|الحساب والسجلات|المزامنة السحابية|تسجيل الخروج|المساعدة والمعلومات|الدعم',
+    'التقويم|اليوم|تصدير الملخص|تقدم اليوم المحدد|مهمة جديدة|عنوان المهمة|التفاصيل|قيد التنفيذ|مكتملة|لم تُنجز|خريطة التركيز لآخر 30 يومًا|ملاحظة جديدة|إضافة مصدر|مجلد جديد|بدء|إيقاف مؤقت|إعادة تعيين|كلاسيكي|ساعة الاختبار|انتهى الوقت!|وقت التركيز',
+    'حفظ|إلغاء|تأكيد|حذف|تعديل|نسخ|لصق|إعادة تسمية|إغلاق|رجوع|بحث|العنوان|الوصف|إضافة بيانات|تنزيل نسخة احتياطية|استعادة النسخة الاحتياطية|صوت|اهتزاز|صامت|ملء الشاشة|الخروج من ملء الشاشة',
+  ],
+  es: [
+    'Iniciar sesión|Crear cuenta|Correo electrónico|Contraseña|Repetir contraseña|Olvidé mi contraseña|Enviar enlace de restablecimiento|Volver al inicio de sesión|Tus tareas, notas y planes en todos tus dispositivos.|Verifica tu correo|Abre el enlace de tu correo y vuelve aquí para continuar.|Ya verifiqué mi correo|Reenviar correo de verificación|Usar otra cuenta|Abriendo tus registros…|Probar sin cuenta · solo en este dispositivo|Eliminar mi cuenta|Correo o contraseña incorrectos.|No se pudo conectar. Comprueba tu conexión e inténtalo de nuevo.|Elige una contraseña de al menos 12 caracteres.|Las contraseñas no coinciden.',
+    'Inicio|Tareas|Plan|Exámenes|Temporizadores|Notas rápidas|Recursos|Listas|Cofre de datos|Ajustes|Más|Idioma|Apariencia|Tema|Espacio de trabajo|Notificaciones|Cuenta y registros|Sincronización en la nube|Cerrar sesión|Ayuda e información|Soporte',
+    'Calendario|Hoy|Exportar resumen|Progreso del día seleccionado|Nueva tarea|Título de la tarea|Detalles|En curso|Completada|No realizada|Mapa de concentración de los últimos 30 días|Nueva nota|Añadir recurso|Nueva carpeta|Iniciar|Pausar|Reiniciar|Clásico|Reloj de examen|¡Se acabó el tiempo!|Tiempo de concentración',
+    'Guardar|Cancelar|Confirmar|Eliminar|Editar|Copiar|Pegar|Renombrar|Cerrar|Atrás|Buscar|Título|Descripción|Añadir datos|Descargar copia de seguridad|Restaurar copia de seguridad|Sonido|Vibración|Silencio|Pantalla completa|Salir de pantalla completa',
+  ],
+  fr: [
+    'Se connecter|Créer un compte|Adresse e-mail|Mot de passe|Répéter le mot de passe|Mot de passe oublié|Envoyer le lien de réinitialisation|Retour à la connexion|Vos tâches, notes et plans sur tous vos appareils.|Vérifiez votre adresse e-mail|Ouvrez le lien reçu par e-mail, puis revenez ici pour continuer.|J’ai vérifié mon adresse|Renvoyer l’e-mail de vérification|Utiliser un autre compte|Ouverture de vos données…|Essayer sans compte · sur cet appareil uniquement|Supprimer mon compte|Adresse e-mail ou mot de passe incorrect.|Connexion impossible. Vérifiez votre connexion et réessayez.|Choisissez un mot de passe d’au moins 12 caractères.|Les mots de passe ne correspondent pas.',
+    'Accueil|Tâches|Plan|Examens|Minuteurs|Notes rapides|Ressources|Listes|Coffre de données|Paramètres|Plus|Langue|Apparence|Thème|Espace de travail|Notifications|Compte et données|Synchronisation cloud|Se déconnecter|Aide et informations|Assistance',
+    'Calendrier|Aujourd’hui|Exporter le résumé|Progression du jour sélectionné|Nouvelle tâche|Titre de la tâche|Détails|En cours|Terminée|Non terminée|Carte de concentration des 30 derniers jours|Nouvelle note|Ajouter une ressource|Nouveau dossier|Démarrer|Pause|Réinitialiser|Classique|Horloge d’examen|Temps écoulé !|Temps de concentration',
+    'Enregistrer|Annuler|Confirmer|Supprimer|Modifier|Copier|Coller|Renommer|Fermer|Retour|Rechercher|Titre|Description|Ajouter des données|Télécharger une sauvegarde|Restaurer une sauvegarde|Son|Vibration|Silencieux|Plein écran|Quitter le plein écran',
+  ],
+  it: [
+    'Accedi|Crea account|Email|Password|Ripeti la password|Password dimenticata|Invia link di ripristino|Torna all’accesso|Attività, note e piani su tutti i tuoi dispositivi.|Verifica la tua email|Apri il link nella tua email, poi torna qui per continuare.|Ho verificato la mia email|Invia di nuovo l’email di verifica|Usa un altro account|Apertura dei dati…|Prova senza account · solo su questo dispositivo|Elimina il mio account|Email o password errata.|Connessione non riuscita. Controlla la rete e riprova.|Scegli una password di almeno 12 caratteri.|Le password non coincidono.',
+    'Home|Attività|Piano|Esami|Timer|Note rapide|Risorse|Elenchi|Cassaforte dati|Impostazioni|Altro|Lingua|Aspetto|Tema|Area di lavoro|Notifiche|Account e dati|Sincronizzazione cloud|Esci|Aiuto e informazioni|Assistenza',
+    'Calendario|Oggi|Esporta riepilogo|Progresso del giorno selezionato|Nuova attività|Titolo dell’attività|Dettagli|In corso|Completata|Non completata|Mappa della concentrazione degli ultimi 30 giorni|Nuova nota|Aggiungi risorsa|Nuova cartella|Avvia|Pausa|Azzera|Classico|Orologio d’esame|Tempo scaduto!|Tempo di concentrazione',
+    'Salva|Annulla|Conferma|Elimina|Modifica|Copia|Incolla|Rinomina|Chiudi|Indietro|Cerca|Titolo|Descrizione|Aggiungi dati|Scarica backup|Ripristina backup|Suono|Vibrazione|Silenzioso|Schermo intero|Esci da schermo intero',
+  ],
+  'zh-CN': [
+    '登录|创建账户|电子邮箱|密码|再次输入密码|忘记密码|发送重置链接|返回登录|在所有设备上同步任务、笔记和计划。|验证电子邮箱|打开邮件中的链接，然后返回这里继续。|我已验证邮箱|重新发送验证邮件|使用其他账户|正在打开记录…|无需账户试用 · 仅此设备|删除我的账户|邮箱或密码不正确。|无法连接。请检查网络后重试。|请选择至少 12 个字符的密码。|两次输入的密码不一致。',
+    '首页|任务|计划|考试|计时器|速记|资源|清单|数据保险库|设置|更多|语言|外观|主题|工作区|通知|账户与记录|云同步|退出登录|帮助与信息|支持',
+    '日历|今天|导出摘要|所选日期的进度|新建任务|任务标题|详情|进行中|已完成|未完成|最近 30 天专注热力图|新建笔记|添加资源|新建文件夹|开始|暂停|重置|经典|考试时钟|时间到！|专注时间',
+    '保存|取消|确认|删除|编辑|复制|粘贴|重命名|关闭|返回|搜索|标题|描述|添加数据|下载备份|恢复备份|声音|振动|静音|全屏|退出全屏',
+  ],
+  ja: [
+    'ログイン|アカウントを作成|メールアドレス|パスワード|パスワードを再入力|パスワードを忘れた場合|再設定リンクを送信|ログインに戻る|タスク、メモ、計画をすべての端末で使えます。|メールアドレスを確認|メールのリンクを開き、ここに戻って続けてください。|メールを確認しました|確認メールを再送信|別のアカウントを使う|記録を開いています…|アカウントなしで試す · この端末のみ|アカウントを削除|メールアドレスまたはパスワードが違います。|接続できません。ネットワークを確認して再試行してください。|12 文字以上のパスワードを設定してください。|パスワードが一致しません。',
+    'ホーム|タスク|計画|模擬試験|タイマー|クイックメモ|資料|リスト|データ保管庫|設定|その他|言語|外観|テーマ|ワークスペース|通知|アカウントと記録|クラウド同期|ログアウト|ヘルプと情報|サポート',
+    'カレンダー|今日|概要をエクスポート|選択した日の進捗|新しいタスク|タスク名|詳細|進行中|完了|未完了|過去 30 日間の集中ヒートマップ|新しいメモ|資料を追加|新しいフォルダー|開始|一時停止|リセット|クラシック|試験用時計|時間です！|集中時間',
+    '保存|キャンセル|確認|削除|編集|コピー|貼り付け|名前を変更|閉じる|戻る|検索|タイトル|説明|データを追加|バックアップをダウンロード|バックアップを復元|サウンド|振動|サイレント|全画面|全画面を終了',
+  ],
+  ko: [
+    '로그인|계정 만들기|이메일|비밀번호|비밀번호 다시 입력|비밀번호를 잊으셨나요?|재설정 링크 보내기|로그인으로 돌아가기|모든 기기에서 할 일, 메모, 계획을 이용하세요.|이메일 인증|이메일의 링크를 연 다음 여기로 돌아와 계속하세요.|이메일을 인증했어요|인증 이메일 다시 보내기|다른 계정 사용|기록을 불러오는 중…|계정 없이 체험 · 이 기기에서만|내 계정 삭제|이메일 또는 비밀번호가 올바르지 않습니다.|연결할 수 없습니다. 네트워크를 확인하고 다시 시도하세요.|12자 이상의 비밀번호를 설정하세요.|비밀번호가 일치하지 않습니다.',
+    '홈|할 일|계획|모의시험|타이머|빠른 메모|자료|목록|데이터 금고|설정|더 보기|언어|모양|테마|작업 공간|알림|계정 및 기록|클라우드 동기화|로그아웃|도움말 및 정보|지원',
+    '달력|오늘|요약 내보내기|선택한 날의 진행률|새 할 일|할 일 제목|상세 정보|진행 중|완료|미완료|최근 30일 집중도 히트맵|새 메모|자료 추가|새 폴더|시작|일시 정지|초기화|클래식|시험 시계|시간이 끝났습니다!|집중 시간',
+    '저장|취소|확인|삭제|편집|복사|붙여넣기|이름 바꾸기|닫기|뒤로|검색|제목|설명|데이터 추가|백업 다운로드|백업 복원|소리|진동|무음|전체 화면|전체 화면 종료',
+  ],
+  az: [
+    'Daxil ol|Hesab yarat|E-poçt|Şifrə|Şifrəni təkrarla|Şifrəni unutdum|Sıfırlama linki göndər|Girişə qayıt|Tapşırıqların, qeydlərin və planların bütün cihazlarında.|E-poçtunu təsdiqlə|Məktubdakı linki aç və davam etmək üçün bura qayıt.|E-poçtumu təsdiqlədim|Təsdiq məktubunu yenidən göndər|Başqa hesabdan istifadə et|Qeydlərin açılır…|Hesabsız sına · yalnız bu cihazda|Hesabımı sil|E-poçt və ya şifrə yanlışdır.|Bağlantı alınmadı. İnterneti yoxla və yenidən sına.|Ən azı 12 simvolluq şifrə seç.|Şifrələr uyğun gəlmir.',
+    'Ana səhifə|Tapşırıqlar|Plan|İmtahanlar|Taymerlər|Sürətli qeydlər|Mənbələr|Siyahılar|Məlumat seyfi|Ayarlar|Daha çox|Dil|Görünüş|Mövzu|İş sahəsi|Bildirişlər|Hesab və qeydlər|Bulud sinxronizasiyası|Çıxış et|Kömək və məlumat|Dəstək',
+    'Təqvim|Bu gün|Xülasəni ixrac et|Seçilmiş günün irəliləyişi|Yeni tapşırıq|Tapşırığın adı|Təfərrüatlar|Davam edir|Tamamlandı|Yerinə yetirilmədi|Son 30 günün fokus xəritəsi|Yeni qeyd|Mənbə əlavə et|Yeni qovluq|Başlat|Fasilə|Sıfırla|Klassik|İmtahan saatı|Vaxt bitdi!|Fokus vaxtı',
+    'Saxla|Ləğv et|Təsdiqlə|Sil|Redaktə et|Kopyala|Yapışdır|Adını dəyiş|Bağla|Geri|Axtar|Başlıq|Təsvir|Məlumat əlavə et|Ehtiyat nüsxəni endir|Ehtiyat nüsxəni bərpa et|Səs|Titrəyiş|Səssiz|Tam ekran|Tam ekrandan çıx',
+  ],
+  kk: [
+    'Кіру|Тіркелгі жасау|Электрондық пошта|Құпиясөз|Құпиясөзді қайталаңыз|Құпиясөзді ұмыттым|Қалпына келтіру сілтемесін жіберу|Кіруге оралу|Тапсырмалар, жазбалар мен жоспарлар барлық құрылғыңызда.|Поштаңызды растаңыз|Хаттағы сілтемені ашып, жалғастыру үшін осы жерге оралыңыз.|Поштамды растадым|Растау хатын қайта жіберу|Басқа тіркелгіні пайдалану|Жазбалар ашылуда…|Тіркелгісіз көру · тек осы құрылғыда|Тіркелгімді жою|Пошта немесе құпиясөз қате.|Байланыс жоқ. Интернетті тексеріп, қайталап көріңіз.|Кемінде 12 таңбалы құпиясөз таңдаңыз.|Құпиясөздер сәйкес емес.',
+    'Басты бет|Тапсырмалар|Жоспар|Емтихандар|Таймерлер|Жылдам жазбалар|Ресурстар|Тізімдер|Дерек қоймасы|Баптаулар|Тағы|Тіл|Көрініс|Тақырып|Жұмыс кеңістігі|Хабарландырулар|Тіркелгі және жазбалар|Бұлтпен синхрондау|Шығу|Көмек және ақпарат|Қолдау',
+    'Күнтізбе|Бүгін|Қорытындыны экспорттау|Таңдалған күннің барысы|Жаңа тапсырма|Тапсырма атауы|Мәліметтер|Орындалуда|Аяқталды|Орындалмады|Соңғы 30 күннің зейін картасы|Жаңа жазба|Ресурс қосу|Жаңа қалта|Бастау|Кідірту|Қалпына келтіру|Классикалық|Емтихан сағаты|Уақыт бітті!|Зейін уақыты',
+    'Сақтау|Бас тарту|Растау|Жою|Өңдеу|Көшіру|Қою|Атын өзгерту|Жабу|Артқа|Іздеу|Атау|Сипаттама|Дерек қосу|Сақтық көшірмені жүктеу|Сақтық көшірмені қалпына келтіру|Дыбыс|Діріл|Дыбыссыз|Толық экран|Толық экраннан шығу',
+  ],
+  ky: [
+    'Кирүү|Аккаунт түзүү|Электрондук почта|Сырсөз|Сырсөздү кайталаңыз|Сырсөздү унуттум|Калыбына келтирүү шилтемесин жөнөтүү|Кирүүгө кайтуу|Тапшырмалар, жазуулар жана пландар бардык түзмөктөрүңүздө.|Почтаңызды ырастоо|Каттагы шилтемени ачып, улантуу үчүн бул жерге кайтыңыз.|Почтамды ырастадым|Ырастоо катын кайра жөнөтүү|Башка аккаунтту колдонуу|Жазуулар ачылууда…|Аккаунтсуз сынап көрүү · ушул түзмөктө гана|Аккаунтумду өчүрүү|Почта же сырсөз туура эмес.|Туташуу болбой калды. Интернетти текшерип, кайра аракет кылыңыз.|Кеминде 12 белгиден турган сырсөз тандаңыз.|Сырсөздөр дал келбейт.',
+    'Башкы бет|Тапшырмалар|План|Сынактар|Таймерлер|Ыкчам жазуулар|Булактар|Тизмелер|Маалымат сактагычы|Жөндөөлөр|Дагы|Тил|Көрүнүш|Тема|Иш мейкиндиги|Билдирмелер|Аккаунт жана жазуулар|Булут менен шайкештештирүү|Чыгуу|Жардам жана маалымат|Колдоо',
+    'Жылнаама|Бүгүн|Жыйынтыкты экспорттоо|Тандалган күндүн жүрүшү|Жаңы тапшырма|Тапшырманын аталышы|Чоо-жайы|Аткарылууда|Аткарылды|Аткарылган жок|Акыркы 30 күндүн көңүл топтоо картасы|Жаңы жазуу|Булак кошуу|Жаңы папка|Баштоо|Тындыруу|Баштапкы абалга келтирүү|Классикалык|Сынак сааты|Убакыт бүттү!|Көңүл топтоо убактысы',
+    'Сактоо|Жокко чыгаруу|Ырастоо|Өчүрүү|Түзөтүү|Көчүрүү|Чаптоо|Атын өзгөртүү|Жабуу|Артка|Издөө|Аталышы|Сүрөттөмө|Маалымат кошуу|Камдык көчүрмөнү жүктөө|Камдык көчүрмөнү калыбына келтирүү|Үн|Титирөө|Үнсүз|Толук экран|Толук экрандан чыгуу',
+  ],
+  uz: [
+    'Kirish|Hisob yaratish|Elektron pochta|Parol|Parolni takrorlang|Parolni unutdim|Tiklash havolasini yuborish|Kirishga qaytish|Vazifalar, eslatmalar va rejalar barcha qurilmalaringizda.|Pochtangizni tasdiqlang|Xatdagi havolani oching va davom etish uchun bu yerga qayting.|Pochtamni tasdiqladim|Tasdiqlash xatini qayta yuborish|Boshqa hisobdan foydalanish|Yozuvlar ochilmoqda…|Hisobsiz sinash · faqat shu qurilmada|Hisobimni o‘chirish|Pochta yoki parol noto‘g‘ri.|Ulanib bo‘lmadi. Internetni tekshirib, qayta urinib ko‘ring.|Kamida 12 belgidan iborat parol tanlang.|Parollar mos kelmadi.',
+    'Bosh sahifa|Vazifalar|Reja|Imtihonlar|Taymerlar|Tezkor eslatmalar|Manbalar|Ro‘yxatlar|Ma’lumotlar ombori|Sozlamalar|Ko‘proq|Til|Ko‘rinish|Mavzu|Ish maydoni|Bildirishnomalar|Hisob va yozuvlar|Bulut bilan sinxronlash|Chiqish|Yordam va ma’lumot|Qo‘llab-quvvatlash',
+    'Taqvim|Bugun|Xulosani eksport qilish|Tanlangan kundagi natija|Yangi vazifa|Vazifa nomi|Tafsilotlar|Bajarilmoqda|Bajarildi|Bajarilmadi|So‘nggi 30 kunning diqqat xaritasi|Yangi eslatma|Manba qo‘shish|Yangi jild|Boshlash|To‘xtatib turish|Nolga qaytarish|Klassik|Imtihon soati|Vaqt tugadi!|Diqqat vaqti',
+    'Saqlash|Bekor qilish|Tasdiqlash|O‘chirish|Tahrirlash|Nusxalash|Joylash|Nomini o‘zgartirish|Yopish|Orqaga|Qidirish|Sarlavha|Tavsif|Ma’lumot qo‘shish|Zaxira nusxasini yuklab olish|Zaxira nusxasini tiklash|Ovoz|Tebranish|Ovozsiz|To‘liq ekran|To‘liq ekrandan chiqish',
+  ],
+  tk: [
+    'Giriş|Hasap döretmek|Elektron poçta|Açar sözi|Açar sözüni gaýtalaň|Açar sözüni unutdym|Dikeldiş baglanyşygyny ibermek|Girişe dolanmak|Wezipeler, bellikler we meýilnamalar ähli enjamlaryňyzda.|Poçtaňyzy tassyklaň|Hatdaky baglanyşygy açyň we dowam etmek üçin şu ýere dolanyň.|Poçtamy tassykladym|Tassyklaýyş hatyny täzeden ibermek|Başga hasaby ulanmak|Ýazgylar açylýar…|Hasapsyz synap görmek · diňe şu enjamda|Hasabymy pozmak|Poçta ýa-da açar sözi nädogry.|Baglanyşyk başartmady. Interneti barlap, gaýtadan synanyşyň.|Iň azyndan 12 belgili açar sözüni saýlaň.|Açar sözleri gabat gelmeýär.',
+    'Baş sahypa|Wezipeler|Meýilnama|Synaglar|Taýmerler|Çalt bellikler|Çeşmeler|Sanawlar|Maglumat ammary|Sazlamalar|Köpräk|Dil|Görnüş|Tema|Iş meýdany|Bildirişler|Hasap we ýazgylar|Bulut bilen sinhronlamak|Çykmak|Kömek we maglumat|Goldaw',
+    'Senenama|Şu gün|Gysgaça hasabaty eksport etmek|Saýlanan günüň ösüşi|Täze wezipe|Wezipäniň ady|Jikme-jiklikler|Ýerine ýetirilýär|Tamamlandy|Ýerine ýetirilmedi|Soňky 30 günüň üns kartasy|Täze bellik|Çeşme goşmak|Täze bukja|Başlatmak|Säginmek|Täzeden başlatmak|Klassyky|Synag sagady|Wagt gutardy!|Üns wagty',
+    'Ýatda saklamak|Ýatyrmak|Tassyklamak|Pozmak|Üýtgetmek|Göçürmek|Ýerlemek|Adyny üýtgetmek|Ýapmak|Yza|Gözlemek|Sözbaşy|Düşündiriş|Maglumat goşmak|Ätiýaçlyk nusgany göçürip almak|Ätiýaçlyk nusgany dikeltmek|Ses|Titreýiş|Sessiz|Doly ekran|Doly ekrandan çykmak',
+  ],
+  sv: [
+    'Logga in|Skapa konto|E-post|Lösenord|Upprepa lösenordet|Glömt lösenord|Skicka återställningslänk|Tillbaka till inloggning|Dina uppgifter, anteckningar och planer på alla dina enheter.|Verifiera din e-post|Öppna länken i mejlet och återvänd hit för att fortsätta.|Jag har verifierat min e-post|Skicka verifieringsmejlet igen|Använd ett annat konto|Öppnar dina uppgifter…|Prova utan konto · endast på den här enheten|Ta bort mitt konto|Fel e-postadress eller lösenord.|Det gick inte att ansluta. Kontrollera nätet och försök igen.|Välj ett lösenord med minst 12 tecken.|Lösenorden stämmer inte överens.',
+    'Hem|Uppgifter|Plan|Prov|Tidtagare|Snabbanteckningar|Resurser|Listor|Datavalv|Inställningar|Mer|Språk|Utseende|Tema|Arbetsyta|Aviseringar|Konto och data|Molnsynkronisering|Logga ut|Hjälp och information|Support',
+    'Kalender|I dag|Exportera sammanfattning|Framsteg för vald dag|Ny uppgift|Uppgiftens titel|Detaljer|Pågår|Slutförd|Inte slutförd|Fokuskarta för de senaste 30 dagarna|Ny anteckning|Lägg till resurs|Ny mapp|Starta|Pausa|Återställ|Klassisk|Provklocka|Tiden är ute!|Fokustid',
+    'Spara|Avbryt|Bekräfta|Ta bort|Redigera|Kopiera|Klistra in|Byt namn|Stäng|Tillbaka|Sök|Titel|Beskrivning|Lägg till data|Hämta säkerhetskopia|Återställ säkerhetskopia|Ljud|Vibration|Tyst|Helskärm|Avsluta helskärm',
+  ],
+  da: [
+    'Log ind|Opret konto|E-mail|Adgangskode|Gentag adgangskoden|Glemt adgangskode|Send link til nulstilling|Tilbage til login|Dine opgaver, noter og planer på alle dine enheder.|Bekræft din e-mail|Åbn linket i mailen, og vend tilbage hertil for at fortsætte.|Jeg har bekræftet min e-mail|Send bekræftelsesmail igen|Brug en anden konto|Åbner dine oplysninger…|Prøv uden konto · kun på denne enhed|Slet min konto|Forkert e-mail eller adgangskode.|Kunne ikke oprette forbindelse. Tjek nettet, og prøv igen.|Vælg en adgangskode på mindst 12 tegn.|Adgangskoderne er ikke ens.',
+    'Hjem|Opgaver|Plan|Prøver|Timere|Hurtige noter|Ressourcer|Lister|Databoks|Indstillinger|Mere|Sprog|Udseende|Tema|Arbejdsområde|Notifikationer|Konto og data|Synkronisering i skyen|Log ud|Hjælp og information|Support',
+    'Kalender|I dag|Eksportér oversigt|Fremskridt for den valgte dag|Ny opgave|Opgavens titel|Detaljer|I gang|Afsluttet|Ikke afsluttet|Fokuskort for de seneste 30 dage|Ny note|Tilføj ressource|Ny mappe|Start|Sæt på pause|Nulstil|Klassisk|Prøveur|Tiden er gået!|Fokustid',
+    'Gem|Annullér|Bekræft|Slet|Redigér|Kopiér|Sæt ind|Omdøb|Luk|Tilbage|Søg|Titel|Beskrivelse|Tilføj data|Hent sikkerhedskopi|Gendan sikkerhedskopi|Lyd|Vibration|Lydløs|Fuld skærm|Afslut fuld skærm',
+  ],
+  nb: [
+    'Logg inn|Opprett konto|E-post|Passord|Gjenta passordet|Glemt passord|Send lenke for tilbakestilling|Tilbake til innlogging|Oppgaver, notater og planer på alle enhetene dine.|Bekreft e-postadressen|Åpne lenken i e-posten og kom tilbake hit for å fortsette.|Jeg har bekreftet e-posten|Send bekreftelsen på nytt|Bruk en annen konto|Åpner opplysningene dine…|Prøv uten konto · bare på denne enheten|Slett kontoen min|Feil e-postadresse eller passord.|Kunne ikke koble til. Sjekk nettet og prøv igjen.|Velg et passord på minst 12 tegn.|Passordene er ikke like.',
+    'Hjem|Oppgaver|Plan|Prøver|Tidtakere|Hurtignotater|Ressurser|Lister|Datahvelv|Innstillinger|Mer|Språk|Utseende|Tema|Arbeidsområde|Varsler|Konto og data|Skysynkronisering|Logg ut|Hjelp og informasjon|Brukerstøtte',
+    'Kalender|I dag|Eksporter sammendrag|Fremdrift for valgt dag|Ny oppgave|Oppgavetittel|Detaljer|Pågår|Fullført|Ikke fullført|Fokuskart for de siste 30 dagene|Nytt notat|Legg til ressurs|Ny mappe|Start|Sett på pause|Nullstill|Klassisk|Prøveklokke|Tiden er ute!|Fokustid',
+    'Lagre|Avbryt|Bekreft|Slett|Rediger|Kopier|Lim inn|Gi nytt navn|Lukk|Tilbake|Søk|Tittel|Beskrivelse|Legg til data|Last ned sikkerhetskopi|Gjenopprett sikkerhetskopi|Lyd|Vibrasjon|Lydløs|Fullskjerm|Avslutt fullskjerm',
+  ],
+  fi: [
+    'Kirjaudu sisään|Luo tili|Sähköposti|Salasana|Toista salasana|Unohdin salasanani|Lähetä palautuslinkki|Takaisin kirjautumiseen|Tehtäväsi, muistiinpanosi ja suunnitelmasi kaikilla laitteillasi.|Vahvista sähköpostiosoitteesi|Avaa sähköpostin linkki ja palaa tänne jatkamaan.|Olen vahvistanut sähköpostini|Lähetä vahvistusviesti uudelleen|Käytä toista tiliä|Avataan tietojasi…|Kokeile ilman tiliä · vain tällä laitteella|Poista tilini|Sähköposti tai salasana on väärä.|Yhteys epäonnistui. Tarkista verkko ja yritä uudelleen.|Valitse vähintään 12 merkin salasana.|Salasanat eivät täsmää.',
+    'Etusivu|Tehtävät|Suunnitelma|Kokeet|Ajastimet|Pikamuistiinpanot|Resurssit|Listat|Tietoholvi|Asetukset|Lisää|Kieli|Ulkoasu|Teema|Työtila|Ilmoitukset|Tili ja tiedot|Pilvisynkronointi|Kirjaudu ulos|Ohje ja tiedot|Tuki',
+    'Kalenteri|Tänään|Vie yhteenveto|Valitun päivän edistyminen|Uusi tehtävä|Tehtävän otsikko|Tiedot|Käynnissä|Valmis|Tekemättä|Viimeisten 30 päivän keskittymiskartta|Uusi muistiinpano|Lisää resurssi|Uusi kansio|Aloita|Keskeytä|Nollaa|Klassinen|Koekello|Aika loppui!|Keskittymisaika',
+    'Tallenna|Peruuta|Vahvista|Poista|Muokkaa|Kopioi|Liitä|Nimeä uudelleen|Sulje|Takaisin|Hae|Otsikko|Kuvaus|Lisää tietoja|Lataa varmuuskopio|Palauta varmuuskopio|Ääni|Värinä|Äänetön|Koko näyttö|Poistu koko näytöstä',
+  ],
+  is: [
+    'Skrá inn|Stofna reikning|Netfang|Lykilorð|Endurtaktu lykilorð|Gleymt lykilorð|Senda endurstillingartengil|Til baka í innskráningu|Verkefni, glósur og áætlanir í öllum tækjunum þínum.|Staðfestu netfangið þitt|Opnaðu tengilinn í tölvupóstinum og komdu aftur hingað til að halda áfram.|Ég hef staðfest netfangið mitt|Senda staðfestingarpóst aftur|Nota annan reikning|Opna gögnin þín…|Prófa án reiknings · aðeins í þessu tæki|Eyða reikningnum mínum|Rangt netfang eða lykilorð.|Tenging mistókst. Athugaðu nettenginguna og reyndu aftur.|Veldu að minnsta kosti 12 stafa lykilorð.|Lykilorðin passa ekki saman.',
+    'Heim|Verkefni|Áætlun|Próf|Tímamælar|Flýtiglósur|Tilföng|Listar|Gagnageymsla|Stillingar|Meira|Tungumál|Útlit|Þema|Vinnusvæði|Tilkynningar|Reikningur og gögn|Samstilling í skýi|Skrá út|Hjálp og upplýsingar|Aðstoð',
+    'Dagatal|Í dag|Flytja út samantekt|Framvinda valins dags|Nýtt verkefni|Heiti verkefnis|Nánari upplýsingar|Í vinnslu|Lokið|Ólokið|Einbeitingarkort síðustu 30 daga|Ný glósa|Bæta við tilfangi|Ný mappa|Byrja|Gera hlé|Núllstilla|Klassískt|Prófklukka|Tíminn er búinn!|Einbeitingartími',
+    'Vista|Hætta við|Staðfesta|Eyða|Breyta|Afrita|Líma|Endurnefna|Loka|Til baka|Leita|Titill|Lýsing|Bæta við gögnum|Sækja öryggisafrit|Endurheimta öryggisafrit|Hljóð|Titringur|Hljóðlaust|Allur skjárinn|Hætta í heilskjá',
+  ],
+};

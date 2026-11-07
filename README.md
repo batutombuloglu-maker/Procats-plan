@@ -1,33 +1,47 @@
 # Procats
 
-Personal study planning for Android, Wear OS, Windows and the web. Developed by **Batu**. Current source: **1.7.7**.
+**A study workspace for turning plans into daily progress.**
 
-## Features
+![Version 2.0.0](https://img.shields.io/badge/version-2.0.0-1884f7)
+![Platforms](https://img.shields.io/badge/platforms-Web%20%7C%20Android%20%7C%20Windows-394556)
+![Interface languages](https://img.shields.io/badge/interface%20languages-20-4a8b6f)
 
-- Daily tasks, a calendar, completion history, ratings and a 30-day activity heatmap.
-- Focus timers with classic, exam-clock and OLED displays, plus a persistent stopwatch.
-- Quick notes, free-form plans, resources, reorderable checklists and practice-exam tracking.
-- Account-scoped local journals, Firestore synchronization, encrypted backups and an offline recovery tool.
-- Android home widgets and a Wear OS companion.
+Procats brings a weekly task planner, focus timers, practice exam tracking, checklists, notes, and study links together. It can run locally in guest mode or sync across devices with a verified Firebase account.
 
-## 1.7.7
+**Plan the week.** Add tasks and study resources. **Work in focus.** Start the timer and mark tasks as you go. **Review progress.** Check your activity and exam results.
 
-The home 3D scene, home post-it and Knowledge Treasury interface have been removed. The original home layout remains. The stopwatch now matches the real clock's system typeface, with fixed numeric fields to prevent lateral movement. The task view has a theme-aware scrollbar and extra space plus a soft edge below its fixed week strip.
+## What you can do
 
-Existing home-note text appears in Quick Notes. Legacy knowledge records remain in their existing storage/sync/backup format for data recovery; they have no active navigation or study interface. Removing these interfaces does not erase account data. A retired pinned destination is filtered while other tabs retain their order.
+| Plan your week | Focus on the next task | Keep your work |
+| --- | --- | --- |
+| Organize daily tasks, free-form plans, and reorderable checklists. | Use classic, exam-clock, and OLED timers, a stopwatch, and a 30-day activity heatmap. | Sync with an account, export encrypted backups, and recover data offline. |
+| Compare practice-exam results and keep resources and quick notes nearby. | See today's tasks from Android home widgets or the Wear OS companion. | Try the workspace in guest mode before creating an account. |
 
-## Build
+## What's new in 2.0.0
 
-Use Node.js 22+. In `Procats/`, run `npm ci`, `npm test`, `npm run build`, then `npm run preview`. A clean public checkout uses example Firebase settings and supports local guest use. For a real backend, create `public/firebase-config.js` from the example and set `.firebaserc` and `publisher.json`. Deploy authenticated Firestore rules.
+- The first-run screen presents sign-in, account creation, guest mode, and language selection.
+- The workspace offers 20 languages. The new packs cover onboarding, navigation, and common actions, with English fallback for remaining text. Arabic uses a right-to-left layout.
+- The home workspace uses the familiar clock, stopwatch, and heatmap. The former 3D progress and Knowledge Treasury features are retired.
+- Older encrypted backups remain readable. Legacy archive records can still be handled during backup recovery and account deletion.
 
-Android requires JDK 21 and Android SDK 36. Build the web client, run `npx cap sync android`, then use the Gradle wrapper. The personal application ID is `com.procats.study.personal`; phone code **32**, watch code **33**. Keep the original signing certificate for in-place updates. Signing credentials are intentionally excluded.
+Available languages include English, Turkish, German, Spanish, French, Italian, Arabic, Azerbaijani, Kazakh, Kyrgyz, Uzbek, Turkmen, Swedish, Danish, Norwegian Bokmål, Finnish, Icelandic, Simplified Chinese, Japanese, and Korean.
 
-For Windows, install dependencies in `Windows/`, copy the completed web build to a fresh `Windows/www/` directory, then run `npm test` and `npm run dist`. The x64 installer and portable EXE are not publisher-signed.
+## Run it locally
 
-## Data and verification
+```sh
+cd Procats
+npm ci
+npm test
+npm run build
+npm run preview
+```
 
-The public repository contains no personal records, account backups, real Firebase configuration, signing keys or credentials. Source code does not replace an encrypted personal-data backup. The retained legacy data layer is deliberate recovery compatibility, not a hidden user interface.
+Use Node.js 22 or newer. Select **Try without an account** to explore the local workspace. To enable account features for your own deployment, supply your Firebase client configuration and deploy the included Firestore rules.
 
-227 application checks cover active behavior and retained data compatibility. New coverage checks stable stopwatch fields and safe retired-tab normalization. Release evidence includes local guest UI tests; physical phone/watch behavior and indefinite retention are not guaranteed. No new dependencies were added. No live Firebase deployment or Play Store upload is part of this release.
+| Project | Contents |
+| --- | --- |
+| [Procats](Procats/) | Web client, Android app, and Wear OS companion |
+| [Windows](Windows/) | Electron desktop shell and Windows packaging |
+| [Data and security](docs/DATA-SECURITY.md) | Account boundaries, backup format, and recovery |
 
-`Procats/` contains the web/Android/Wear project; `Windows/` contains the isolated Electron shell. `legacy/` preserves an older prototype. Release and security notes are in `Procats/docs/`.
+See the [2.0.0 release notes](Procats/docs/2.0.0-RELEASE.md) for Android and Windows build details. This public source uses example Firebase settings and contains no personal records or release signing keys.

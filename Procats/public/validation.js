@@ -58,7 +58,7 @@ import './sync-merge.js';
                 ['string', 'number'].includes(typeof value.chatId) && (value.lastSentTime == null || isTimestamp(value.lastSentTime));
             if (key === 'procats_sw') return isRecord(value) && typeof value.isRunning === 'boolean' && isTimestamp(value.startTime) && isTimestamp(value.savedTime);
             if (key === 'procats_timer') return isRecord(value) && typeof value.isRunning === 'boolean' && isTimestamp(value.endTime) && isCount(value.remainingTime);
-            if (key === 'procats_lang') return ['tr', 'en', 'de'].includes(value);
+            if (key === 'procats_lang') return globalThis.ProcatsLocale?.supported(value) ?? ['tr', 'en', 'de'].includes(value);
             if (key === 'procats_theme') return ["default","cream","light","dark","alpine","solar","velvet","swan","heritage","starlit","hibiscus","lily","starry","vinyl","oled","hacker","crimson"].includes(value);
             if (key.endsWith('sidebarWidth')) return typeof value === 'string' && /^\d+(\.\d+)?px$/.test(value) && parseFloat(value) >= 220 && parseFloat(value) <= 600;
             return false;
