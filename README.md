@@ -2,7 +2,7 @@
 
 **A study workspace for turning plans into daily progress.**
 
-![Version 2.1.0](https://img.shields.io/badge/version-2.1.0-1884f7)
+![Version 2.1.1](https://img.shields.io/badge/version-2.1.1-1884f7)
 ![Platforms](https://img.shields.io/badge/platforms-Web%20%7C%20Android%20%7C%20Windows-394556)
 ![Interface languages](https://img.shields.io/badge/interface%20languages-20-4a8b6f)
 
@@ -17,9 +17,11 @@ Procats brings a weekly task planner, focus timers, practice exam tracking, chec
 | Organize daily tasks, free-form plans, and reorderable checklists. | Use classic, exam-clock, and OLED timers, a stopwatch, and a 30-day activity heatmap. | Sync with an account, export encrypted backups, and recover data offline. |
 | Compare practice-exam results and keep resources and quick notes nearby. | See today's tasks from Android home widgets or the Wear OS companion. | Organize study cards in collections and reveal each answer when you review. |
 
-## Knowledge Collection in 2.1.0
+## Knowledge Collection
 
 Create custom collections alongside Words, Concepts, and General Knowledge. A card can belong to multiple collections and appears once in All cards. The card menu opens its editor or delete confirmation.
+
+In 2.1.1, right-click a custom collection tab or open its three-dot menu to rename or delete it. Renaming keeps its cards assigned. Deleting a collection keeps its cards in their other collections and moves cards with no other memberships to General Knowledge. Built-in collections serve as fixed categories. Card labels use more visible colored dots to distinguish collections.
 
 Choose a collection or search for cards, then select **Review** to see the prompts and reveal the answers. Use **Data Vault → Add data** to preview and import a supported JSON data pack. The [Turkish example pack](docs/examples/knowledge-collection-tr.json) contains ten sample cards and one custom collection.
 
@@ -47,4 +49,4 @@ Use Node.js 22 or newer. Select **Try without an account** to explore the local 
 | [Windows](Windows/) | Electron desktop shell and Windows packaging |
 | [Data and security](docs/DATA-SECURITY.md) | Account boundaries, backup format, and recovery |
 
-See the [2.1.0 release notes](Procats/docs/2.1.0-RELEASE.md) for Android and Windows build details. This public source uses example Firebase settings and contains no personal records or release signing keys.
+See the [2.1.1 release notes](Procats/docs/2.1.1-RELEASE.md) for Android and Windows build details. This public source uses example Firebase settings. Store personal records and release signing keys separately.

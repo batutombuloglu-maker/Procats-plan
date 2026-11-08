@@ -401,8 +401,8 @@
         #syncStatus{position:fixed;bottom:8px;right:16px;z-index:60;max-width:calc(100vw - 88px);border:0;border-radius:8px;background:var(--bg-card);color:var(--text-secondary);font-size:12px;padding:5px 9px;cursor:pointer}
         #syncModal .modal-actions{flex-wrap:wrap}#syncModal p{line-height:1.6;margin:14px 0}#syncModal button{font-size:14px}#syncAccount{overflow-wrap:anywhere}
     </style>
-<link rel="stylesheet" href="/mobile.css?v=2.1.0">
-<link rel="stylesheet" href="/account.css?v=2.1.0"><link rel="stylesheet" href="/weekly-summary.css?v=2.1.0">
+<link rel="stylesheet" href="/mobile.css?v=2.1.1">
+<link rel="stylesheet" href="/account.css?v=2.1.1"><link rel="stylesheet" href="/weekly-summary.css?v=2.1.1">
 <link rel="stylesheet" href="/experience.css">
 <link rel="stylesheet" href="/release.css">
 <link rel="stylesheet" href="/upgrade.css">
@@ -623,13 +623,13 @@
               <div class="collection-dialog-head">
                 <div>
                   <h2 id="collectionCreateTitle" data-collection-text="newCollection">Yeni koleksiyon</h2>
-                  <p class="collection-dialog-intro" data-collection-text="collectionIntro">Benzer kartları bir arada bulmak için bir koleksiyon oluştur.</p>
+                  <p id="collectionCreateIntro" class="collection-dialog-intro" data-collection-text="collectionIntro">Benzer kartları bir arada bulmak için bir koleksiyon oluştur.</p>
                 </div>
                 <button type="button" id="collectionCreateCancel" class="collection-close" aria-label="Formu kapat" data-collection-label="closeForm">×</button>
               </div>
               <label class="collection-field"><span data-collection-text="collectionName">Koleksiyon adı</span><input name="label" placeholder="Örn. Sınavda çıkanlar" data-collection-placeholder="collectionHint" maxlength="48" required autofocus></label>
               <p class="collection-form-error" role="alert" hidden></p>
-              <div class="collection-actions collection-form-footer"><button type="submit" class="collection-button collection-primary" data-collection-text="createCollection">Koleksiyonu oluştur</button></div>
+              <div class="collection-actions collection-form-footer"><button type="submit" id="collectionCreateSubmit" class="collection-button collection-primary" data-collection-text="createCollection">Koleksiyonu oluştur</button></div>
             </form>
           </dialog>
           <dialog id="collectionDeleteDialog" class="collection-dialog" aria-labelledby="collectionDeleteTitle" aria-describedby="collectionDeleteCopy">
@@ -639,7 +639,7 @@
               <p class="collection-form-error" role="alert" hidden></p>
               <div class="collection-actions collection-form-footer">
                 <button type="button" id="collectionDeleteCancel" data-collection-text="cancel" class="collection-button" autofocus>Vazgeç</button>
-                <button type="submit" class="collection-button collection-danger" data-collection-text="deleteCard">Kartı sil</button>
+                <button type="submit" id="collectionDeleteSubmit" class="collection-button collection-danger" data-collection-text="deleteCard">Kartı sil</button>
               </div>
             </form>
           </dialog>

@@ -147,6 +147,24 @@ function allocateId(rows) {
   }
 }
 
+function categoryNames(view, exceptId) {
+  return new Map([...defaultNames, ...view.categories
+    .filter(category => category.id !== exceptId)
+    .map(category => [nameKey(category.label), category.id])]);
+}
+
+const membershipIds = view => new Set([...defaultIds, ...view.categories.map(category => category.id)]);
+
+function moveMembership(row, fromId, toId, validIds, now) {
+  if (row.source !== cardSource) return row;
+  const memberships = membershipFromRow(row);
+  if (!memberships?.includes(fromId)) return row;
+  const next = [...new Set(memberships.map(id => id === fromId ? toId : id).filter(id => validIds.has(id)))];
+  const origin = JSON.stringify(next.length ? next : ['facts']);
+  if (origin.length > 2000) throw Error('collection-limit');
+  return { ...row, origin, updatedAt: Math.max(now, row.updatedAt) };
+}
+
 export function createCollectionStore(store) {
   const read = () => {
     store.refresh();
@@ -172,6 +190,11 @@ export function createCollectionStore(store) {
     if (!card || expected !== undefined && JSON.stringify(card) !== (typeof expected === 'string' ? expected : JSON.stringify(expected))) throw Error('collection-changed');
     return card;
   };
+  const currentCategory = (view, id, expectedLabel) => {
+    const category = view.categories.find(item => item.id === id);
+    if (!category || expectedLabel !== undefined && category.label !== expectedLabel) throw Error('collection-changed');
+    return category;
+  };
   return {
     get: () => collectionView(read()),
     getState: () => store.getState(),
@@ -179,15 +202,38 @@ export function createCollectionStore(store) {
     resolve: which => store.resolve(which),
     createCollection(value) {
       const rows = mutable(), view = collectionView(rows);
-      const names = new Map([...defaultNames, ...view.categories.map(category => [nameKey(category.label), category.id])]);
-      const label = validateName(value, names);
+      const label = validateName(value, categoryNames(view));
       commit([...rows, buildFolder(label, allocateId(rows), Date.now())]);
       return { id: customId(label), label };
+    },
+    renameCollection(id, value, expectedLabel) {
+      const rows = mutable(), view = collectionView(rows);
+      const category = currentCategory(view, id, expectedLabel);
+      const label = validateName(value, categoryNames(view, id));
+      if (label === category.label) return category;
+      const nextId = customId(label), validIds = membershipIds(view), now = Date.now();
+      validIds.delete(id);
+      validIds.add(nextId);
+      commit(rows.map(row => {
+        if (folderFromRow(row)?.id === id) {
+          return { ...row, question: label, origin: nextId, updatedAt: Math.max(now, row.updatedAt) };
+        }
+        return nextId === id ? row : moveMembership(row, id, nextId, validIds, now);
+      }));
+      return { id: nextId, label };
+    },
+    deleteCollection(id, expectedLabel) {
+      const rows = mutable(), view = collectionView(rows);
+      currentCategory(view, id, expectedLabel);
+      const validIds = membershipIds(view), now = Date.now();
+      validIds.delete(id);
+      commit(rows.filter(row => folderFromRow(row)?.id !== id)
+        .map(row => moveMembership(row, id, null, validIds, now)));
     },
     saveCard(input, expected) {
       if (!record(input)) throw Error('collection-invalid');
       const rows = mutable(), view = collectionView(rows);
-      const validIds = new Set([...defaultIds, ...view.categories.map(category => category.id)]);
+      const validIds = membershipIds(view);
       if (input.id != null) currentCard(view, input.id, expected);
       const index = rows.findIndex(row => row.id === input.id);
       const saved = buildCard(input, index < 0 ? allocateId(rows) : input.id, validIds, Date.now(), rows[index]);

@@ -29,8 +29,13 @@
       collectionName: 'Koleksiyon adı', collectionHint: 'Örn. Sınavda çıkanlar',
       collectionRequired: 'Koleksiyonun adını yaz.', duplicate: 'Bu adda bir koleksiyon zaten var.',
       deleteCard: 'Kartı sil', deleteCopy: '«{title}» kartı yer aldığı tüm koleksiyonlardan kaldırılacak.',
+      collectionOptions: '{title} koleksiyon seçenekleri', renameCollection: 'Yeniden adlandır',
+      renameIntro: 'Yeni bir ad yaz. Kartların bu koleksiyonda kalır.',
+      deleteCollection: 'Koleksiyonu sil',
+      deleteCollectionCopy: '«{title}» koleksiyonu silinecek. Kartlar diğer koleksiyonlarında kalır. Yalnızca bu koleksiyondaki kartlar Genel bilgi’ye taşınır.',
       saveFailed: 'Değişiklik kaydedilemedi. Lütfen tekrar dene.',
       changed: 'Bu kart başka bir yerde değişti. Kartı yeniden açıp düzenle.',
+      collectionChanged: 'Bu koleksiyon başka bir yerde değişti. Seçeneklerini yeniden aç.',
       invalidEdit: 'Kart veya koleksiyon bilgilerini kontrol et.',
       limit: 'Koleksiyon kayıt sınırına ulaşıldı.',
       locked: 'Koleksiyon kayıtları şu anda düzenlemeye kapalı.',
@@ -65,8 +70,13 @@
       collectionName: 'Collection name', collectionHint: 'e.g. Exam practice',
       collectionRequired: 'Enter a collection name.', duplicate: 'A collection with this name already exists.',
       deleteCard: 'Delete card', deleteCopy: '“{title}” will be removed from all its collections.',
+      collectionOptions: 'Collection options for {title}', renameCollection: 'Rename',
+      renameIntro: 'Enter a new name. Your cards stay in this collection.',
+      deleteCollection: 'Delete collection',
+      deleteCollectionCopy: '“{title}” will be deleted. Cards stay in their other collections. Cards that belong only here move to General knowledge.',
       saveFailed: 'Could not save the change. Please try again.',
       changed: 'This card changed elsewhere. Reopen it to edit the latest version.',
+      collectionChanged: 'This collection changed elsewhere. Reopen its options.',
       invalidEdit: 'Check the card or collection details.',
       limit: 'The collection record limit was reached.',
       locked: 'Collection records are currently locked.',
@@ -101,8 +111,13 @@
       collectionName: 'Sammlungsname', collectionHint: 'z. B. Prüfungsvorbereitung',
       collectionRequired: 'Gib einen Sammlungsnamen ein.', duplicate: 'Eine Sammlung mit diesem Namen existiert bereits.',
       deleteCard: 'Karte löschen', deleteCopy: '„{title}“ wird aus allen Sammlungen entfernt.',
+      collectionOptions: 'Sammlungsoptionen für {title}', renameCollection: 'Umbenennen',
+      renameIntro: 'Gib einen neuen Namen ein. Deine Karten bleiben in dieser Sammlung.',
+      deleteCollection: 'Sammlung löschen',
+      deleteCollectionCopy: '„{title}“ wird gelöscht. Die Karten bleiben in ihren anderen Sammlungen. Karten, die nur hier enthalten sind, werden zu Allgemeinwissen verschoben.',
       saveFailed: 'Änderung konnte nicht gespeichert werden. Versuche es erneut.',
       changed: 'Diese Karte wurde an anderer Stelle geändert. Öffne sie erneut.',
+      collectionChanged: 'Diese Sammlung wurde an anderer Stelle geändert. Öffne ihre Optionen erneut.',
       invalidEdit: 'Prüfe die Angaben zur Karte oder Sammlung.',
       limit: 'Die Sammlungsgrenze wurde erreicht.',
       locked: 'Sammlungseinträge können derzeit nicht bearbeitet werden.',
@@ -129,6 +144,7 @@
   const deleteDialog = byId('collectionDeleteDialog');
   const addForm = byId('collectionAddForm');
   const createForm = byId('collectionCreateForm');
+  const deleteForm = byId('collectionDeleteForm');
   const collectionName = createForm.elements.label;
   const membershipChoices = byId('collectionMembershipChoices');
   const membershipError = byId('collectionMembershipError');
@@ -147,6 +163,8 @@
   let reviewIndex = 0;
   let editingCard = null;
   let deletingCard = null;
+  let editingCategory = null;
+  let deletingCategory = null;
   let openMenu = null;
   let categorySignature = '';
   let cardSignature = '';
@@ -189,7 +207,7 @@
     for (const card of cards) {
       for (const id of card.collectionIds) counts.set(id, (counts.get(id) || 0) + 1);
     }
-    for (const tab of categoryBar.children) {
+    for (const tab of categoryBar.querySelectorAll('[data-category]')) {
       const id = tab.dataset.category;
       tab.setAttribute('aria-pressed', String(selected === id));
       tab.querySelector('small').textContent = (counts.get(id) || 0).toLocaleString(language());
@@ -200,7 +218,7 @@
     const focused = document.activeElement;
     const focusedId = focused?.closest('[data-card-id]')?.dataset.cardId;
     const selector = focused?.classList.contains('collection-card-more') ? '.collection-card-more' : '.collection-card';
-    closeCardMenu();
+    closeActionMenu();
     const query = searchKey(search.value);
     visibleCards = cards.filter(card => (selected === 'all' || card.collectionIds.includes(selected))
       && searchKey(card.title + ' ' + card.answer).includes(query));
@@ -264,14 +282,35 @@
     if (reviewing) reveal.focus();
   }
 
-  function makeCategoryButton(category) {
+  function makeCategoryButton(category, index) {
     const tab = button('', () => selectCategory(category.id), 'collection-category');
     tab.dataset.category = category.id;
     tab.append(element('span', '', category.label), element('small'));
-    return tab;
+    if (!category.id.startsWith('custom:') || locked) return tab;
+
+    const wrap = element('div', 'collection-category-wrap');
+    const panel = element('div', 'collection-card-menu collection-category-menu');
+    panel.id = 'collectionCategoryMenu-' + index;
+    panel.hidden = true;
+    const rename = button(L('renameCollection'), () => {
+      closeActionMenu(true);
+      openCollectionForm(category);
+    });
+    const remove = button(L('deleteCollection'), () => {
+      closeActionMenu(true);
+      openDeleteDialog(null, category);
+    }, 'collection-menu-delete');
+    panel.append(rename, remove);
+    const trigger = actionTrigger(panel, format('collectionOptions', 'title', category.label), 'collection-category-more');
+    wrap.addEventListener('contextmenu', event => {
+      event.preventDefault();
+      showActionMenu(trigger, panel);
+    });
+    wrap.append(tab, trigger, panel);
+    return wrap;
   }
 
-  function closeCardMenu(restoreFocus = false) {
+  function closeActionMenu(restoreFocus = false) {
     if (!openMenu) return;
     const { trigger, panel } = openMenu;
     openMenu = null;
@@ -280,35 +319,69 @@
     if (restoreFocus) trigger.focus();
   }
 
+  function showActionMenu(trigger, panel) {
+    closeActionMenu();
+    panel.hidden = false;
+    trigger.setAttribute('aria-expanded', 'true');
+    openMenu = { trigger, panel };
+    panel.firstElementChild.focus();
+  }
+
+  function actionTrigger(panel, label, className) {
+    const trigger = button('⋯', () => {
+      if (openMenu?.trigger === trigger) closeActionMenu();
+      else showActionMenu(trigger, panel);
+    }, className);
+    trigger.setAttribute('aria-label', label);
+    trigger.setAttribute('aria-expanded', 'false');
+    trigger.setAttribute('aria-controls', panel.id);
+    return trigger;
+  }
+
   function addCardActions(wrap, card) {
     const panel = element('div', 'collection-card-menu');
     panel.id = 'collectionCardMenu-' + card.id;
     panel.hidden = true;
-    const trigger = button('⋯', () => {
-      const alreadyOpen = openMenu?.trigger === trigger;
-      closeCardMenu();
-      if (alreadyOpen) return;
-      panel.hidden = false;
-      trigger.setAttribute('aria-expanded', 'true');
-      openMenu = { trigger, panel };
-      edit.focus();
-    }, 'collection-card-more');
-    trigger.setAttribute('aria-label', format('options', 'title', card.title));
-    trigger.setAttribute('aria-expanded', 'false');
-    trigger.setAttribute('aria-controls', panel.id);
+    const trigger = actionTrigger(panel, format('options', 'title', card.title), 'collection-card-more');
     const edit = button(L('edit'), () => {
-      closeCardMenu(true);
+      closeActionMenu(true);
       openEditor(card);
     });
     const remove = button(L('remove'), () => {
-      closeCardMenu(true);
-      deletingCard = card;
-      showError(byId('collectionDeleteForm'));
-      byId('collectionDeleteCopy').textContent = format('deleteCopy', 'title', card.title);
-      deleteDialog.showModal();
+      closeActionMenu(true);
+      openDeleteDialog(card);
     }, 'collection-menu-delete');
     panel.append(edit, remove);
     wrap.append(trigger, panel);
+  }
+
+  function setDialogText(node, key) {
+    node.dataset.collectionText = key;
+    node.textContent = L(key);
+  }
+
+  function openCollectionForm(category = null) {
+    editingCategory = category;
+    createForm.reset();
+    showError(createForm);
+    collectionName.setCustomValidity('');
+    collectionName.value = category?.label || '';
+    setDialogText(byId('collectionCreateTitle'), category ? 'renameCollection' : 'newCollection');
+    setDialogText(byId('collectionCreateIntro'), category ? 'renameIntro' : 'collectionIntro');
+    setDialogText(byId('collectionCreateSubmit'), category ? 'saveEdit' : 'createCollection');
+    createDialog.showModal();
+    if (category) collectionName.select();
+  }
+
+  function openDeleteDialog(card, category = null) {
+    deletingCard = card;
+    deletingCategory = category;
+    showError(deleteForm);
+    const titleKey = category ? 'deleteCollection' : 'deleteCard';
+    setDialogText(byId('collectionDeleteTitle'), titleKey);
+    setDialogText(byId('collectionDeleteSubmit'), titleKey);
+    byId('collectionDeleteCopy').textContent = format(category ? 'deleteCollectionCopy' : 'deleteCopy', 'title', category?.label || card.title);
+    deleteDialog.showModal();
   }
 
   function openEditor(card = null) {
@@ -352,7 +425,9 @@
       'collection-changed': 'changed', 'collection-duplicate': 'duplicate', 'collection-invalid': 'invalidEdit',
       'collection-limit': 'limit', 'collection-locked': 'locked',
     };
-    notice.textContent = error ? L(keys[error.message] || 'saveFailed') : '';
+    const key = error?.message === 'collection-changed' && (form === createForm || form === deleteForm && deletingCategory)
+      ? 'collectionChanged' : keys[error?.message] || 'saveFailed';
+    notice.textContent = error ? L(key) : '';
     notice.hidden = !error;
   }
 
@@ -413,17 +488,18 @@
       { id: 'facts', label: L('facts') },
       ...snapshot.categories,
     ];
-    const newCategorySignature = JSON.stringify([language(), nextCategories]);
+    const newCategorySignature = JSON.stringify([language(), locked, nextCategories]);
     const newCardSignature = JSON.stringify([locked, snapshot.cards]);
     if (categorySignature === newCategorySignature && cardSignature === newCardSignature) return;
     cards = snapshot.cards;
     if (categorySignature !== newCategorySignature) {
-      const focusedId = document.activeElement?.dataset.category;
+      const focused = document.activeElement;
+      const focusedId = focused?.dataset.category || focused?.closest('.collection-category-wrap')?.querySelector('[data-category]').dataset.category;
       categories = nextCategories;
       if (!categoryFor(selected)) selected = 'all';
       categoryBar.replaceChildren(...categories.map(makeCategoryButton));
       if (focusedId && categoryFor(focusedId)) {
-        categoryBar.querySelector('[data-category="' + CSS.escape(focusedId) + '"]')?.focus({ preventScroll: true });
+        focusCategory(focusedId, focused.classList.contains('collection-category-more'));
       }
       categorySignature = newCategorySignature;
       localize();
@@ -433,13 +509,19 @@
     renderCards();
   }
 
-  function outsideCardMenu(event) {
-    if (openMenu && !openMenu.trigger.contains(event.target) && !openMenu.panel.contains(event.target)) closeCardMenu();
+  function focusCategory(id, options = false) {
+    const tab = categoryBar.querySelector('[data-category="' + CSS.escape(String(id)) + '"]');
+    const target = options ? tab?.closest('.collection-category-wrap')?.querySelector('.collection-category-more') || tab : tab;
+    target?.focus({ preventScroll: true });
   }
-  document.addEventListener('click', outsideCardMenu);
-  document.addEventListener('focusin', outsideCardMenu);
+
+  function outsideActionMenu(event) {
+    if (openMenu && !openMenu.trigger.contains(event.target) && !openMenu.panel.contains(event.target)) closeActionMenu();
+  }
+  document.addEventListener('click', outsideActionMenu);
+  document.addEventListener('focusin', outsideActionMenu);
   document.addEventListener('keydown', event => {
-    if (event.key === 'Escape' && openMenu) closeCardMenu(true);
+    if (event.key === 'Escape' && openMenu) closeActionMenu(true);
   });
   search.addEventListener('input', renderCards);
   reviewButton.addEventListener('click', () => {
@@ -492,12 +574,7 @@
     focusCard(card.id);
   });
 
-  byId('collectionCreate').addEventListener('click', () => {
-    createForm.reset();
-    showError(createForm);
-    collectionName.setCustomValidity('');
-    createDialog.showModal();
-  });
+  byId('collectionCreate').addEventListener('click', () => openCollectionForm());
   byId('collectionCreateCancel').addEventListener('click', () => createDialog.close());
   collectionName.addEventListener('input', () => {
     collectionName.setCustomValidity('');
@@ -507,30 +584,37 @@
     event.preventDefault();
     if (!hasText(collectionName, 'collectionRequired')) return;
     const label = collectionName.value.trim();
-    if (categories.some(category => searchKey(category.label) === searchKey(label))) {
+    const original = editingCategory;
+    if (categories.some(category => category.id !== original?.id && searchKey(category.label) === searchKey(label))) {
       collectionName.setCustomValidity(L('duplicate'));
       collectionName.reportValidity();
       return;
     }
-    const category = tryWrite(createForm, () => store.createCollection(label));
+    const previousSelection = selected;
+    const category = tryWrite(createForm, () => original
+      ? store.renameCollection(original.id, label, original.label)
+      : store.createCollection(label));
     if (!category) return;
-    search.value = '';
+    if (!original) search.value = '';
     createDialog.close();
     refresh();
-    selectCategory(category.id);
-    categoryBar.querySelector('[data-category="' + CSS.escape(String(category.id)) + '"]')?.focus();
+    selectCategory(!original || previousSelection === original.id ? category.id : selected);
+    focusCategory(category.id);
   });
 
   byId('collectionDeleteCancel').addEventListener('click', () => deleteDialog.close());
-  byId('collectionDeleteForm').addEventListener('submit', event => {
+  deleteForm.addEventListener('submit', event => {
     event.preventDefault();
+    const category = deletingCategory;
     if (!tryWrite(event.currentTarget, () => {
-      store.deleteCard(deletingCard.id, JSON.stringify(deletingCard));
+      if (category) store.deleteCollection(category.id, category.label);
+      else store.deleteCard(deletingCard.id, JSON.stringify(deletingCard));
       return true;
     })) return;
     deleteDialog.close();
     refresh();
-    search.focus();
+    if (category) focusCategory(selected);
+    else search.focus();
   });
 
   window.addEventListener('procats-collection-change', refresh);
