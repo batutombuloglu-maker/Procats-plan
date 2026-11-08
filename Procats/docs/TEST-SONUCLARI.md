@@ -1,5 +1,5 @@
-# Procats 2.0.0 verification
+# Procats 2.1.0 verification
 
-The shared application test suite passed 217 checks. The Android and Wear OS packages use the original personal signing certificate. The Windows distribution includes the same web assets as the Android app.
+Run `npm test` in `Procats` for shared application checks and in `Windows` for desktop checks. The personal release package records actual test counts and build results in `07-Kontroller`.
 
-Browser checks used fictional guest data. They covered the sign-up form, the Arabic right-to-left layout, language persistence, Japanese sign-in, Spanish navigation, and creating and completing tasks. The Android phone and watch were not tested on physical devices.
+The package checks verify the Android and Wear OS package IDs, version codes, and signing certificate. The bundled Android and Windows web assets are compared against the release web build. Device tests require a physical phone or watch.

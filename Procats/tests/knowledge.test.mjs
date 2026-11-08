@@ -16,6 +16,18 @@ test('empty treasury accepts only user-created content and editing preserves ide
  const first=save([],card());assert.equal(first.length,1);assert.equal(first[0].createdAt,2000);
  const next=save(first,{...first[0],question:'Yeni soru'},2000);assert.equal(next[0].createdAt,2000);assert.equal(next[0].updatedAt,2001);assert.equal(first[0].question,'Tirat ne anlama gelir?');
 });
+test('choosing a conflicting archive card preserves both devices’ independent records',async()=>{
+ const remote=server(),a=instance(remote),b=instance(remote);
+ a.store.commit([card()]);await a.store.sync();await b.store.sync();
+ a.store.commit([card(1,{answer:'Telefon'}),card(2,{question:'Independent remote'})]);
+ b.store.commit([card(1,{answer:'PC'}),card(3,{question:'Independent local'})]);
+ await a.store.sync();await b.store.sync();assert.equal(b.store.getState().conflict,true);
+ await b.store.resolve('local');
+ const result=remote.get().data[C.key];
+ assert.equal(result.find(item=>item.id===1).answer,'PC');
+ assert.deepEqual(result.map(item=>item.id).sort(),[1,2,3]);
+ await a.store.stop();await b.store.stop();
+});
 test('validation rejects malformed, unsafe-image, duplicate and excessive records',()=>{
  const c=card();for(const value of [[c,c],[{...c,answer:''}],[{...c,id:NaN}],[{...c,image:'data:image/svg+xml,<svg/>'}],[{...c,related:[1]}],[{...c,tags:['x','X']}],[{...c,review:{...c.review,interval:-1}}],[{...c,passage:'x'.repeat(12001)}]])assert.equal(C.valid(value),false);
  assert.equal(C.snapshot({[C.key]:[c]}),true);assert.equal(C.snapshot({}),false);assert.equal(C.snapshot({[C.key]:[],yks_v3_tasks:[]}),false);

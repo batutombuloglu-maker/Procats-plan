@@ -31,7 +31,11 @@ export function createKnowledgeStore({storage,cloudFactory,flush,isLocalSaved=()
   const remoteLists=remote.data[key]||[];
   const result=merge({[key]:base},{[key]:lists},{[key]:remoteLists});
   if(result.conflicts.length||!valid(result.data[key])){conflict=clone(remote);writing=true;try{writeMeta();}finally{writing=false;}status='conflict';publish();return false;}
-  base=clone(remoteLists);baseJSON=JSON.stringify(base);revision=remote.revision;write(result.data[key]);return true;
+  const previous={base,baseJSON,revision};
+  base=clone(remoteLists);baseJSON=JSON.stringify(base);revision=remote.revision;
+  try{write(result.data[key]);}
+  catch(error){({base,baseJSON,revision}=previous);throw error;}
+  return true;
  }
  async function run(force){
   if(closed||invalid||conflict)return;refresh();
@@ -52,7 +56,28 @@ export function createKnowledgeStore({storage,cloudFactory,flush,isLocalSaved=()
   finally{publish();}
  }
  function sync(force=true){if(busy)return busy;busy=run(force).finally(()=>busy=null);return busy;}
- async function resolve(which){check();if(!conflict)return;recovery={local:clone(lists),remote:clone(conflict.data[key]||[]),savedAt:Date.now()};const chosen=which==='remote'?conflict.data[key]||[]:lists;if(!conflict.localDraft){base=clone(conflict.data[key]||[]);baseJSON=JSON.stringify(base);revision=conflict.revision;}conflict=null;write(chosen);dueAt=Date.now();await sync();}
+ async function resolve(which){
+  check();if(!conflict)return;
+  const previous={base,baseJSON,revision,conflict,recovery};
+  const remote=conflict.data[key]||[],preferRemote=which==='remote';
+  const preferred=preferRemote?remote:lists,alternate=preferRemote?lists:remote;
+  recovery={local:clone(lists),remote:clone(remote),savedAt:Date.now()};
+  let chosen=preferred;
+  if(!conflict.localDraft){
+   const merged=merge({[key]:base},{[key]:preferred},{[key]:alternate});
+   const conflictingIds=new Set(merged.conflicts.map(path=>/^\.procats_knowledge_v1\.(\d+)(?:\.|$)/.exec(path)?.[1]).filter(Boolean).map(Number));
+   const preferredRows=new Map(preferred.map(row=>[row.id,row]));
+   const combined=merged.data[key].map(row=>conflictingIds.has(row.id)?preferredRows.get(row.id):row).filter(Boolean);
+   // Resolve only the records that disagree when both versions fit in the archive.
+   // The recovery record always retains both versions.
+   if(valid(combined))chosen=combined;
+   base=clone(remote);baseJSON=JSON.stringify(base);revision=conflict.revision;
+  }
+  conflict=null;
+  try{write(chosen);}
+  catch(error){({base,baseJSON,revision,conflict,recovery}=previous);throw error;}
+  dueAt=Date.now();await sync();
+ }
  function watch(){clearTimeout(heartbeat);if(closed)return;heartbeat=setTimeout(()=>{void sync(false);watch();},60000);}
  return {getConflict:()=>conflict?{local:clone(lists),remote:clone(conflict.data[key]||[])}:null,get:()=>clone(lists),commit,refresh,sync,resolve,getState:()=>({status,invalid,conflict:!!conflict,pending:pending(),revision}),
   start(){if(started)return;started=true;if(invalid){publish();return;}cloud.subscribe(()=>{void sync(false);},()=>{status='offline';publish();});watch();void sync();},

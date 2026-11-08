@@ -7,7 +7,7 @@ const syncTranslations={
 function syncText(key){return (globalThis.ProcatsLocale?.messages(syncTranslations,currentLang) || syncTranslations[currentLang]||syncTranslations.tr)[key]||key;}
 function updateSyncUI(){
  const state={...ProcatsSync.getState()};
- const sidecars=[window.ProcatsListsStore].filter(Boolean).map(s=>s.getState());
+ const sidecars=[window.ProcatsListsStore,window.ProcatsLegacyArchive].filter(Boolean).map(s=>s.getState());
  if(['synced','device'].includes(state.status)){const issue=sidecars.find(s=>s.conflict||s.invalid||['storage','unavailable','offline'].includes(s.status));if(issue)state.status=issue.conflict?'sectionConflict':issue.invalid?'sectionInvalid':issue.status==='unavailable'?'sectionUnavailable':issue.status;else if(sidecars.some(s=>s.pending||s.status==='saving'||s.status==='connecting'))state.status='pending';}
  if(state.localSaved===false&&state.status!=='storage')state.status='localSaving';else if(state.localSaved&&state.pending&&!['conflict','invalid','quota','signin','storage','offline','waiting','saving'].includes(state.status))state.status='localPending';
  document.querySelectorAll('[data-sync-text]').forEach(el=>el.textContent=syncText(el.dataset.syncText));
@@ -17,7 +17,7 @@ function updateSyncUI(){
  document.getElementById('syncConflict').hidden=!state.conflict;
 }
 function procatsOpenSync(){updateSyncUI();hideAllMenus();openModal('syncModal');}
-async function procatsSyncNow(){if(ProcatsSync.getState().status==='signin'){location.reload();return;}await Promise.all([ProcatsSync.sync(),window.ProcatsListsStore?.sync()]);updateSyncUI();}
+async function procatsSyncNow(){if(ProcatsSync.getState().status==='signin'){location.reload();return;}await Promise.all([ProcatsSync.sync(),window.ProcatsListsStore?.sync(),window.ProcatsLegacyArchive?.sync()]);updateSyncUI();}
 function procatsResolve(which){ProcatsSync.resolve(which);updateSyncUI();}
 async function procatsConflictBackup(){
  const state=ProcatsSync.getConflict();if(!state)return;
@@ -60,6 +60,7 @@ window.procatsApplyRemote=function(previous,data){
 };
 window.addEventListener('procats-sync-status',updateSyncUI);
 window.addEventListener('procats-lists-change',updateSyncUI);
+window.addEventListener('procats-collection-change',updateSyncUI);
 new MutationObserver(updateSyncUI).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
 window.procatsInitializeSyncUI=async()=>{
  ProcatsSync.start();updateSyncUI();
@@ -76,4 +77,4 @@ window.procatsInitializeSyncUI=async()=>{
 
 for(const [lang,words]of Object.entries({tr:['Cihaza kaydediliyor…','Cihazda kayıtlı · eşitleme bekliyor'],en:['Saving on device…','Saved on device · sync pending'],de:['Wird lokal gespeichert…','Lokal gespeichert · Sync ausstehend']}))Object.assign(syncTranslations[lang],{localSaving:words[0],localPending:words[1]});
 
-for(const [lang,words]of Object.entries({tr:['Bir bölümde çakışma var · Listeler / Bilgi Hazinesi bölümünü aç','Bir bölüm okunamadı · Listeler / Bilgi Hazinesi bölümünü aç','Bölüm eşitlemesi kullanılamıyor · Listeler / Bilgi Hazinesi bölümünü aç'],en:['Section conflict · open Lists / Knowledge treasury','Section unreadable · open Lists / Knowledge treasury','Section sync unavailable · open Lists / Knowledge treasury'],de:['Bereichskonflikt · Listen / Wissensschatz öffnen','Bereich nicht lesbar · Listen / Wissensschatz öffnen','Bereichssynchronisierung nicht verfügbar · Listen / Wissensschatz öffnen']}))Object.assign(syncTranslations[lang],{sectionConflict:words[0],sectionInvalid:words[1],sectionUnavailable:words[2]});
+for(const [lang,words]of Object.entries({tr:['Bir bölümde çakışma var · Listeler veya Bilgi Koleksiyonu’nu aç','Bir bölüm okunamadı · Listeler veya Bilgi Koleksiyonu’nu aç','Bölüm eşitlemesi kullanılamıyor · Listeler veya Bilgi Koleksiyonu’nu aç'],en:['Section conflict · open Lists or Knowledge Collection','Section unreadable · open Lists or Knowledge Collection','Section sync unavailable · open Lists or Knowledge Collection'],de:['Bereichskonflikt · Listen oder Wissenssammlung öffnen','Bereich nicht lesbar · Listen oder Wissenssammlung öffnen','Bereichssynchronisierung nicht verfügbar · Listen oder Wissenssammlung öffnen']}))Object.assign(syncTranslations[lang],{sectionConflict:words[0],sectionInvalid:words[1],sectionUnavailable:words[2]});

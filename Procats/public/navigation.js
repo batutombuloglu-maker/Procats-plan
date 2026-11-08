@@ -1,7 +1,7 @@
 /* Small, deterministic navigation model shared by touch controls and backup validation. */
 (()=>{
  const defaults=['home','tasks','timers','notes','more'];
- const allowed=['home','tasks','obsidian','exams','timers','notes','bookmarks','lists','vault','settings','more'];
+ const allowed=['home','tasks','obsidian','exams','timers','notes','bookmarks','lists','collection','vault','settings','more'];
  const valid=value=>Array.isArray(value)&&value.length>=1&&value.length<=5&&value.includes('more')&&new Set(value).size===value.length&&value.every(v=>allowed.includes(v));
  const normalize=value=>{if(valid(value))return [...value];if(Array.isArray(value)&&value.includes('knowledge')){const active=value.filter(v=>v!=='knowledge');if(valid(active))return active;}return [...defaults];};
  function place(value,view,index){

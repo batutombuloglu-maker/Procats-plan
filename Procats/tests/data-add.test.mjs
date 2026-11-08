@@ -5,6 +5,8 @@ import vm from 'node:vm';
 import '../public/knowledge-core.js';
 import {planAddition} from '../public/data-add-core.js';
 import {validateSnapshot} from '../public/validation.js';
+import {createCollectionStore} from '../public/collection-core.js';
+import {createKnowledgeStore} from '../public/knowledge-store.js';
 import * as limits from '../public/security-limits.js';
 const C=globalThis.ProcatsKnowledgeCore,copy=structuredClone;
 const card=(id,question='Question '+id,extra={})=>C.make({id,question,answer:'Answer '+id,category:['Coğrafya'],tags:['Avrupa'],...extra},1000);
@@ -46,6 +48,27 @@ function journal(){
 test('durable additive commit publishes selected sections together and leaves unrelated preferences and clocks intact',async()=>{
  const a=journal(),S=a.ctx.ProcatsSync,file=pack({yks_v5_notes:[{id:1,text:'New note'}],procats_knowledge_v1:[card(1,'Added card')]}),preview=S.previewAddition(file),before=copy(S.getData());await S.addData(file,preview.signature);
  assert.equal(S.getData().yks_v5_notes.length,2);assert.equal(JSON.parse(a.saved.settings.procats_knowledge_v1).length,1);assert.deepEqual(S.getData().procats_timer,before.procats_timer);assert.equal(a.saved.settings.procats_theme,'dark');assert.equal(JSON.parse(a.saved.settings.procats_lists_v1)[0].items[0].completed,true);assert.equal(S.previewAddition(file).totalAdded,0);
+});
+test('a durable collection import notifies the open view and preserves personal and legacy records',async()=>{
+ const a=journal(),S=a.ctx.ProcatsSync,previous=copy(S.getData()),legacy=JSON.parse(a.ctx.procatsStorage.getItem(C.key)),changes=[];
+ const archive=createKnowledgeStore({storage:a.ctx.procatsStorage,flush:S.flush,merge:globalThis.ProcatsMerge.mergeDocuments,
+  cloudFactory:()=>({stop(){}}),notify:()=>changes.push(collection.get())});
+ const collection=createCollectionStore(archive);
+ a.ctx.ProcatsLegacyArchive=archive;
+ a.ctx.dispatchEvent=()=>archive.refresh(); // The actual Firebase workspace refresh handler.
+ const file=pack({procats_collection_v1:{collections:['Sınavda çıkanlar'],cards:[
+  {title:'Mahir',answer:'Becerikli.',collections:['Sözcükler','Sınavda çıkanlar']}
+ ]}});
+ const preview=S.previewAddition(file);
+ assert.equal(preview.totalAdded,2);
+ const added=await S.addData(file,preview.signature);
+ assert.equal(added.mainChanged,false);
+ assert.deepEqual(S.getData(),previous);
+ assert.equal(changes.at(-1).cards[0].title,'Mahir');
+ assert.equal(changes.at(-1).cards[0].collectionIds.length,2);
+ assert.deepEqual(JSON.parse(a.saved.settings[C.key]).slice(0,legacy.length),legacy);
+ assert.equal(S.previewAddition(file).totalAdded,0);
+ await archive.stop();
 });
 test('failed durable write and a changed preview leave both main records and knowledge untouched',async()=>{
  for(const mode of ['disk','stale']){const a=journal(),S=a.ctx.ProcatsSync,file=pack({yks_v5_notes:[{id:2,text:'New note'}],procats_knowledge_v1:[card(2)]}),preview=S.previewAddition(file);if(mode==='disk')a.fail();else a.ctx.procatsStorage.setItem('yks_v5_notes',JSON.stringify([{id:1,text:'Changed during preview'}]));const before=copy(S.getData()),knowledge=a.ctx.procatsStorage.getItem('procats_knowledge_v1');await assert.rejects(S.addData(file,preview.signature));assert.deepEqual(S.getData(),before);assert.equal(a.ctx.procatsStorage.getItem('procats_knowledge_v1'),knowledge);}

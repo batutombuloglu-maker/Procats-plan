@@ -3,6 +3,7 @@
 **/build/
 **/.gradle/
 **/.firebase/
+**/.kotlin/
 **/.idea/
 **/signing/
 **/private-signing/
@@ -26,4 +27,3 @@
 *.zip
 *.procats.json
 Procats-Kurtarilmis-*.json
-**/.kotlin/

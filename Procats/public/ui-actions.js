@@ -9,6 +9,7 @@ const exact={"closeCustomPrompt(false)":function(event){closeCustomPrompt(false)
 "switchView('tasks')":function(event){switchView('tasks')},
 "switchView('exams')":function(event){switchView('exams')},
 "switchView('lists')":function(event){switchView('lists')},
+"switchView('collection')":function(event){switchView('collection')},
 "switchView('knowledge')":function(event){switchView('knowledge')},
 "if(event.key==='Enter'||event.key===' '){event.preventDefault();switchView('exams');}":function(event){if(event.key==='Enter'||event.key===' '){event.preventDefault();switchView('exams');}},
 "switchView('timers')":function(event){switchView('timers')},

@@ -1,0 +1,69 @@
+{
+  "format": "procats-data-pack",
+  "version": 1,
+  "title": "Bilgi Koleksiyonu · Örnek kartlar",
+  "description": "Procats 2.1.0 önizlemesindeki 10 örnek kart ve Sınavda çıkanlar koleksiyonu.",
+  "data": {
+    "procats_collection_v1": {
+      "collections": ["Sınavda çıkanlar"],
+      "cards": [
+        {
+          "title": "Mahir",
+          "answer": "Bir işi ustalıkla yapan, becerikli.",
+          "example": "Küçük ayrıntıları fark etmekte mahir bir editördü.",
+          "collections": ["Sözcükler", "Sınavda çıkanlar"]
+        },
+        {
+          "title": "İhtimam",
+          "answer": "Özen gösterme, dikkatle ilgilenme.",
+          "example": "Notlarını büyük bir ihtimamla düzenledi.",
+          "collections": ["Sözcükler"]
+        },
+        {
+          "title": "Veciz",
+          "answer": "Az sözle çok şey anlatan.",
+          "example": "Yazar, düşüncesini veciz bir cümleyle anlattı.",
+          "collections": ["Sözcükler"]
+        },
+        {
+          "title": "İtidal",
+          "answer": "Ölçülü ve dengeli olma durumu.",
+          "example": "Tartışma sırasında itidalini korudu.",
+          "collections": ["Sözcükler"]
+        },
+        {
+          "title": "Mütevazı",
+          "answer": "Alçak gönüllü veya gösterişsiz.",
+          "example": "Başarılarından mütevazı bir dille söz etti.",
+          "collections": ["Sözcükler"]
+        },
+        {
+          "title": "Tahayyül",
+          "answer": "Bir şeyi zihinde canlandırma, hayal etme.",
+          "example": "Yazar, kentin geleceğini tahayyül ediyordu.",
+          "collections": ["Sözcükler"]
+        },
+        {
+          "title": "Paradoks",
+          "answer": "İlk bakışta kabul edilebilir görünen düşüncelerin çelişkiye yol açması.",
+          "collections": ["Kavramlar"]
+        },
+        {
+          "title": "Atalet",
+          "answer": "Bir cismin hareket durumundaki değişime karşı koyma eğilimi.",
+          "collections": ["Kavramlar"]
+        },
+        {
+          "title": "Satürn’ün halkaları",
+          "answer": "Büyük ölçüde buz parçacıklarından oluşur. Halkalarda kaya parçaları ve toz da bulunur.",
+          "collections": ["Genel bilgi"]
+        },
+        {
+          "title": "Ankara’nın başkent oluşu",
+          "answer": "13 Ekim 1923.",
+          "collections": ["Genel bilgi"]
+        }
+      ]
+    }
+  }
+}

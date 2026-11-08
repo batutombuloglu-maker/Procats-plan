@@ -1,6 +1,7 @@
 /* Account-scoped durable journal; cloud writes wait for ten seconds without edits. */
 (()=>{'use strict';const boot=window.PROCATS_BOOT;if(!boot?.user)throw Error('Account required');
 const keys=new Set(['procats_folders','yks_v3_days','yks_v3_tasks','yks_v5_notes','yks_v6_activity','procats_activity_v1','yks_v7_bookmarks','yks_v8_archives','procats_obs_folders','procats_obs_notes','procats_reminders','procats_sw','procats_timer','procats_exams_v1','procats_exam_selection_v1']);
+const additionSidecars=['procats_lists_v1','procats_knowledge_v1'];
 const clone=v=>JSON.parse(JSON.stringify(v)),{same,mergeDocuments}=ProcatsMerge,prefix='procats-cloud:'+boot.user+':',store=window.ProcatsDeviceStore;
 let base=clone(boot.journal?.base||boot.data),data=clone(boot.journal?.data||boot.data),revision=boot.journal?.revision??boot.revision,conflict=boot.journal?.conflict||null;
 let syncPromise=Promise.resolve(),resolvePromise=Promise.resolve(),closing=false,importPromise=Promise.resolve(),importing=false,busy=false,again=false,ready=false,stopped=false,applying=false,status='connecting',localSaved=true,storageError=false,generation=0,durable=Promise.resolve(),timer,heartbeat,dueAt=Date.now()+10000,pendingRemote=null;
@@ -32,7 +33,14 @@ finally{busy=false;if(!stopped){if(failed)schedule(30000);else if(again){again=f
 function resolve(which){if(stopped||closing||importing)return Promise.resolve();const result=performResolve(which);resolvePromise=result;return result;}
 async function performResolve(which){if(!conflict)return;await store.recovery(boot.user,{local:clone(data),remote:clone(conflict.data),createdAt:Date.now()});if(stopped)return;const old=clone(data);base=clone(conflict.data);revision=conflict.revision;if(which==='remote')data=ProcatsActivity.snapshot(clone(conflict.data));conflict=null;await persist();applying=true;try{window.procatsApplyRemote?.(old,data);}finally{applying=false;}dueAt=Date.now();await sync();}
 function importBackup(updates){if(importing)return Promise.reject(Error("Storage busy"));const result=commitBackup(updates);importPromise=result.catch(()=>{});return result;}
-function additionCurrent(){const current=clone(data);for(const key of ['procats_lists_v1'])current[key]=settings[key]?JSON.parse(settings[key]):[];return current;}
+function additionCurrent(){
+ const current=clone(data);
+ for(const key of additionSidecars){
+  try{current[key]=settings[key]?JSON.parse(settings[key]):[];}
+  catch{current[key]={};} // Unrelated imports can proceed, but never replace a damaged sidecar.
+ }
+ return current;
+}
 function previewAddition(file){if(importing||stopped||closing||conflict)throw Error('add-busy');return ProcatsDataAdd.plan(additionCurrent(),file);}
 function addData(file,expected){if(importing)return Promise.reject(Error('add-busy'));const result=commitAddition(file,expected);importPromise=result.catch(()=>{});return result;}
 async function commitAddition(file,expected){
@@ -43,19 +51,19 @@ async function commitAddition(file,expected){
   // Prepare against the newest durable record while all storage writes are locked.
   const plan=ProcatsDataAdd.plan(additionCurrent(),file);
   if(plan.signature!==expected)throw Error('add-changed');
-  for(const [key,store]of [['procats_lists_v1',window.ProcatsListsStore]])if(Object.hasOwn(plan.updates,key)){const state=store?.getState();if(state?.invalid||state?.conflict)throw Error('add-busy');}
+  for(const [key,store]of [['procats_lists_v1',window.ProcatsListsStore],['procats_knowledge_v1',window.ProcatsLegacyArchive]])if(Object.hasOwn(plan.updates,key)){const state=store?.getState();if(state?.invalid||state?.conflict)throw Error('add-busy');}
   const previous=clone(data);
   if(!plan.totalAdded)return {plan,previous,mainChanged:false};
   const mainUpdates=Object.fromEntries(Object.entries(plan.updates).filter(([key])=>keys.has(key))),mainChanged=Object.keys(mainUpdates).length>0;
   const next=mainChanged?ProcatsActivity.snapshot({...clone(data),...mainUpdates}):clone(data),prefs=clone(settings);
-  for(const key of ['procats_lists_v1'])if(Object.hasOwn(plan.updates,key))prefs[key]=JSON.stringify(plan.updates[key]);
+  for(const key of additionSidecars)if(Object.hasOwn(plan.updates,key))prefs[key]=JSON.stringify(plan.updates[key]);
   if(mainChanged&&window.procatsValidate&&!window.procatsValidate(next))throw Error('add-invalid');
   checkChange(next);
   const record={base:clone(base),data:next,revision,conflict:null,settings:prefs,savedAt:Date.now()};
   // One atomic durable journal commit; failure exposes none of the additions.
   await store.save(boot.user,record);
   data=next;for(const key of Object.keys(settings))delete settings[key];Object.assign(settings,prefs);
-  for(const key of ['procats_lists_v1'])if(Object.hasOwn(plan.updates,key))try{localStorage.setItem(prefix+'setting:'+key,prefs[key]);}catch{}
+  for(const key of additionSidecars)if(Object.hasOwn(plan.updates,key))try{localStorage.setItem(prefix+'setting:'+key,prefs[key]);}catch{}
   localSaved=true;storageError=false;dueAt=Date.now()+10000;setStatus('pending');
   return {plan,previous,mainChanged};
  }finally{importing=false;schedule();}

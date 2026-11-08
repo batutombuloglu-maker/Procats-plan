@@ -1,11 +1,12 @@
 import {checkStructure,checkChange,limits} from './security-limits.js';
 import {validateSnapshot} from './validation.js';
 import './lists-core.js';
+import {buildCollectionPack, checkCollectionAddition, collectionArchiveKey, collectionIdentity, collectionSection, isCollectionRow} from './collection-core.js';
 
 // Additive imports only operate on record collections. Preferences, running
 // clocks, selection state and activity ledgers are never replaced here.
-export const addKeys=Object.freeze(['procats_folders','yks_v3_days','yks_v3_tasks','yks_v5_notes','yks_v7_bookmarks','yks_v8_archives','procats_obs_folders','procats_obs_notes','procats_reminders','procats_exams_v1','procats_lists_v1']);
-const independent=new Set(['procats_lists_v1','procats_knowledge_v1']);
+export const addKeys=Object.freeze(['procats_folders','yks_v3_days','yks_v3_tasks','yks_v5_notes','yks_v7_bookmarks','yks_v8_archives','procats_obs_folders','procats_obs_notes','procats_reminders','procats_exams_v1','procats_lists_v1',collectionArchiveKey]);
+const independent=new Set(['procats_lists_v1',collectionArchiveKey]);
 const ignoredKeys=new Set(['yks_v6_activity','procats_activity_v1','procats_sw','procats_timer','procats_exam_selection_v1','procats_navigation_v1','procats-device-settings-v1','procats_theme','procats_lang','yks_v3_sidebarWidth','procats_obs_sidebarWidth']);
 const metadata=new Set(['format','version','exportDate','id','title','description','source','createdAt']);
 const object=x=>x!==null&&typeof x==='object'&&!Array.isArray(x);
@@ -17,6 +18,7 @@ function canonical(x){if(Array.isArray(x))return x.map(canonical);if(!object(x))
 const volatile=new Set(['id','createdAt','updatedAt','position','expanded','completed','missed','rating','score','isExempt','completedDate','activityDate','lastSentTimestamp','timesSentToday','active','itemOrder','review','x','y','w','h','width','height','z']);
 function identity(key,item){
  if(key==='procats_lists_v1')return stable({title:fold(item.title),items:item.items.map(i=>fold(i.title))});
+ if(key===collectionArchiveKey)return collectionIdentity(item)??stable(['legacy',item.id]);
  const value=Object.fromEntries(Object.entries(item).filter(([k])=>!volatile.has(k)));
  // Cosmetic note movement or progress changes do not cause repeat imports.
  if(key==='yks_v5_notes')return stable({text:fold(item.text)});
@@ -31,9 +33,30 @@ function readCollections(value){
  }else if(value.format!=null&&value.format!=='procats')throw Error('add-format');
  else if(value.version!=null&&(!Number.isInteger(value.version)||value.version<1||value.version>2))throw Error('add-format');
  const incoming={},ignored=[];
+ function addCollectionRows(rows){
+  if(!rows.length)return;
+  if(Object.hasOwn(incoming,collectionArchiveKey))throw Error('add-section');
+  checkStructure(rows);
+  incoming[collectionArchiveKey]=rows;
+ }
  for(const [key,raw]of Object.entries(source)){
   if(source===value&&metadata.has(key)){checkStructure(raw);continue;}
-  if(ignoredKeys.has(key)||key==='procats_knowledge_v1'){ignored.push(key);continue;}
+  if(ignoredKeys.has(key)){ignored.push(key);continue;}
+  if(key===collectionSection&&value.format==='procats-data-pack'){
+   checkStructure(raw);
+   addCollectionRows(buildCollectionPack(raw));
+   continue;
+  }
+  if(key===collectionArchiveKey){
+   // New backups can add their collection rows; the retired archive is untouched.
+   let rows;
+   try{rows=typeof raw==='string'?JSON.parse(raw):raw;}catch{}
+   if(!Array.isArray(rows)){ignored.push(key);continue;}
+   const scoped=rows.filter(isCollectionRow);
+   if(!scoped.length||scoped.length!==rows.length)ignored.push(key);
+   addCollectionRows(scoped);
+   continue;
+  }
   if(!addKeys.includes(key))throw Error('add-section');
   if(raw===null)continue;
   const records=typeof raw==='string'?JSON.parse(raw):clone(raw);checkStructure(records);
@@ -60,6 +83,10 @@ export function planAddition(current,file,{now=Date.now()}={}){
  for(const key of addKeys){
   if(!Object.hasOwn(incoming,key))continue;
   const old=current[key]||[];if(key==='procats_lists_v1'&&!globalThis.ProcatsListsCore.valid(old))throw Error('add-current');
+  if(key===collectionArchiveKey){
+   globalThis.ProcatsKnowledgeCore.check(old);
+   checkCollectionAddition(old,incoming[key]);
+  }
   const next=clone(old),known=new Map(old.map(item=>[identity(key,item),item.id])),used=new Set(old.map(item=>item.id)),mapping=new Map();mappings[key]=mapping;counts[key]=0;skipped[key]=0;
   let candidate=Math.max(1,Math.min(now,Number.MAX_SAFE_INTEGER-100000));
   const allocate=()=>{while(used.has(candidate)){candidate=candidate<Number.MAX_SAFE_INTEGER?candidate+1:1;}const id=candidate;used.add(id);candidate=candidate<Number.MAX_SAFE_INTEGER?candidate+1:1;return id;};
@@ -80,6 +107,7 @@ export function planAddition(current,file,{now=Date.now()}={}){
    next.push(item);
   }
   if(key==='procats_lists_v1'&&(!globalThis.ProcatsListsCore.valid(next)||bytes({[key]:next})>750000))throw Error('add-limit');
+  if(key===collectionArchiveKey)globalThis.ProcatsKnowledgeCore.pack(next);
   if(counts[key])updates[key]=next;
  }
  const mainUpdates=Object.fromEntries(Object.entries(updates).filter(([key])=>!independent.has(key)));

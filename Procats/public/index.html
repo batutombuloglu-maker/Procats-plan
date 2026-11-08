@@ -401,8 +401,8 @@
         #syncStatus{position:fixed;bottom:8px;right:16px;z-index:60;max-width:calc(100vw - 88px);border:0;border-radius:8px;background:var(--bg-card);color:var(--text-secondary);font-size:12px;padding:5px 9px;cursor:pointer}
         #syncModal .modal-actions{flex-wrap:wrap}#syncModal p{line-height:1.6;margin:14px 0}#syncModal button{font-size:14px}#syncAccount{overflow-wrap:anywhere}
     </style>
-<link rel="stylesheet" href="/mobile.css?v=2.0.0">
-<link rel="stylesheet" href="/account.css?v=2.0.0"><link rel="stylesheet" href="/weekly-summary.css?v=2.0.0">
+<link rel="stylesheet" href="/mobile.css?v=2.1.0">
+<link rel="stylesheet" href="/account.css?v=2.1.0"><link rel="stylesheet" href="/weekly-summary.css?v=2.1.0">
 <link rel="stylesheet" href="/experience.css">
 <link rel="stylesheet" href="/release.css">
 <link rel="stylesheet" href="/upgrade.css">
@@ -415,6 +415,7 @@
 <script src="/publisher.js"></script>
 <link rel="stylesheet" href="/calendar.css"><link rel="stylesheet" href="/planning-mobile.css">
 <link rel="stylesheet" href="/locale.css">
+    <link rel="stylesheet" href="/collection.css">
 </head> 
 <body class="auth-locked">
 <div id="authRoot"><section class="launch-screen" role="status" aria-live="polite"><div class="launch-logo">P</div><h1>Procats</h1><p id="launchMessage">Kayıtların açılıyor…</p><div class="launch-track" aria-hidden="true"><span></span></div></section></div> 
@@ -427,6 +428,7 @@
             <button type="button" class="nav-item" data-action-click="switchView('tasks')" title="Görevler" aria-label="Görevler"><svg viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></button>
             <button type="button" class="nav-item" data-action-click="switchView('exams')" title="Denemeler" id="examNav" aria-label="Denemeler"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h2v16h16v2H3V3zm4 8h3v6H7v-6zm5-4h3v10h-3V7zm5-4h3v14h-3V3z"/></svg></button>
             <button type="button" class="nav-item" id="listsNav" data-action-click="switchView('lists')" title="Listeler" aria-label="Listeler"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h6v6H3V4zm2 2v2h2V6H5zm6-1h10v2H11V5zM3 14h6v6H3v-6zm2 2v2h2v-2H5zm6-1h10v2H11v-2zm0-6h7v2h-7V9zm0 10h7v2h-7v-2z"/></svg></button>
+            <button type="button" class="nav-item" data-action-click="switchView('collection')" title="Bilgi Koleksiyonu" aria-label="Bilgi Koleksiyonu"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" style="fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><rect x="4" y="7" width="15" height="13" rx="2"/><path d="M8 4h11a2 2 0 0 1 2 2v10M8 12h7m-7 4h5"/></svg></button>
             <button type="button" class="nav-item" data-action-click="switchView('timers')" title="Sayaçlar" aria-label="Sayaçlar"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg></button>
             <button type="button" class="nav-item" data-action-click="switchView('notes')" title="Post-it" aria-label="Post-it"><svg viewBox="0 0 24 24"><path d="M3 3v18h18V3H3zm16 16H5V5h14v14zM7 7h10v2H7zm0 4h10v2H7zm0 4h7v2H7z"/></svg></button>
             
@@ -535,6 +537,113 @@
         </div>
 
         <div id="view-lists" class="view"></div>
+
+        <section id="view-collection" class="view" aria-labelledby="collectionTitle">
+          <div class="collection-page">
+            <header class="collection-header">
+              <div class="collection-heading">
+                <div class="collection-heading-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="7" width="15" height="13" rx="2"/><path d="M8 4h11a2 2 0 0 1 2 2v10M8 12h7m-7 4h5"/></svg></div>
+                <div>
+                  <h1 id="collectionTitle" data-collection-text="title">Bilgi Koleksiyonu</h1>
+                  <p data-collection-text="subtitle">Öğrendiklerini kaydet, düzenle ve tekrar et.</p>
+                </div>
+              </div>
+              <div class="collection-actions">
+                <button type="button" id="collectionReview" class="collection-button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10a8 8 0 1 0-2 8m2-13v5h-5"/></svg> <span data-collection-text="review">Tekrar et</span></button>
+                <button type="button" id="collectionAdd" class="collection-button collection-primary"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> <span data-collection-text="addCard">Bilgi ekle</span></button>
+              </div>
+            </header>
+            <div id="collectionSyncStatus" class="collection-sync" aria-live="polite" hidden></div>
+            <div class="collection-filters">
+              <div class="collection-filter-group">
+                <div id="collectionCategories" class="collection-categories" role="group" aria-label="Koleksiyonlar" data-collection-label="collections"></div>
+                <button type="button" id="collectionCreate" class="collection-category collection-create"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> <span data-collection-text="newCollection">Yeni koleksiyon</span></button>
+              </div>
+              <label class="collection-search">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 4.5 4.5"/></svg>
+                <input type="search" id="collectionSearch" aria-label="Koleksiyonda ara" data-collection-label="searchLabel" placeholder="Koleksiyonda ara…" data-collection-placeholder="search" autocomplete="off">
+              </label>
+            </div>
+            <div class="collection-results">
+              <h2 id="collectionSelection">Sözcükler</h2>
+              <span id="collectionCount" aria-live="polite"></span>
+            </div>
+            <div id="collectionGrid" class="collection-grid"></div>
+            <div id="collectionEmpty" class="collection-empty" hidden>
+              <h3 id="collectionEmptyTitle"></h3>
+              <p id="collectionEmptyText"></p>
+            </div>
+
+          </div>
+          <dialog id="collectionCardDialog" class="collection-dialog" aria-labelledby="collectionCardTitle">
+            <div class="collection-dialog-head">
+              <span id="collectionCardMeta" class="collection-meta"></span>
+              <form method="dialog"><button type="submit" class="collection-close" aria-label="Kartı kapat" data-collection-label="closeCard" autofocus>×</button></form>
+            </div>
+            <h2 id="collectionCardTitle"></h2>
+            <div id="collectionCardBody" class="collection-card-body">
+              <p class="collection-label" id="collectionAnswerLabel"></p>
+              <p id="collectionAnswer"></p>
+              <p id="collectionExample"></p>
+            </div>
+            <p id="collectionReviewHint" data-collection-text="reviewHint" hidden>Cevabı hatırlamaya çalış, ardından kendini kontrol et.</p>
+            <div id="collectionReviewActions" class="collection-actions" hidden>
+              <button type="button" id="collectionReveal" data-collection-text="reveal" class="collection-button collection-primary">Cevabı göster</button>
+              <button type="button" id="collectionNext" class="collection-button collection-primary" hidden>Sonraki kart →</button>
+            </div>
+          </dialog>
+          <dialog id="collectionAddDialog" class="collection-dialog collection-editor" aria-labelledby="collectionAddTitle" aria-describedby="collectionAddIntro">
+            <form id="collectionAddForm">
+              <div class="collection-dialog-head">
+                <div>
+                  <h2 id="collectionAddTitle">Bilgi ekle</h2>
+                  <p id="collectionAddIntro" class="collection-dialog-intro">Hatırlamak istediğin bilgiyi yeni bir karta yaz.</p>
+                </div>
+                <button type="button" id="collectionCancel" class="collection-close" aria-label="Formu kapat" data-collection-label="closeForm">×</button>
+              </div>
+              <div class="collection-form-fields">
+                <label class="collection-field"><span data-collection-text="cardTitle">Başlık</span><input name="title" placeholder="Örn. Mahir" data-collection-placeholder="titleHint" maxlength="100" required autofocus></label>
+                <label class="collection-field"><span data-collection-text="answerField">Anlamı veya cevabı</span><textarea name="answer" placeholder="Cevabı kendi cümlelerinle yaz…" data-collection-placeholder="answerHint" maxlength="700" rows="4" required></textarea></label>
+                <fieldset class="collection-memberships" aria-describedby="collectionMembershipHelp">
+                  <legend data-collection-text="collections">Koleksiyonlar</legend>
+                  <p id="collectionMembershipHelp" data-collection-text="membershipHelp">Kartın görüneceği bir veya daha fazla koleksiyon seç.</p>
+                  <div id="collectionMembershipChoices" class="collection-membership-choices"></div>
+                  <p id="collectionMembershipError" data-collection-text="membershipError" class="collection-form-error" role="alert" hidden>En az bir koleksiyon seç.</p>
+                </fieldset>
+                <p class="collection-form-error" role="alert" hidden></p>
+              </div>
+              <div class="collection-actions collection-form-footer">
+                <button type="button" id="collectionDiscard" data-collection-text="cancel" class="collection-button">Vazgeç</button>
+                <button type="submit" id="collectionSave" class="collection-button collection-primary">Kartı ekle</button>
+              </div>
+            </form>
+          </dialog>
+          <dialog id="collectionCreateDialog" class="collection-dialog" aria-labelledby="collectionCreateTitle">
+            <form id="collectionCreateForm">
+              <div class="collection-dialog-head">
+                <div>
+                  <h2 id="collectionCreateTitle" data-collection-text="newCollection">Yeni koleksiyon</h2>
+                  <p class="collection-dialog-intro" data-collection-text="collectionIntro">Benzer kartları bir arada bulmak için bir koleksiyon oluştur.</p>
+                </div>
+                <button type="button" id="collectionCreateCancel" class="collection-close" aria-label="Formu kapat" data-collection-label="closeForm">×</button>
+              </div>
+              <label class="collection-field"><span data-collection-text="collectionName">Koleksiyon adı</span><input name="label" placeholder="Örn. Sınavda çıkanlar" data-collection-placeholder="collectionHint" maxlength="48" required autofocus></label>
+              <p class="collection-form-error" role="alert" hidden></p>
+              <div class="collection-actions collection-form-footer"><button type="submit" class="collection-button collection-primary" data-collection-text="createCollection">Koleksiyonu oluştur</button></div>
+            </form>
+          </dialog>
+          <dialog id="collectionDeleteDialog" class="collection-dialog" aria-labelledby="collectionDeleteTitle" aria-describedby="collectionDeleteCopy">
+            <form id="collectionDeleteForm">
+              <div class="collection-dialog-head"><h2 id="collectionDeleteTitle" data-collection-text="deleteCard">Kartı sil</h2></div>
+              <p id="collectionDeleteCopy" class="collection-dialog-intro"></p>
+              <p class="collection-form-error" role="alert" hidden></p>
+              <div class="collection-actions collection-form-footer">
+                <button type="button" id="collectionDeleteCancel" data-collection-text="cancel" class="collection-button" autofocus>Vazgeç</button>
+                <button type="submit" class="collection-button collection-danger" data-collection-text="deleteCard">Kartı sil</button>
+              </div>
+            </form>
+          </dialog>
+        </section>
 
         <!-- 2. TASKS / AUFGABEN -->
         <div id="view-tasks" class="view">

@@ -15,6 +15,7 @@ import {createCloudAdapter} from './cloud-adapter.js';
 import {createListsStore} from './lists-store.js';
 import {createKnowledgeStore} from './knowledge-store.js';
 import {createKnowledgeCloud} from './knowledge-cloud.js';
+import {createCollectionStore} from './collection-core.js';
 window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();window.procatsInstallPrompt=event;});
 const root=document.getElementById('authRoot');
 const translations={
@@ -103,14 +104,22 @@ async function openWorkspace(user,demo=false){
    notify:()=>window.dispatchEvent(new CustomEvent('procats-lists-change'))});
   window.ProcatsLegacyArchive=createKnowledgeStore({recovered:journal?.recovered||[],storage:window.procatsStorage,flush:()=>window.ProcatsSync.flush(),isLocalSaved:()=>window.ProcatsSync.getState().localSaved,merge:ProcatsMerge.mergeDocuments,demo,
    cloudFactory:cached=>demo?createDemoAdapter(cached,ProcatsKnowledgeCore.snapshot):createKnowledgeCloud({sdk:window.ProcatsFirestoreSDK,db:window.ProcatsDB,auth,user,cached}),
-   notify:()=>window.dispatchEvent(new CustomEvent('procats-knowledge-change'))});
-  window.addEventListener('procats-sync-status',()=>window.ProcatsListsStore.refresh());
-  window.addEventListener('online',()=>void window.ProcatsListsStore.sync());
-  window.addEventListener('focus',()=>void window.ProcatsListsStore.sync());
-  document.addEventListener('visibilitychange',()=>void window.ProcatsListsStore.sync());
+   notify:()=>window.dispatchEvent(new CustomEvent('procats-collection-change'))});
+  window.ProcatsCollection=createCollectionStore(window.ProcatsLegacyArchive);
+  window.addEventListener('procats-sync-status',()=>{
+   window.ProcatsListsStore.refresh();
+   window.ProcatsLegacyArchive.refresh();
+  });
+  const syncSidecars=()=>{
+   void window.ProcatsListsStore.sync();
+   void window.ProcatsLegacyArchive.sync();
+  };
+  window.addEventListener('online',syncSidecars);
+  window.addEventListener('focus',syncSidecars);
+  document.addEventListener('visibilitychange',syncSidecars);
   if(!window.procatsStorage.getItem('procats_lang'))window.procatsStorage.setItem('procats_lang',language);
-  await loadScript('/quotes.js');await loadScript('/daily-quote.js');await loadScript('/planning-core.js');await loadScript('/calendar-core.js');await loadScript('/navigation.js');await loadScript('/exams-data.js');await loadScript('/app.js');await loadScript('/exams.js');await loadScript('/themes.js');await loadScript('/sync-ui.js?v=2.0.0');await loadScript('/weekly-summary.js?v=2.0.0');await loadScript('/mobile.js?v=2.0.0');await loadScript('/experience.js');await loadScript('/release-ui.js');window.renderHeatmap?.();await loadScript('/calendar.js');await loadScript('/task-touch.js');await loadScript('/free-plan-mobile.js');await loadScript('/tour.js');await loadScript('/resources-core.js');await loadScript('/theme-colors.js');await loadScript('/resources.js');await loadScript('/custom-themes.js');await loadScript('/lists.js');await loadScript('/lists-drag.js');await loadScript('/timer-views-core.js');await loadScript('/timer-views.js');
-  await window.ProcatsTimerClockReady;window.procatsInitialize();await window.ProcatsCustomThemes.ready();await window.procatsInitializeSyncUI();window.ProcatsListsStore.start();
+  await loadScript('/quotes.js');await loadScript('/daily-quote.js');await loadScript('/planning-core.js');await loadScript('/calendar-core.js');await loadScript('/navigation.js');await loadScript('/exams-data.js');await loadScript('/app.js');await loadScript('/exams.js');await loadScript('/themes.js');await loadScript('/sync-ui.js?v=2.1.0');await loadScript('/weekly-summary.js?v=2.1.0');await loadScript('/mobile.js?v=2.1.0');await loadScript('/experience.js');await loadScript('/release-ui.js');window.renderHeatmap?.();await loadScript('/calendar.js');await loadScript('/task-touch.js');await loadScript('/free-plan-mobile.js');await loadScript('/tour.js');await loadScript('/resources-core.js');await loadScript('/theme-colors.js');await loadScript('/resources.js');await loadScript('/custom-themes.js');await loadScript('/lists.js');await loadScript('/lists-drag.js');await loadScript('/timer-views-core.js');await loadScript('/timer-views.js');await loadScript('/collection.js');
+  await window.ProcatsTimerClockReady;window.procatsInitialize();await window.ProcatsCustomThemes.ready();await window.procatsInitializeSyncUI();window.ProcatsListsStore.start();window.ProcatsLegacyArchive.start();
   window.dispatchEvent(new CustomEvent('procats-sync-status'));
   await startCompanion(user.uid).catch(()=>{});
   appLoaded=true;clearTimeout(window.procatsBootTimer);document.body.classList.remove('auth-locked');root.replaceChildren();window.ProcatsWelcome?.start();void window.ProcatsResources.ready();void window.ProcatsTimerAlerts?.resume();
@@ -125,7 +134,7 @@ window.ProcatsAccount={
   try{
    await drainCompanion();
    window.ProcatsLegacyArchive?.refresh();
-   if(window.ProcatsLegacyArchive?.getState().pending)await window.ProcatsLegacyArchive.beforeExit();await window.ProcatsListsStore?.beforeExit();
+   await window.ProcatsLegacyArchive?.beforeExit();await window.ProcatsListsStore?.beforeExit();
    await window.ProcatsSync?.pause();
    const state=window.ProcatsSync?.getState(),uid=auth?.currentUser?.uid;
    const journal=!state&&uid?await DeviceStore.load(uid):null;

@@ -4,7 +4,7 @@ This public source repository contains no account database, session, signing key
 
 ## Accounts and synchronization
 
-Firestore rules permit reads/writes only for the verified owner of the account. Revisions prevent silent stale overwrites. Older versions store the retired archive across a manifest and four bounded shards. Current versions access these records for legacy backup compatibility and account deletion. Current-account checks are repeated before remote operations. Device journals separate accounts, preserve offline drafts and block an exit that would discard pending records. Conflict resolution keeps recovery copies.
+Firestore rules permit reads/writes only for the verified owner of the account. Revisions prevent silent stale overwrites. Knowledge Collection reuses the existing archive transport across a manifest and four bounded shards. Collection records have a separate marker, and the app preserves older archive records for backups and account deletion. Current-account checks are repeated before remote operations. Device journals separate accounts, preserve offline drafts and block an exit that would discard pending records. Conflict resolution keeps recovery copies.
 
 Cloud records are not end-to-end encrypted; project administrators can technically access the Firebase project. A source-code repository is not a backup of private application records.
 
