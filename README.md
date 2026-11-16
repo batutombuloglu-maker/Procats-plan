@@ -2,7 +2,7 @@
 
 **A study workspace for turning plans into daily progress.**
 
-![Version 2.1.1](https://img.shields.io/badge/version-2.1.1-1884f7)
+![Version 2.1.2](https://img.shields.io/badge/version-2.1.2-1884f7)
 ![Platforms](https://img.shields.io/badge/platforms-Web%20%7C%20Android%20%7C%20Windows-394556)
 ![Interface languages](https://img.shields.io/badge/interface%20languages-20-4a8b6f)
 
@@ -21,7 +21,7 @@ Procats brings a weekly task planner, focus timers, practice exam tracking, chec
 
 Create custom collections alongside Words, Concepts, and General Knowledge. A card can belong to multiple collections and appears once in All cards. The card menu opens its editor or delete confirmation.
 
-In 2.1.1, right-click a custom collection tab or open its three-dot menu to rename or delete it. Renaming keeps its cards assigned. Deleting a collection keeps its cards in their other collections and moves cards with no other memberships to General Knowledge. Built-in collections serve as fixed categories. Card labels use more visible colored dots to distinguish collections.
+In 2.1.2, every collection and search result offers the card menu for editing or deleting cards. Right-click a card on desktop or use its three-dot button. Deletion asks for confirmation. Custom collection tabs also have their own rename and delete menu; deleting a collection preserves its cards in their other collections or General Knowledge.
 
 Choose a collection or search for cards, then select **Review** to see the prompts and reveal the answers. Use **Data Vault → Add data** to preview and import a supported JSON data pack. The [Turkish example pack](docs/examples/knowledge-collection-tr.json) contains ten sample cards and one custom collection.
 
@@ -49,4 +49,4 @@ Use Node.js 22 or newer. Select **Try without an account** to explore the local 
 | [Windows](Windows/) | Electron desktop shell and Windows packaging |
 | [Data and security](docs/DATA-SECURITY.md) | Account boundaries, backup format, and recovery |
 
-See the [2.1.1 release notes](Procats/docs/2.1.1-RELEASE.md) for Android and Windows build details. This public source uses example Firebase settings. Store personal records and release signing keys separately.
+See the [2.1.2 release notes](Procats/docs/2.1.2-RELEASE.md) for Android and Windows build details. This public source uses example Firebase settings. Store personal records and release signing keys separately.

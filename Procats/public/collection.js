@@ -248,7 +248,7 @@
       foot.insertAdjacentHTML('beforeend', arrow);
       open.append(badges, element('strong', '', card.title), foot);
       wrap.append(open);
-      if (selected === 'all' && !locked) addCardActions(wrap, card);
+      if (!locked) addCardActions(wrap, card);
       fragment.append(wrap);
     }
     grid.replaceChildren(fragment);
@@ -352,6 +352,10 @@
       openDeleteDialog(card);
     }, 'collection-menu-delete');
     panel.append(edit, remove);
+    wrap.addEventListener('contextmenu', event => {
+      event.preventDefault();
+      showActionMenu(trigger, panel);
+    });
     wrap.append(trigger, panel);
   }
 

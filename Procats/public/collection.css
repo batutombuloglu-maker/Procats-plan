@@ -176,6 +176,7 @@
   .collection-heading-icon { flex-basis: 43px; height: 43px; border-radius: 12px; }
   .collection-heading-icon svg { width: 23px; height: 23px; }
   .collection-filter-group { flex-basis: 100%; }
+  .collection-card-more { width: 44px; height: 44px; top: 2px; inset-inline-end: 2px; }
   .collection-category-more { min-width: 44px; min-height: 44px; }
   .collection-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .collection-search { max-width: none; }
