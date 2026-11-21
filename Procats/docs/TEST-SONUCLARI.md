@@ -1,4 +1,4 @@
-# Procats 2.1.2 verification
+# Procats 2.1.3 verification
 
 Run `npm test` in `Procats` for shared application checks and in `Windows` for desktop checks. The personal release package records actual test counts and build results in `07-Kontroller`.
 

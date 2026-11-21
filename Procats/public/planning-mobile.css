@@ -11,6 +11,12 @@
 #taskTouchGhost{position:fixed;z-index:20002;pointer-events:none;transform:translate(-50%,-100%);max-width:min(270px,75vw);padding:14px 18px;border:1px solid var(--accent-color);border-radius:14px;background:var(--bg-card);color:var(--text-main);font-size:14px;font-weight:650;box-shadow:0 10px 30px #0006;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .task-touch-dragging{cursor:grabbing}.task-touch-dragging #view-tasks .main-content{overscroll-behavior:contain;scroll-behavior:auto}
 .free-plan-mobile-heading,.free-plan-mobile-intro,.free-plan-preview{display:none}
+#view-obsidian .obs-editor-container {
+ background:color-mix(in srgb,var(--text-main) 6%,var(--bg-nav));
+ min-width:0;min-height:0;
+}
+#view-obsidian .obs-editor-header{flex-shrink:0;overflow-wrap:anywhere}
+#view-obsidian .obs-editor{min-width:0;white-space:pre-wrap;overflow-wrap:anywhere;scrollbar-width:thin;scrollbar-color:var(--text-secondary) transparent}
 @media(max-width:760px),(pointer:coarse) and (max-width:1024px){
  #view-obsidian{background:var(--bg-main);gap:0}
  #view-obsidian>.mobile-picker{margin:16px 16px 0;min-height:48px;border-radius:15px;background:var(--bg-nav);padding:12px 16px;font-weight:600;flex-shrink:0}
@@ -27,10 +33,34 @@
  #obsSidebar .folder-header{min-height:44px;padding:8px 4px;font-size:13px}.folder-content .subject-item:last-child{margin-bottom:0}
  #obsSidebar>.btn-sidebar-add{min-height:43px;margin-top:8px;border-radius:11px;background:var(--bg-card);border:1px solid var(--theme-border,#445);font-size:13px;color:var(--text-main)}
  #obsSidebar>.mobile-new-note{background:var(--accent-color);color:var(--theme-on-accent,#fff);border:0;font-weight:650}
- #view-obsidian .obs-editor-container{margin:12px 16px 16px;border:1px solid var(--theme-border,#445);border-radius:18px;background:var(--bg-nav);overflow:hidden;min-height:0}
+ #view-obsidian .obs-editor-container{margin:12px 16px 16px;border:1px solid var(--theme-border,#445);border-radius:18px;overflow:hidden;min-height:0}
  #view-obsidian .obs-editor-header{padding:18px 18px 14px;font-size:19px;line-height:1.4;overflow-wrap:anywhere;border-color:var(--theme-border,#445)}
  #view-obsidian .obs-editor{padding:17px 18px 24px;line-height:1.85;min-height:70px;overscroll-behavior:contain}
  #view-obsidian .obs-empty-state{padding:24px 20px;overflow:auto;justify-content:flex-start;gap:13px}
  #obsEmptyState>svg{width:38px!important;height:38px!important;opacity:.6!important;flex-shrink:0;color:var(--accent-color)}
  #obsEmptyState>[data-i18n]{display:none}.free-plan-mobile-intro{display:block}.free-plan-mobile-intro h2{margin:0 0 8px;font-size:19px;color:var(--text-main);line-height:1.4}.free-plan-mobile-intro p{margin:0 auto 17px;font-size:13px;line-height:1.65;max-width:290px}.free-plan-mobile-intro button{min-height:44px;border:0;border-radius:12px;padding:10px 18px;background:var(--accent-color);color:var(--theme-on-accent,#fff);font-size:14px;font-weight:650}
+}
+
+/* One working surface at a time on phones: browse pages, then write. */
+@media(max-width:760px),(pointer:coarse) and (max-width:1024px){
+ #view-obsidian>.mobile-picker{margin:10px 12px 0;min-height:48px;gap:12px;text-align:start}
+ #view-obsidian>.mobile-picker span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+ #view-obsidian>.mobile-picker b{flex-shrink:0;transition:transform .15s}
+ #view-obsidian.mobile-list-open>.mobile-picker b{transform:rotate(180deg)}
+ #view-obsidian.mobile-list-open>#obsSidebar{
+  flex:1;min-height:0;max-height:none;width:calc(100% - 24px)!important;
+  margin:10px 12px 12px;padding:14px!important;overflow:hidden;
+ }
+ #view-obsidian.mobile-list-open>.obs-editor-container{display:none}
+ #obsSidebar .subject-list{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:2px 2px 12px;scrollbar-width:thin}
+ #obsSidebar .free-plan-mobile-heading{flex-shrink:0}
+ #obsSidebar .folder-content{margin-inline-start:8px;padding-inline-start:10px}
+ #obsSidebar .folder-header{gap:8px;font-size:14px;min-width:0}
+ #obsSidebar .subject-info>span:not(.icon){white-space:normal;overflow-wrap:anywhere;line-height:1.4}
+ #obsSidebar .subject-item{gap:8px;padding:10px;min-height:64px}
+ #obsSidebar .three-dots{width:44px;min-width:44px;height:44px;flex-shrink:0;border-radius:10px;background:var(--bg-nav)}
+ #obsSidebar>.btn-sidebar-add{min-height:46px;flex-shrink:0}
+ #view-obsidian .obs-editor-container{margin:10px 12px 12px;border-radius:16px;flex:1}
+ #view-obsidian .obs-editor-header{padding:15px 16px;font-size:20px;line-height:1.35;max-height:28%;overflow:auto}
+ #view-obsidian .obs-editor{padding:16px 18px 24px;font-size:16px;line-height:1.8;min-height:0}
 }

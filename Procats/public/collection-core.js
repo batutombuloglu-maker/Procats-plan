@@ -41,7 +41,7 @@ function membershipFromRow(row) {
 }
 
 function cardFromRow(row, validIds) {
-  if (row.source !== cardSource || !normalizedText(row.question, 100) || !normalizedText(row.answer, 700)) return null;
+  if (row.source !== cardSource || !normalizedText(row.question, 100) || !normalizedText(row.answer, Infinity)) return null;
   const memberships = membershipFromRow(row);
   if (!memberships) return null;
   const collectionIds = memberships.filter(id => validIds.has(id));
@@ -63,7 +63,7 @@ export const isCollectionRow = row => record(row) && [cardSource, folderSource].
 export function validateCollectionRows(rows) {
   archive.check(rows);
   if (rows.some(row => row.source === folderSource ? !folderFromRow(row)
-    : row.source !== cardSource || !normalizedText(row.question, 100) || !normalizedText(row.answer, 700) || !membershipFromRow(row))) {
+    : row.source !== cardSource || !normalizedText(row.question, 100) || !normalizedText(row.answer, Infinity) || !membershipFromRow(row))) {
     throw Error('collection-invalid');
   }
 }
@@ -80,7 +80,7 @@ function buildFolder(label, id, now) {
 }
 
 function buildCard(input, id, validIds, now, previous) {
-  const title = normalizedText(input.title, 100), answer = normalizedText(input.answer, 700);
+  const title = normalizedText(input.title, 100), answer = normalizedText(input.answer, Infinity);
   const example = normalizedText(input.example ?? previous?.example ?? '', 2000);
   const { collectionIds } = input;
   if (!title || !answer || example === null || !Array.isArray(collectionIds) || !collectionIds.length

@@ -5,6 +5,31 @@ import { planAddition } from '../public/data-add-core.js';
 import { createKnowledgeStore } from '../public/knowledge-store.js';
 
 const archive = globalThis.ProcatsKnowledgeCore;
+
+test('long poems survive create, edit, projection, backup import and cloud packing without truncation', () => {
+  const poem = ('Bir satır: ıİğüşöç — 夜空 🌙\nİkinci satır.\n\n').repeat(1800).trim();
+  assert.ok(poem.length > 12000);
+  const backing = memoryStore([]), store = createCollectionStore(backing);
+  const saved = store.saveCard({ title: 'Uzun şiir', answer: poem, collectionIds: ['words', 'facts'] });
+  assert.equal(saved.answer, poem);
+  const edited = store.saveCard({ ...saved, answer: poem + '\nSon dize.' }, saved);
+  const rows = backing.get();
+  assert.equal(collectionView(rows).cards[0].answer, edited.answer);
+  const cloudRows = archive.pack(rows).flatMap(part => JSON.parse(JSON.stringify(part))[archive.key]);
+  assert.equal(cloudRows[0].answer, edited.answer);
+  const backup = { format: 'procats', version: 2, [collectionArchiveKey]: JSON.stringify(rows) };
+  const restored = planAddition({}, backup).updates[collectionArchiveKey];
+  assert.equal(collectionView(restored).cards[0].answer, edited.answer);
+  const imported = buildCollectionPack({ collections: ['Şiirler'], cards: [{ title: 'Uzun şiir', answer: poem, collections: ['Şiirler'] }] });
+  assert.equal(collectionView(imported).cards[0].answer, poem);
+});
+
+test('a poem larger than one safe cloud part is rejected before changing existing data', () => {
+  const backing = memoryStore([legacy]), store = createCollectionStore(backing);
+  assert.throws(() => store.saveCard({ title: 'Büyük', answer: 'ş'.repeat(310000), collectionIds: ['facts'] }), /collection-limit/);
+  assert.deepEqual(backing.get(), [legacy]);
+  assert.equal(backing.commits, 0);
+});
 const legacy = archive.make({ id: 1, question: 'Eski arşiv', answer: 'Korunan kayıt' }, 0);
 const card = { title: 'Mahir', answer: 'Becerikli.', example: 'Bu konuda mahir.', collections: ['Sözcükler', 'Sınavda çıkanlar'] };
 const payload = { collections: ['Sınavda çıkanlar'], cards: [card] };

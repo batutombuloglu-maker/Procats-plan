@@ -12,6 +12,16 @@ const card=(id=1,extra={})=>C.make({id,question:'Tirat ne anlama gelir?',answer:
 const save=(cards,c,now=2000)=>C.update(cards,{type:'save',card:c,now});
 function server(){let value={data:{[C.key]:[]},revision:0},offline=false;return {offline:v=>offline=v,get:()=>copy(value),factory:()=>({subscribe(){},stop(){},async request(method,payload){if(offline)throw Error('offline');if(method==='GET')return copy(value);if(value.revision!==payload.revision)return {conflict:true,...copy(value)};value={data:copy(payload.data),revision:value.revision+1};return {revision:value.revision};}})};}
 function instance(backend,entries=[],recovered=[]){const raw=new Map(entries);let broken=false;const store=createKnowledgeStore({storage:{getItem:k=>raw.get(k)??null,setItem(k,v){if(broken)throw Error('disk full');raw.set(k,v);}},flush:async()=>{},merge:M.mergeDocuments,cloudFactory:()=>backend.factory(),recovered});return {store,raw,fail:v=>broken=v};}
+
+test('long collection answers synchronize to a second device and survive local reload', async () => {
+ const poem=('Deneme dizesi — 🌙\n\n').repeat(4000).trim();
+ const remote=server(),a=instance(remote),b=instance(remote);
+ const value=card(10,{source:'procats:collection:v1:card',origin:'["facts"]',answer:poem});
+ a.store.commit([value]);await a.store.sync();await b.store.sync();
+ assert.equal(b.store.get()[0].answer,poem);
+ const reloaded=instance(remote,[...b.raw]);assert.equal(reloaded.store.get()[0].answer,poem);
+ await a.store.stop();await b.store.stop();await reloaded.store.stop();
+});
 test('empty treasury accepts only user-created content and editing preserves identity',()=>{
  const first=save([],card());assert.equal(first.length,1);assert.equal(first[0].createdAt,2000);
  const next=save(first,{...first[0],question:'Yeni soru'},2000);assert.equal(next[0].createdAt,2000);assert.equal(next[0].updatedAt,2001);assert.equal(first[0].question,'Tirat ne anlama gelir?');

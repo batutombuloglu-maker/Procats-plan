@@ -15,13 +15,14 @@
  const fields=new Set(['id','kind','question','answer','explanation','source','category','tags','related','image','imageSide','author','work','origin','example','meaning','passage','createdAt','updatedAt','review']),reviewFields=new Set(['dueAt','interval','count','lapses','at','grade']);
  const object=x=>x!==null&&typeof x==='object'&&!Array.isArray(x),id=x=>Number.isSafeInteger(x)&&x>0;
  const text=(s,n)=>typeof s==='string'&&s.length<=n;
+ const collectionAnswer=c=>c.source==='procats:collection:v1:card';
  const fold=s=>String(s||'').normalize('NFKC').toLocaleLowerCase('tr-TR');
  const bytes=x=>new TextEncoder().encode(JSON.stringify(x)).length;
  const stringList=(v,max,len)=>Array.isArray(v)&&v.length<=max&&v.every(x=>text(x,len)&&x.trim())&&new Set(v.map(fold)).size===v.length;
  function valid(cards){
   if(!Array.isArray(cards)||cards.length>maxCards)return false;const ids=new Set();
   return cards.every(c=>{
-   if(!object(c)||Object.keys(c).some(k=>!fields.has(k))||!id(c.id)||ids.has(c.id)||!kinds.includes(c.kind)||!text(c.question,500)||!c.question.trim()||!text(c.answer,12000)||!c.answer.trim())return false;
+   if(!object(c)||Object.keys(c).some(k=>!fields.has(k))||!id(c.id)||ids.has(c.id)||!kinds.includes(c.kind)||!text(c.question,500)||!c.question.trim()||!text(c.answer,collectionAnswer(c)?maxBytes:12000)||!c.answer.trim())return false;
    ids.add(c.id);
    if(!text(c.explanation,12000)||!text(c.source,1000)||!stringList(c.category,5,80)||!stringList(c.tags,12,40)||!Array.isArray(c.related)||c.related.length>20||c.related.some(x=>!id(x)||x===c.id)||new Set(c.related).size!==c.related.length)return false;
    for(const k of ['author','work','origin','example','meaning'])if(!text(c[k],2000))return false;
@@ -36,7 +37,7 @@
  const snapshot=v=>object(v)&&Object.keys(v).length===1&&Object.keys(v).every(k=>k===key)&&(!Object.hasOwn(v,key)||valid(v[key])&&bytes(v)<=maxBytes);
  const clean=(s,n)=>String(s||'').trim().slice(0,n),labels=(v,max,n)=>[...new Map(v.map(x=>clean(x,n)).filter(Boolean).map(x=>[fold(x),x])).values()].slice(0,max);
  function make(input,now=Date.now(),previous){
-  const c={id:previous?.id??input.id,kind:input.kind||'fact',question:clean(input.question,500),answer:clean(input.answer,12000),explanation:clean(input.explanation,12000),source:clean(input.source,1000),category:labels(input.category||[],5,80),tags:labels(input.tags||[],12,40),related:[...new Set(input.related||[])].filter(x=>x!==(previous?.id??input.id)).slice(0,20),image:input.image||'',imageSide:input.imageSide||'front',passage:clean(input.passage,12000),createdAt:previous?.createdAt??now,updatedAt:Math.max(now,(previous?.updatedAt??-1)+1),review:previous?structuredClone(previous.review):{dueAt:0,interval:0,count:0,lapses:0,at:0,grade:''}};
+  const c={id:previous?.id??input.id,kind:input.kind||'fact',question:clean(input.question,500),answer:collectionAnswer(input)?String(input.answer||'').trim():clean(input.answer,12000),explanation:clean(input.explanation,12000),source:clean(input.source,1000),category:labels(input.category||[],5,80),tags:labels(input.tags||[],12,40),related:[...new Set(input.related||[])].filter(x=>x!==(previous?.id??input.id)).slice(0,20),image:input.image||'',imageSide:input.imageSide||'front',passage:clean(input.passage,12000),createdAt:previous?.createdAt??now,updatedAt:Math.max(now,(previous?.updatedAt??-1)+1),review:previous?structuredClone(previous.review):{dueAt:0,interval:0,count:0,lapses:0,at:0,grade:''}};
   for(const k of ['author','work','origin','example','meaning'])c[k]=clean(input[k],2000);
   if(previous&&(previous.question!==c.question||previous.answer!==c.answer||previous.image!==c.image)){c.review={...c.review,dueAt:0,interval:0};}
   if(!valid([c]))throw Error('knowledge-invalid');return c;
@@ -82,7 +83,7 @@
   else result.sort((a,b)=>schedule(a).dueAt-schedule(b).dueAt||a.createdAt-b.createdAt);
   return result.slice(0,limit).map(c=>c.id);
  }
- function pack(cards){check(cards);const shards=[[],[],[],[]];let i=0;for(const c of cards){if(bytes({[key]:[...shards[i],c]})>600000)i++;if(i>=4)throw Error('knowledge-limit');shards[i].push(c);}return shards.map(a=>({[key]:a}));}
+ function pack(cards){check(cards);const shards=[[],[],[],[]];let i=0;for(const c of cards){if(bytes({[key]:[c]})>600000)throw Error('knowledge-limit');if(bytes({[key]:[...shards[i],c]})>600000)i++;if(i>=4)throw Error('knowledge-limit');shards[i].push(c);}return shards.map(a=>({[key]:a}));}
  function paginate(cards,index=0,size=36){
   if(!Array.isArray(cards)||!Number.isInteger(size)||size<1||size>100)throw Error('knowledge-page');
   const total=cards.length,pages=Math.max(1,Math.ceil(total/size)),page=Math.max(0,Math.min(pages-1,Number.isFinite(index)?Math.floor(index):0)),offset=page*size;

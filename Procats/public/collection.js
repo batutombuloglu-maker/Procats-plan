@@ -37,7 +37,7 @@
       changed: 'Bu kart başka bir yerde değişti. Kartı yeniden açıp düzenle.',
       collectionChanged: 'Bu koleksiyon başka bir yerde değişti. Seçeneklerini yeniden aç.',
       invalidEdit: 'Kart veya koleksiyon bilgilerini kontrol et.',
-      limit: 'Koleksiyon kayıt sınırına ulaşıldı.',
+      limit: 'Bu metin veya koleksiyon, güvenli kayıt kapasitesini aşıyor. Metni birkaç karta böl. Yazdıkların formda korunuyor.',
       locked: 'Koleksiyon kayıtları şu anda düzenlemeye kapalı.',
       offline: 'Çevrimdışı · Koleksiyon değişiklikleri bu cihazda bekliyor.',
       storage: 'Koleksiyon değişiklikleri cihaza kaydedilemedi.',
